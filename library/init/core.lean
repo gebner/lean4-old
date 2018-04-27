@@ -182,6 +182,12 @@ def and.elim_left {a b : Prop} (h : and a b) : a := h.1
 
 def and.elim_right {a b : Prop} (h : and a b) : b := h.2
 
+structure iff (a b : Prop) : Prop :=
+intro :: (mp : a → b) (mpr : b → a)
+
+notation a <-> b := iff a b
+notation a ↔ b := iff a b
+
 /- eq basic support -/
 
 infix = := eq
@@ -264,20 +270,17 @@ structure subtype {α : Sort u} (p : α → Prop) :=
 
 attribute [pp_using_anonymous_constructor] sigma psigma subtype pprod and
 
-class inductive decidable (p : Prop)
-| is_false (h : ¬p) : decidable
-| is_true  (h : p) : decidable
+class decidable (p : Prop) :=
+(witness : bool)
+(spec    : witness = bool.tt ↔ p)
 
-@[reducible]
-def decidable_pred {α : Sort u} (r : α → Prop) :=
+@[reducible] def decidable_pred {α : Sort u} (r : α → Prop) :=
 Π (a : α), decidable (r a)
 
-@[reducible]
-def decidable_rel {α : Sort u} (r : α → α → Prop) :=
+@[reducible] def decidable_rel {α : Sort u} (r : α → α → Prop) :=
 Π (a b : α), decidable (r a b)
 
-@[reducible]
-def decidable_eq (α : Sort u) :=
+@[reducible] def decidable_eq (α : Sort u) :=
 decidable_rel (@eq α)
 
 inductive option (α : Type u)

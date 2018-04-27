@@ -220,12 +220,6 @@ def xor (a b : Prop) := (a ∧ ¬ b) ∨ (b ∧ ¬ a)
 
 /- iff -/
 
-structure iff (a b : Prop) : Prop :=
-intro :: (mp : a → b) (mpr : b → a)
-
-notation a <-> b := iff a b
-notation a ↔ b := iff a b
-
 lemma iff.elim : ((a → b) → (b → a) → c) → (a ↔ b) → c := iff.rec
 
 attribute [recursor 5] iff.elim
@@ -585,113 +579,165 @@ lemma forall_not_of_not_exists {α : Sort u} {p : α → Prop} : ¬(∃ x, p x) 
 /- decidable -/
 
 def decidable.to_bool (p : Prop) [h : decidable p] : bool :=
-decidable.cases_on h (λ h₁, bool.ff) (λ h₂, bool.tt)
+h.witness
 
-export decidable (is_true is_false to_bool)
-
-@[simp] lemma to_bool_true_eq_tt (h : decidable true) : @to_bool true h = tt :=
-decidable.cases_on h (λ h, false.elim (iff.mp not_true h)) (λ _, rfl)
-
-@[simp] lemma to_bool_false_eq_ff (h : decidable false) : @to_bool false h = ff :=
-decidable.cases_on h (λ h, rfl) (λ h, false.elim h)
+export decidable (to_bool)
 
 instance decidable.true : decidable true :=
-is_true trivial
+{ witness := tt, spec := iff.intro (λ _, trivial) (λ _, rfl) }
 
 instance decidable.false : decidable false :=
-is_false not_false
+{ witness := ff, spec := iff.intro (λ h, bool.no_confusion h) (λ h, false.elim h) }
+
+@[simp] lemma to_bool_true_eq_tt (h : decidable true) : @to_bool true h = tt :=
+iff.mpr h.spec trivial
+
+@[simp] lemma to_bool_false_eq_ff : Π (h : decidable false), @to_bool false h = ff
+| { witness := tt, spec := h } := false.elim (iff.mp h rfl)
+| { witness := ff, spec := h } := rfl
 
 -- We use "dependent" if-then-else to be able to communicate the if-then-else condition
 -- to the branches
 @[inline] def dite (c : Prop) [h : decidable c] {α : Sort u} : (c → α) → (¬ c → α) → α :=
-λ t e, decidable.rec_on h e t
+λ t e, match h with
+       | ⟨tt, h₁⟩ := t (iff.mp h₁ rfl)
+       | ⟨ff, h₁⟩ := e (λ hnc, bool.no_confusion (iff.mpr h₁ hnc))
+       end
 
 /- if-then-else -/
 
 @[inline] def ite (c : Prop) [h : decidable c] {α : Sort u} (t e : α) : α :=
-decidable.rec_on h (λ hnc, e) (λ hc, t)
-
-namespace decidable
-  variables {p q : Prop}
-
-  def rec_on_true [h : decidable p] {h₁ : p → Sort u} {h₂ : ¬p → Sort u} (h₃ : p) (h₄ : h₁ h₃)
-      : (decidable.rec_on h h₂ h₁ : Sort u) :=
-  decidable.rec_on h (λ h, false.rec _ (h h₃)) (λ h, h₄)
-
-  def rec_on_false [h : decidable p] {h₁ : p → Sort u} {h₂ : ¬p → Sort u} (h₃ : ¬p) (h₄ : h₂ h₃)
-      : (decidable.rec_on h h₂ h₁ : Sort u) :=
-  decidable.rec_on h (λ h, h₄) (λ h, false.rec _ (h₃ h))
-
-  def by_cases {q : Sort u} [φ : decidable p] : (p → q) → (¬p → q) → q := dite _
-
-  lemma em (p : Prop) [decidable p] : p ∨ ¬p := by_cases or.inl or.inr
-
-  lemma by_contradiction [decidable p] (h : ¬p → false) : p :=
-  if h₁ : p then h₁ else false.rec _ (h h₁)
-
-  lemma of_not_not [decidable p] : ¬ ¬ p → p :=
-  λ hnn, by_contradiction (λ hn, absurd hn hnn)
-
-  lemma not_not_iff (p) [decidable p] : (¬ ¬ p) ↔ p :=
-  iff.intro of_not_not not_not_intro
-
-  lemma not_and_iff_or_not (p q : Prop) [d₁ : decidable p] [d₂ : decidable q] : ¬ (p ∧ q) ↔ ¬ p ∨ ¬ q :=
-  iff.intro
-  (λ h, match d₁ with
-        | is_true h₁  :=
-          match d₂ with
-          | is_true h₂  := absurd (and.intro h₁ h₂) h
-          | is_false h₂ := or.inr h₂
-          end
-        | is_false h₁ := or.inl h₁
-        end)
-  (λ h ⟨hp, hq⟩, or.elim h (λ h, h hp) (λ h, h hq))
-
-  lemma not_or_iff_and_not (p q) [d₁ : decidable p] [d₂ : decidable q] : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q :=
-  iff.intro
-    (λ h, match d₁ with
-          | is_true h₁  := false.elim $ h (or.inl h₁)
-          | is_false h₁ :=
-            match d₂ with
-            | is_true h₂  := false.elim $ h (or.inr h₂)
-            | is_false h₂ := ⟨h₁, h₂⟩
-            end
-          end)
-    (λ ⟨np, nq⟩ h, or.elim h np nq)
-end decidable
-
-section
-  variables {p q : Prop}
-  def  decidable_of_decidable_of_iff (hp : decidable p) (h : p ↔ q) : decidable q :=
-  if hp : p then is_true (iff.mp h hp)
-  else is_false (iff.mp (not_iff_not_of_iff h) hp)
-
-  def  decidable_of_decidable_of_eq (hp : decidable p) (h : p = q) : decidable q :=
-  decidable_of_decidable_of_iff hp h.to_iff
-
-  protected def or.by_cases [decidable p] [decidable q] {α : Sort u}
-                                   (h : p ∨ q) (h₁ : p → α) (h₂ : q → α) : α :=
-  if hp : p then h₁ hp else
-    if hq : q then h₂ hq else
-      false.rec _ (or.elim h hp hq)
+match h.witness with
+| tt := t
+| ff := e
 end
 
+namespace decidable
+variables {p q : Prop}
+
+def by_cases {q : Sort u} [φ : decidable p] : (p → q) → (¬p → q) → q := dite _
+
+lemma em (p : Prop) [decidable p] : p ∨ ¬p := by_cases or.inl or.inr
+
+lemma by_contradiction [decidable p] (h : ¬p → false) : p :=
+if h₁ : p then h₁ else false.rec _ (h h₁)
+
+lemma of_not_not [decidable p] : ¬ ¬ p → p :=
+λ hnn, by_contradiction (λ hn, absurd hn hnn)
+
+lemma not_not_iff (p) [decidable p] : (¬ ¬ p) ↔ p :=
+iff.intro of_not_not not_not_intro
+
+lemma not_and_iff_or_not (p q : Prop) [decidable p] [decidable q] : ¬ (p ∧ q) ↔ ¬ p ∨ ¬ q :=
+iff.intro
+(λ h, if h₁ : p
+      then if h₂ : q then absurd (and.intro h₁ h₂) h else or.inr h₂
+      else or.inl h₁)
+(λ h ⟨hp, hq⟩, or.elim h (λ h, h hp) (λ h, h hq))
+
+lemma not_or_iff_and_not (p q) [decidable p] [decidable q] : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q :=
+iff.intro
+(λ h, if h₁ : p then false.elim $ h (or.inl h₁)
+      else if h₂ : q then false.elim $ h (or.inr h₂) else ⟨h₁, h₂⟩)
+(λ ⟨np, nq⟩ h, or.elim h np nq)
+
+theorem sneg (h : ff = tt ↔ p) : ¬ p :=
+λ hp, bool.no_confusion (iff.mpr h hp)
+
+theorem spos (h : tt = tt ↔ p) : p :=
+iff.mp h rfl
+
+end decidable
+
+open decidable (sneg spos)
+
 section
-  variables {p q : Prop}
+variables {p q : Prop}
 
-  instance [decidable p] [decidable q] : decidable (p ∧ q) :=
-  if hp : p then
-    if hq : q then is_true ⟨hp, hq⟩
-    else is_false (assume h : p ∧ q, hq (and.right h))
-  else is_false (assume h : p ∧ q, hp (and.left h))
+def or.by_cases [decidable p] [decidable q] {α : Sort u}
+                (h : p ∨ q) (h₁ : p → α) (h₂ : q → α) : α :=
+if hp : p then h₁ hp
+else if hq : q then h₂ hq
+else false.elim (or.elim h hp hq)
 
-  instance [decidable p] [decidable q] : decidable (p ∨ q) :=
-  if hp : p then is_true (or.inl hp) else
-    if hq : q then is_true (or.inr hq) else
-      is_false (or.rec hp hq)
+def  decidable_of_decidable_of_iff : decidable p → (p ↔ q) → decidable q
+| ⟨tt, h₁⟩ h₂ := ⟨tt, iff.intro (λ _, iff.mp h₂ (spos h₁)) (λ _, rfl)⟩
+| ⟨ff, h₁⟩ h₂ := ⟨ff, iff.intro (λ h, bool.no_confusion h) (λ h, absurd (iff.mpr h₂ h) (sneg h₁))⟩
 
-  instance [decidable p] : decidable (¬p) :=
-  if hp : p then is_false (absurd hp) else is_true hp
+def  decidable_of_decidable_of_eq (hp : decidable p) (h : p = q) : decidable q :=
+decidable_of_decidable_of_iff hp h.to_iff
+
+theorem band_spec : Π {a b : bool}, (a = tt ↔ p) → (b = tt ↔ q) → ((a && b) = tt ↔ p ∧ q)
+| tt tt h₁ h₂ := iff.intro (λ _, and.intro (spos h₁) (spos h₂)) (λ _, rfl)
+| ff x  h₁ h₂ := iff.intro (λ h, bool.no_confusion h) (λ h, absurd h.1 (sneg h₁))
+| tt ff h₁ h₂ := iff.intro (λ h, bool.no_confusion h) (λ h, absurd h.2 (sneg h₂))
+
+instance [h₁ : decidable p] [h₂ : decidable q] : decidable (p ∧ q) :=
+{ witness := h₁.witness && h₂.witness,
+  spec    := band_spec h₁.spec h₂.spec }
+
+theorem bor_spec : Π {a b : bool}, (a = tt ↔ p) → (b = tt ↔ q) → ((a || b) = tt ↔ p ∨ q)
+| tt x  h₁ h₂ := iff.intro (λ _, or.inl (spos h₁)) (λ _, rfl)
+| ff tt h₁ h₂ := iff.intro (λ _, or.inr (spos h₂)) (λ _, rfl)
+| ff ff h₁ h₂ := iff.intro (λ h, bool.no_confusion h) (λ h, or.elim h (λ h, absurd h (sneg h₁)) (λ h, absurd h (sneg h₂)))
+
+instance [h₁ : decidable p] [h₂ : decidable q] : decidable (p ∨ q) :=
+{ witness := h₁.witness || h₂.witness,
+  spec    := bor_spec h₁.spec h₂.spec }
+
+theorem bnot_spec : Π {a : bool}, (a = tt ↔ p) → ((!a) = tt ↔ ¬p)
+| tt h := iff.intro (λ h, bool.no_confusion h) (λ np, absurd (spos h) np)
+| ff h := iff.intro (λ _, (sneg h)) (λ _, rfl)
+
+instance [h : decidable p] : decidable (¬p) :=
+{ witness := !h.witness, spec := bnot_spec h.spec }
+
+
+end
+
+protected def bool.eq : bool → bool → bool
+| ff ff := tt
+| ff tt := ff
+| tt ff := ff
+| tt tt := tt
+
+theorem bool.eq_spec : ∀ a b : bool, bool.eq a b = tt ↔ a = b
+| ff ff := iff.intro (λ h, rfl) (λ h, rfl)
+| ff tt := iff.intro (λ h, bool.no_confusion h) (λ h, bool.no_confusion h)
+| tt ff := iff.intro (λ h, bool.no_confusion h) (λ h, bool.no_confusion h)
+| tt tt := iff.rfl
+
+instance : decidable_eq bool :=
+λ a b, { witness := bool.eq a b, spec := bool.eq_spec _ _ }
+
+protected def nat.eq : nat → nat → bool
+| 0            0            := tt
+| (nat.succ a) 0            := ff
+| 0            (nat.succ b) := ff
+| (nat.succ a) (nat.succ b) := nat.eq a b
+
+theorem nat.eq_spec : ∀ a b : nat, nat.eq a b = tt ↔ a = b
+| 0            0            := iff.intro (λ h, rfl) (λ h, rfl)
+| (nat.succ a) 0            := iff.intro (λ h, bool.no_confusion h) (λ h, nat.no_confusion h)
+| 0            (nat.succ b) := iff.intro (λ h, bool.no_confusion h) (λ h, nat.no_confusion h)
+| (nat.succ a) (nat.succ b) := iff.intro
+  (λ h, have a = b, from iff.mp (nat.eq_spec a b) h,
+        this ▸ rfl)
+  (λ h, nat.no_confusion h (λ h, iff.mpr (nat.eq_spec a b) h))
+
+instance nat_dec_eq : decidable_eq nat :=
+λ a b, { witness := nat.eq a b, spec := nat.eq_spec _ _ }
+
+
+#exit
+| ff ff := { witness := tt, spec := _ }
+| ff tt := { witness := ff, spec := _ }
+| tt ff := { witness := ff, spec := _ }
+| tt tt := { witness := tt, spec := iff.rfl }
+
+
+#exit
+
 
   instance implies.decidable [decidable p] [decidable q] : decidable (p → q) :=
   if hp : p then
@@ -728,6 +774,8 @@ end
 
 instance {α : Sort u} [decidable_eq α] (a b : α) : decidable (a ≠ b) :=
 implies.decidable
+
+#exit
 
 lemma bool.ff_ne_tt : ff = tt → false
 .
