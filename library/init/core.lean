@@ -582,6 +582,11 @@ attribute [elab_simple] bin_tree.node bin_tree.leaf
 | ff tt  := tt
 | _  _   := ff
 
+@[inline] def beq : bool → bool → bool
+| ff ff := tt
+| tt tt := tt
+| _  _  := ff
+
 notation !x     := bnot x
 notation x || y := bor x y
 notation x && y := band x y

@@ -692,8 +692,38 @@ theorem bnot_spec : Π {a : bool}, (a = tt ↔ p) → ((!a) = tt ↔ ¬p)
 instance [h : decidable p] : decidable (¬p) :=
 { witness := !h.witness, spec := bnot_spec h.spec }
 
+theorem bimplies_spec : Π {a b : bool}, (a = tt ↔ p) → (b = tt ↔ q) → ((!a || b) = tt ↔ (p → q))
+| ff x h₁ h₂  := iff.intro (λ _ hp, absurd hp (sneg h₁)) (λ _, rfl)
+| tt tt h₁ h₂ := iff.intro (λ _ _, spos h₂) (λ _, rfl)
+| tt ff h₁ h₂ := iff.intro (λ h _, bool.no_confusion h) (λ h, absurd (h (spos h₁)) (sneg h₂))
 
+instance imp_decidable [h₁ : decidable p] [h₂ : decidable q] : decidable (p → q) :=
+{ witness := !h₁.witness || h₂.witness,
+  spec    := bimplies_spec h₁.spec h₂.spec }
+
+theorem beq_spec : Π {a b : bool}, (a = tt ↔ p) → (b = tt ↔ q) → (beq a b = tt ↔ (p ↔ q))
+| tt tt h₁ h₂ := iff.intro (λ _, iff.intro (λ _, spos h₂) (λ _, spos h₁)) (λ _, rfl)
+| ff ff h₁ h₂ := iff.intro (λ _, iff.intro (λ hp, absurd hp (sneg h₁)) (λ hq, absurd hq (sneg h₂))) (λ _, rfl)
+| tt ff h₁ h₂ := iff.intro (λ h, bool.no_confusion h) (λ h, absurd (iff.mp h (spos h₁)) (sneg h₂))
+| ff tt h₁ h₂ := iff.intro (λ h, bool.no_confusion h) (λ h, absurd (iff.mpr h (spos h₂)) (sneg h₁))
+
+instance [h₁ : decidable p] [h₂ : decidable q] : decidable (p ↔ q) :=
+{ witness := beq h₁.witness h₂.witness,
+  spec    := beq_spec h₁.spec h₂.spec }
+
+theorem bxor_spec : Π {a b : bool}, (a = tt ↔ p) → (b = tt ↔ q) → (bxor a b = tt ↔ (xor p q))
+| tt tt h₁ h₂ := iff.intro (λ h, bool.no_confusion h) (λ h, or.elim h (λ h, absurd (spos h₂) h.2) (λ h, absurd (spos h₁) h.2))
+| ff ff h₁ h₂ := iff.intro (λ h, bool.no_confusion h) (λ h, or.elim h (λ h, absurd h.1 (sneg h₁)) (λ h, absurd h.1 (sneg h₂)))
+| tt ff h₁ h₂ := iff.intro (λ _, or.inl ⟨spos h₁, sneg h₂⟩) (λ _, rfl)
+| ff tt h₁ h₂ := iff.intro (λ _, or.inr ⟨spos h₂, sneg h₁⟩) (λ _, rfl)
+
+instance [h₁ : decidable p] [h₂ : decidable q] : decidable (xor p q) :=
+{ witness := bxor h₁.witness h₂.witness,
+  spec    := bxor_spec h₁.spec h₂.spec }
 end
+
+instance {α : Sort u} [decidable_eq α] (a b : α) : decidable (a ≠ b) :=
+infer_instance
 
 protected def bool.eq : bool → bool → bool
 | ff ff := tt
@@ -727,86 +757,6 @@ theorem nat.eq_spec : ∀ a b : nat, nat.eq a b = tt ↔ a = b
 
 instance nat_dec_eq : decidable_eq nat :=
 λ a b, { witness := nat.eq a b, spec := nat.eq_spec _ _ }
-
-
-#exit
-| ff ff := { witness := tt, spec := _ }
-| ff tt := { witness := ff, spec := _ }
-| tt ff := { witness := ff, spec := _ }
-| tt tt := { witness := tt, spec := iff.rfl }
-
-
-#exit
-
-
-  instance implies.decidable [decidable p] [decidable q] : decidable (p → q) :=
-  if hp : p then
-    if hq : q then is_true (assume h, hq)
-    else is_false (assume h : p → q, absurd (h hp) hq)
-  else is_true (assume h, absurd h hp)
-
-  instance [decidable p] [decidable q] : decidable (p ↔ q) :=
-  if hp : p then
-    if hq : q then is_true ⟨λ_, hq, λ_, hp⟩
-    else is_false $ λh, hq (h.1 hp)
-  else
-    if hq : q then is_false $ λh, hp (h.2 hq)
-    else is_true $ ⟨λh, absurd h hp, λh, absurd h hq⟩
-
-  instance [decidable p] [decidable q] : decidable (xor p q) :=
-  if hp : p then
-    if hq : q then is_false (or.rec (λ ⟨_, h⟩, h hq : ¬(p ∧ ¬ q)) (λ ⟨_, h⟩, h hp : ¬(q ∧ ¬ p)))
-    else is_true $ or.inl ⟨hp, hq⟩
-  else
-    if hq : q then is_true $ or.inr ⟨hq, hp⟩
-    else is_false (or.rec (λ ⟨h, _⟩, hp h : ¬(p ∧ ¬ q)) (λ ⟨h, _⟩, hq h : ¬(q ∧ ¬ p)))
-
-  instance exists_prop_decidable {p} (P : p → Prop)
-    [Dp : decidable p] [DP : ∀ h, decidable (P h)] : decidable (∃ h, P h) :=
-  if h : p then decidable_of_decidable_of_iff (DP h)
-    ⟨λ h2, ⟨h, h2⟩, λ⟨h', h2⟩, h2⟩ else is_false (mt (λ⟨h, _⟩, h) h)
-
-  instance forall_prop_decidable {p} (P : p → Prop)
-    [Dp : decidable p] [DP : ∀ h, decidable (P h)] : decidable (∀ h, P h) :=
-  if h : p then decidable_of_decidable_of_iff (DP h)
-    ⟨λ h2 _, h2, λal, al h⟩ else is_true (λ h2, absurd h2 h)
-end
-
-instance {α : Sort u} [decidable_eq α] (a b : α) : decidable (a ≠ b) :=
-implies.decidable
-
-#exit
-
-lemma bool.ff_ne_tt : ff = tt → false
-.
-
-def is_dec_eq {α : Sort u} (p : α → α → bool) : Prop   := ∀ ⦃x y : α⦄, p x y = tt → x = y
-def is_dec_refl {α : Sort u} (p : α → α → bool) : Prop := ∀ x, p x x = tt
-
-open decidable
-instance : decidable_eq bool
-| ff ff := is_true rfl
-| ff tt := is_false bool.ff_ne_tt
-| tt ff := is_false (ne.symm bool.ff_ne_tt)
-| tt tt := is_true rfl
-
-def decidable_eq_of_bool_pred {α : Sort u} {p : α → α → bool} (h₁ : is_dec_eq p) (h₂ : is_dec_refl p) : decidable_eq α :=
-assume x y : α,
- if hp : p x y = tt then is_true (h₁ hp)
- else is_false (assume hxy : x = y, absurd (h₂ y) (@eq.rec_on _ _ (λ z, ¬p z y = tt) _ hxy hp))
-
-lemma decidable_eq_inl_refl {α : Sort u} [h : decidable_eq α] (a : α) : h a a = is_true (eq.refl a) :=
-match (h a a) with
-| (is_true e)  := rfl
-| (is_false n) := absurd rfl n
-end
-
-lemma decidable_eq_inr_neg {α : Sort u} [h : decidable_eq α] {a b : α} : Π n : a ≠ b, h a b = is_false n :=
-assume n,
-match (h a b) with
-| (is_true e)   := absurd e n
-| (is_false n₁) := proof_irrel n n₁ ▸ eq.refl (is_false n)
-end
 
 /- inhabited -/
 
@@ -857,6 +807,8 @@ eq.rec_on h (λ a b : α, heq_of_eq (subsingleton.elim a b))
 
 instance subsingleton_prop (p : Prop) : subsingleton p :=
 ⟨λ a b, proof_irrel a b⟩
+
+
 
 instance (p : Prop) : subsingleton (decidable p) :=
 subsingleton.intro (λ d₁,
