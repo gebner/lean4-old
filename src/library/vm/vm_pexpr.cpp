@@ -30,10 +30,21 @@ vm_obj pexpr_reflect(vm_obj const & e) {
     return to_obj(mk_pexpr_quote_and_substs(to_expr(e), /* is_strict */ false));
 }
 
+vm_obj pexpr_subst(vm_obj const &, vm_obj const & _e1, vm_obj const & _e2) {
+    expr const & e1 = to_expr(_e1);
+    expr const & e2 = to_expr(_e2);
+    if (is_lambda(e1)) {
+        return to_obj(instantiate(binding_body(e1), e2));
+    } else {
+        return to_obj(e1);
+    }
+}
+
 void initialize_vm_pexpr() {
     DECLARE_VM_BUILTIN(name({"pexpr", "of_expr"}),        pexpr_of_expr);
     DECLARE_VM_BUILTIN(name({"pexpr", "to_expr"}),        pexpr_to_expr);
     DECLARE_VM_BUILTIN(name({"pexpr", "reflect"}),        pexpr_reflect);
+    DECLARE_VM_BUILTIN(name({"pexpr", "subst"}),          pexpr_subst);
 }
 
 void finalize_vm_pexpr() {
