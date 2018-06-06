@@ -30,7 +30,7 @@ vm_obj pexpr_reflect(vm_obj const & e) {
     return to_obj(mk_pexpr_quote_and_substs(to_expr(e), /* is_strict */ false));
 }
 
-vm_obj pexpr_subst(vm_obj const &, vm_obj const & _e1, vm_obj const & _e2) {
+vm_obj pexpr_subst(vm_obj const & _e1, vm_obj const & _e2) {
     expr const & e1 = to_expr(_e1);
     expr const & e2 = to_expr(_e2);
     if (is_lambda(e1)) {

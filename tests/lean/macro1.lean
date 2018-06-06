@@ -26,7 +26,7 @@ def ref_macro := {macro .
   do [syntax.ident ident] ← pure node.args
        | throw "unreachable",
      some resolved ← pure $ resolve_name ident.msc sc ident.name
-       | throw sformat!"unknown identifier {ident.name}",
+       | throw $ "unknown identifier " ++ ident.name.to_string,
      modify (λ st, ⟨st.resolve_map.insert ident.id resolved⟩),
      pure []}
 
