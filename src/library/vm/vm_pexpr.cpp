@@ -8,6 +8,7 @@ Author: Leonardo de Moura
 #include "library/placeholder.h"
 #include "library/explicit.h"
 #include "library/choice.h"
+#include "library/quote.h"
 #include "library/vm/vm.h"
 #include "library/vm/vm_expr.h"
 #include "library/vm/vm_name.h"
@@ -21,8 +22,18 @@ vm_obj pexpr_of_expr(vm_obj const & e) {
     return to_obj(mk_as_is(to_expr(e)));
 }
 
+vm_obj pexpr_to_expr(vm_obj const & e) {
+    return e;
+}
+
+vm_obj pexpr_reflect(vm_obj const & e) {
+    return to_obj(mk_pexpr_quote_and_substs(to_expr(e), /* is_strict */ false));
+}
+
 void initialize_vm_pexpr() {
     DECLARE_VM_BUILTIN(name({"pexpr", "of_expr"}),        pexpr_of_expr);
+    DECLARE_VM_BUILTIN(name({"pexpr", "to_expr"}),        pexpr_to_expr);
+    DECLARE_VM_BUILTIN(name({"pexpr", "reflect"}),        pexpr_reflect);
 }
 
 void finalize_vm_pexpr() {
