@@ -231,6 +231,7 @@ expr old_type_checker::infer_type_core(expr const & e, bool infer_only) {
     case expr_kind::Pi:        r = infer_pi(e, infer_only);             break;
     case expr_kind::App:       r = infer_app(e, infer_only);            break;
     case expr_kind::Let:       r = infer_let(e, infer_only);            break;
+    case expr_kind::Lit:       r = infer_let(e, infer_only);            break;
 
     case expr_kind::Quote: throw_found_quote(m_env);
     }
@@ -325,7 +326,7 @@ expr old_type_checker::whnf_core(expr const & e) {
             r = whnf_core(mk_rev_app(instantiate(binding_body(f), m, args.data() + (num_args - m)), num_args - m, args.data()));
         } else if (f == f0) {
             if (auto r = norm_ext(e)) {
-                /* mainly iota-reduction, it also applies HIT and quotient reduction rules */
+                /* mainly iota-reduction and quotient reduction rules */
                 return whnf_core(*r);
             } else {
                 return e;

@@ -351,7 +351,7 @@ expr type_checker::whnf_core(expr const & e) {
             r = whnf_core(mk_rev_app(instantiate(binding_body(f), m, args.data() + (num_args - m)), num_args - m, args.data()));
         } else if (f == f0) {
             if (auto r = norm_ext(e)) {
-                /* mainly iota-reduction, it also applies HIT and quotient reduction rules */
+                /* iota-reduction and quotient reduction rules */
                 return whnf_core(*r);
             } else {
                 return e;
