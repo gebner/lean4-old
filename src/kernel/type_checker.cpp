@@ -646,9 +646,9 @@ bool type_checker::is_def_eq_proof_irrel(expr const & t, expr const & s) {
 }
 
 bool type_checker::failed_before(expr const & t, expr const & s) const {
-    if (t.hash() < s.hash()) {
+    if (hash(t) < hash(s)) {
         return m_failure_cache.find(mk_pair(t, s)) != m_failure_cache.end();
-    } else if (t.hash() > s.hash()) {
+    } else if (hash(t) > hash(s)) {
         return m_failure_cache.find(mk_pair(s, t)) != m_failure_cache.end();
     } else {
         return
@@ -658,7 +658,7 @@ bool type_checker::failed_before(expr const & t, expr const & s) const {
 }
 
 void type_checker::cache_failure(expr const & t, expr const & s) {
-    if (t.hash() <= s.hash())
+    if (hash(t) <= hash(s))
         m_failure_cache.insert(mk_pair(t, s));
     else
         m_failure_cache.insert(mk_pair(s, t));

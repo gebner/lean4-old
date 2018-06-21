@@ -13,7 +13,6 @@ Author: Leonardo de Moura
 #include "util/list_fn.h"
 #include "util/hash.h"
 #include "util/buffer.h"
-#include "util/object_serializer.h"
 #include "kernel/expr.h"
 #include "kernel/expr_eq_fn.h"
 #include "kernel/expr_sets.h"
@@ -58,6 +57,14 @@ bool operator<(literal const & a, literal const & b) {
     lean_unreachable();
 }
 
+static inline unsigned hash(literal const & a) {
+    switch (a.kind()) {
+    case literal_kind::Nat:    return a.get_nat().hash();
+    case literal_kind::String: return hash_str(a.get_string().num_bytes(), a.get_string().data(), 17);
+    }
+    lean_unreachable();
+}
+
 /* Auxiliary functions for computing scalar data offset into expression objects. */
 inline constexpr unsigned num_obj_fields(expr_kind k) {
     return
@@ -79,6 +86,11 @@ inline constexpr unsigned num_obj_fields(expr_kind k) {
 /* Expression scalar data offset. */
 inline constexpr unsigned scalar_offset(expr_kind k) { return num_obj_fields(k) * sizeof(object*); }
 
+inline constexpr unsigned binder_info_offset(expr_kind k) {
+    // Only for: k == expr_kind::Pi || k == expr_kind::Lambda || k == expr_kind::FVar
+    return scalar_offset(k);
+}
+
 inline constexpr unsigned hash_offset(expr_kind k) {
     return
         k == expr_kind::FVar   ? scalar_offset(k) + sizeof(unsigned char) : // for binder_info, TODO(Leo): delete after we remove support for legacy code
@@ -94,23 +106,311 @@ inline constexpr size_t loose_bvar_range_offset(expr_kind k) { return depth_offs
 /* Size for scalar value area for non recursive expression. */
 inline constexpr size_t expr_scalar_size(expr_kind k) { return flags_offset(k) + sizeof(unsigned char); }
 /* Size for scalar value area for recursive expression. */
-inline constexpr size_t recursive_expr_scalar_size(expr_kind k) { return loose_bvar_range_offset(k) + sizeof(unsigned); }
+inline constexpr size_t rec_expr_scalar_size(expr_kind k) { return loose_bvar_range_offset(k) + sizeof(unsigned); }
 
 
-/* Weight safe arith functions */
-static unsigned add_weight(unsigned w1, unsigned w2) {
+/* safe arith functions */
+static unsigned safe_add(unsigned w1, unsigned w2) {
     unsigned r = w1 + w2;
     if (r < w1)
         r = std::numeric_limits<unsigned>::max(); // overflow
     return r;
 }
 
-static unsigned inc_weight(unsigned w) {
+static unsigned safe_inc(unsigned w) {
     if (w < std::numeric_limits<unsigned>::max())
         return w+1;
     else
         return w;
 }
+
+#if 1
+
+/* Set expr cached hash code and flags. All expressions contain them.
+   We provide the kind `k` to allow the compiler to compute offsets at compilation time. */
+template<expr_kind k> void set_scalar(expr const & e, unsigned hash, bool has_expr_mvar, bool has_univ_mvar,
+                                      bool has_fvar, bool has_univ_param) {
+    lean_assert(e.kind() == k);
+    unsigned char d =
+        (has_expr_mvar ? 1 : 0) +
+        (has_univ_mvar ? 2 : 0) +
+        (has_fvar ? 4 : 0) +
+        (has_univ_param ? 8 : 0);
+    cnstr_set_scalar<unsigned>(e.raw(), hash_offset(k), hash);
+    cnstr_set_scalar<unsigned char>(e.raw(), flags_offset(k), d);
+}
+
+/* Set expr cached weight, depth and loose bvar range. We only store this information in recursive expr constructors.
+   We provide the kind `k` to allow the compiler to compute offsets at compilation time. */
+template<expr_kind k> void set_rec_scalar(expr const & e, unsigned weight, unsigned depth, unsigned loose_bvar_range) {
+    lean_assert(e.kind() == k);
+    cnstr_set_scalar<unsigned>(e.raw(), weight_offset(k), weight);
+    cnstr_set_scalar<unsigned>(e.raw(), depth_offset(k), depth);
+    cnstr_set_scalar<unsigned>(e.raw(), loose_bvar_range_offset(k), loose_bvar_range);
+}
+
+template<expr_kind k> void set_binder_info(expr const & e, binder_info bi) {
+    lean_assert(e.kind() == k);
+    cnstr_set_scalar<unsigned char>(e.raw(), binder_info_offset(k), static_cast<unsigned char>(bi));
+}
+
+unsigned hash(expr const & e) { return cnstr_scalar<unsigned>(e.raw(), hash_offset(e.kind())); }
+static inline unsigned char get_flags(expr const & e) { return cnstr_scalar<unsigned char>(e.raw(), flags_offset(e.kind())); }
+bool has_expr_mvar(expr const & e) { return (get_flags(e) & 1) != 0; }
+bool has_univ_mvar(expr const & e) { return (get_flags(e) & 2) != 0; }
+bool has_fvar(expr const & e) { return (get_flags(e) & 4) != 0; }
+bool has_univ_param(expr const & e) { return (get_flags(e) & 8) != 0; }
+
+template<expr_kind k> unsigned get_weight_core(expr const & e) { return cnstr_scalar<unsigned>(e.raw(), weight_offset(k)); }
+
+unsigned get_weight(expr const & e) {
+    switch (e.kind()) {
+    case expr_kind::BVar:  case expr_kind::Constant: case expr_kind::Sort:
+    case expr_kind::MVar:  case expr_kind::FVar:     case expr_kind::Lit:
+    case expr_kind::Quote:
+        return 1;
+    case expr_kind::Lambda:  return get_weight_core<expr_kind::Lambda>(e);
+    case expr_kind::Pi:      return get_weight_core<expr_kind::Pi>(e);
+    case expr_kind::App:     return get_weight_core<expr_kind::App>(e);
+    case expr_kind::Let:     return get_weight_core<expr_kind::Let>(e);
+    case expr_kind::MData:   return get_weight_core<expr_kind::MData>(e);
+    case expr_kind::Proj:    return get_weight_core<expr_kind::Proj>(e);
+    }
+    lean_unreachable(); // LCOV_EXCL_LINE
+}
+
+template<expr_kind k> unsigned get_depth_core(expr const & e) { return cnstr_scalar<unsigned>(e.raw(), depth_offset(k)); }
+
+unsigned get_depth(expr const & e) {
+    switch (e.kind()) {
+    case expr_kind::BVar:  case expr_kind::Constant: case expr_kind::Sort:
+    case expr_kind::MVar:  case expr_kind::FVar:     case expr_kind::Lit:
+    case expr_kind::Quote:
+        return 1;
+    case expr_kind::Lambda:  return get_depth_core<expr_kind::Lambda>(e);
+    case expr_kind::Pi:      return get_depth_core<expr_kind::Pi>(e);
+    case expr_kind::App:     return get_depth_core<expr_kind::App>(e);
+    case expr_kind::Let:     return get_depth_core<expr_kind::Let>(e);
+    case expr_kind::MData:   return get_depth_core<expr_kind::MData>(e);
+    case expr_kind::Proj:    return get_depth_core<expr_kind::Proj>(e);
+    }
+    lean_unreachable(); // LCOV_EXCL_LINE
+}
+
+template<expr_kind k> unsigned get_loose_bvar_range_core(expr const & e) { return cnstr_scalar<unsigned>(e.raw(), loose_bvar_range_offset(k)); }
+
+unsigned get_loose_bvar_range(expr const & e) {
+    switch (e.kind()) {
+    case expr_kind::Constant: case expr_kind::Sort:
+    case expr_kind::Quote:    case expr_kind::Lit:
+        return 0;
+    case expr_kind::BVar:    {
+        nat const & idx = bvar_idx(e);
+        return idx.is_small() ? safe_inc(idx.get_small_value()) : std::numeric_limits<unsigned>::max();
+    }
+    case expr_kind::MVar:    return get_loose_bvar_range_core<expr_kind::MVar>(e);
+    case expr_kind::FVar:    return get_loose_bvar_range_core<expr_kind::FVar>(e);
+    case expr_kind::Lambda:  return get_loose_bvar_range_core<expr_kind::Lambda>(e);
+    case expr_kind::Pi:      return get_loose_bvar_range_core<expr_kind::Pi>(e);
+    case expr_kind::App:     return get_loose_bvar_range_core<expr_kind::App>(e);
+    case expr_kind::Let:     return get_loose_bvar_range_core<expr_kind::Let>(e);
+    case expr_kind::MData:   return get_loose_bvar_range_core<expr_kind::MData>(e);
+    case expr_kind::Proj:    return get_loose_bvar_range_core<expr_kind::Proj>(e);
+    }
+    lean_unreachable(); // LCOV_EXCL_LINE
+}
+
+bool is_atomic(expr const & e) {
+    switch (e.kind()) {
+    case expr_kind::Constant: case expr_kind::Sort:
+    case expr_kind::BVar:     case expr_kind::Lit:
+    case expr_kind::Quote:
+        return true;
+    case expr_kind::App:      case expr_kind::MVar:
+    case expr_kind::FVar:     case expr_kind::Lambda:
+    case expr_kind::Pi:       case expr_kind::Let:
+    case expr_kind::MData:    case expr_kind::Proj:
+        return false;
+    }
+    lean_unreachable(); // LCOV_EXCL_LINE
+}
+
+// =======================================
+// Constructors
+
+expr mk_lit(literal const & l) {
+    inc(l.raw());
+    expr r(mk_cnstr(static_cast<unsigned>(expr_kind::Lit), l.raw(), expr_scalar_size(expr_kind::Lit)));
+    set_scalar<expr_kind::Lit>(r, hash(l), false, false, false, false);
+    return r;
+}
+
+expr mk_mdata(kvmap const & m, expr const & e) {
+    inc(m.raw()); inc(e.raw());
+    expr r(mk_cnstr(static_cast<unsigned>(expr_kind::MData), m.raw(), e.raw(), rec_expr_scalar_size(expr_kind::MData)));
+    unsigned w = safe_inc(get_weight(e));
+    unsigned d = get_depth(e) + 1;
+    unsigned h = hash(hash(e), hash(w, d));
+    set_scalar<expr_kind::MData>(r, h, has_expr_mvar(e), has_univ_mvar(e), has_fvar(e), has_univ_param(e));
+    set_rec_scalar<expr_kind::MData>(r, w, d, get_loose_bvar_range(e));
+    return r;
+}
+
+expr mk_proj(nat const & idx, expr const & e) {
+    inc(idx.raw()); inc(e.raw());
+    expr r(mk_cnstr(static_cast<unsigned>(expr_kind::Proj), idx.raw(), e.raw(), rec_expr_scalar_size(expr_kind::Proj)));
+    unsigned w    = safe_inc(get_weight(e));
+    unsigned d    = get_depth(e) + 1;
+    unsigned h    = hash(hash(e), hash(idx.hash(), w));
+    set_scalar<expr_kind::Proj>(r, h, has_expr_mvar(e), has_univ_mvar(e), has_fvar(e), has_univ_param(e));
+    set_rec_scalar<expr_kind::Proj>(r, w, d, get_loose_bvar_range(e));
+    return r;
+}
+
+expr mk_bvar(nat const & idx) {
+    inc(idx.raw());
+    expr r(mk_cnstr(static_cast<unsigned>(expr_kind::BVar), idx.raw(), expr_scalar_size(expr_kind::BVar)));
+    set_scalar<expr_kind::BVar>(r, idx.hash(), false, false, false, false);
+    return r;
+}
+
+/* Legacy */
+expr mk_local(name const & n, name const & pp_n, expr const & t, binder_info bi) {
+    inc(n.raw()); inc(pp_n.raw()); inc(t.raw());
+    expr r(mk_cnstr(static_cast<unsigned>(expr_kind::FVar), n.raw(), pp_n.raw(), t.raw(), rec_expr_scalar_size(expr_kind::FVar)));
+    set_binder_info<expr_kind::FVar>(r, bi);
+    set_scalar<expr_kind::FVar>(r, n.hash(), has_expr_mvar(t), has_univ_mvar(t), true, has_univ_param(t));
+    set_rec_scalar<expr_kind::FVar>(r, 1, 1, get_loose_bvar_range(t));
+    return r;
+}
+
+expr mk_fvar(name const & n) {
+    return mk_local(n, n, expr(), mk_binder_info());
+}
+
+expr mk_constant(name const & n, levels const & ls);
+expr mk_metavar(name const & n, expr const & t);
+expr mk_metavar(name const & n, name const & pp_n, expr const & t);
+expr mk_app(expr const & f, expr const & a);
+expr mk_app(expr const & f, unsigned num_args, expr const * args);
+expr mk_app(unsigned num_args, expr const * args);
+expr mk_app(expr const & f, list<expr> const & args);
+expr mk_rev_app(expr const & f, unsigned num_args, expr const * args);
+expr mk_rev_app(unsigned num_args, expr const * args);
+expr mk_binding(expr_kind k, name const & n, expr const & t, expr const & e, binder_info bi);
+expr mk_arrow(expr const & t, expr const & e);
+expr mk_let(name const & n, expr const & t, expr const & v, expr const & b);
+expr mk_sort(level const & l);
+expr mk_Prop();
+expr mk_Type();
+
+expr update_mdata(expr const & e, expr const & t) {
+    if (!is_eqp(mdata_expr(e), t))
+        return mk_mdata(mdata_data(e), t);
+    else
+        return e;
+}
+
+expr update_proj(expr const & e, expr const & t) {
+    if (!is_eqp(proj_expr(e), t))
+        return mk_proj(proj_idx(e), t);
+    else
+        return e;
+}
+
+expr update_app(expr const & e, expr const & new_fn, expr const & new_arg) {
+    if (!is_eqp(app_fn(e), new_fn) || !is_eqp(app_arg(e), new_arg))
+        return mk_app(new_fn, new_arg);
+    else
+        return e;
+}
+
+expr update_binding(expr const & e, expr const & new_domain, expr const & new_body) {
+    if (!is_eqp(binding_domain(e), new_domain) || !is_eqp(binding_body(e), new_body))
+        return mk_binding(e.kind(), binding_name(e), new_domain, new_body, binding_info(e));
+    else
+        return e;
+}
+
+expr update_binding(expr const & e, expr const & new_domain, expr const & new_body, binder_info bi) {
+    if (!is_eqp(binding_domain(e), new_domain) || !is_eqp(binding_body(e), new_body) || bi != binding_info(e))
+        return mk_binding(e.kind(), binding_name(e), new_domain, new_body, bi);
+    else
+        return e;
+}
+
+expr update_sort(expr const & e, level const & new_level) {
+    if (!is_eqp(sort_level(e), new_level))
+        return mk_sort(new_level);
+    else
+        return e;
+}
+
+expr update_const(expr const & e, levels const & new_levels) {
+    if (!is_eqp(const_levels(e), new_levels))
+        return mk_const(const_name(e), new_levels);
+    else
+        return e;
+}
+
+expr update_mvar(expr const & e, expr const & new_type) {
+    if (is_eqp(mvar_type(e), new_type))
+        return e;
+    else
+        return mk_mvar(mvar_name(e), new_type);
+}
+
+expr update_let(expr const & e, expr const & new_type, expr const & new_value, expr const & new_body) {
+    if (!is_eqp(let_type(e), new_type) || !is_eqp(let_value(e), new_value) || !is_eqp(let_body(e), new_body))
+        return mk_let(let_name(e), new_type, new_value, new_body);
+    else
+        return e;
+}
+
+/* Legacy */
+expr update_local(expr const & e, expr const & new_type, binder_info bi) {
+    if (is_eqp(mlocal_type(e), new_type) && local_info(e) == bi)
+        return e;
+    else
+        return mk_local(mlocal_name(e), mlocal_pp_name(e), new_type, bi);
+}
+
+/* Legacy */
+expr update_local(expr const & e, binder_info bi) {
+    return update_local(e, mlocal_type(e), bi);
+}
+
+/* Legacy */
+expr update_mlocal(expr const & e, expr const & new_type) {
+    if (is_eqp(mlocal_type(e), new_type))
+        return e;
+    else if (is_metavar(e))
+        return mk_metavar(mlocal_name(e), mlocal_pp_name(e), new_type);
+    else
+        return mk_local(mlocal_name(e), mlocal_pp_name(e), new_type, local_info(e));
+}
+
+
+// bool is_arrow(expr const & t) {
+//    return is_pi(t) && !has_loose_bvar(binding_body(t), 0);
+// }
+
+
+/* Legacy */
+optional<expr> has_expr_metavar_strict(expr const & e) {
+    if (!has_expr_metavar(e))
+        return none_expr();
+    optional<expr> r;
+    for_each(e, [&](expr const & e, unsigned) {
+            if (r || !has_expr_metavar(e)) return false;
+            if (is_metavar_app(e)) { r = e; return false; }
+            if (is_local(e)) return false; // do not visit type
+            return true;
+        });
+    return r;
+}
+
+#else
 
 static expr * g_nat_type    = nullptr;
 static expr * g_string_type = nullptr;
@@ -266,7 +566,7 @@ expr_app::expr_app(expr const & fn, expr const & arg):
                    fn.has_univ_metavar() || arg.has_univ_metavar(),
                    fn.has_fvar()         || arg.has_fvar(),
                    fn.has_param_univ()   || arg.has_param_univ(),
-                   inc_weight(add_weight(get_weight(fn), get_weight(arg))),
+                   safe_inc(safe_add(get_weight(fn), get_weight(arg))),
                    std::max(get_loose_bvar_range(fn), get_loose_bvar_range(arg))),
     m_fn(fn), m_arg(arg) {
     m_depth = std::max(get_depth(fn), get_depth(arg)) + 1;
@@ -292,7 +592,7 @@ expr_binding::expr_binding(expr_kind k, name const & n, expr const & t, expr con
                    t.has_univ_metavar()   || b.has_univ_metavar(),
                    t.has_fvar()           || b.has_fvar(),
                    t.has_param_univ()     || b.has_param_univ(),
-                   inc_weight(add_weight(get_weight(t), get_weight(b))),
+                   safe_inc(safe_add(get_weight(t), get_weight(b))),
                    std::max(get_loose_bvar_range(t), dec(get_loose_bvar_range(b)))),
     m_binder(n, t, i),
     m_body(b) {
@@ -621,81 +921,6 @@ unsigned get_depth(expr const & e) {
     lean_unreachable(); // LCOV_EXCL_LINE
 }
 
-expr update_mdata(expr const & e, expr const & t) {
-    if (!is_eqp(mdata_expr(e), t))
-        return mk_mdata(mdata_data(e), t);
-    else
-        return e;
-}
-
-expr update_proj(expr const & e, expr const & t) {
-    if (!is_eqp(proj_expr(e), t))
-        return mk_proj(proj_idx(e), t);
-    else
-        return e;
-}
-
-expr update_app(expr const & e, expr const & new_fn, expr const & new_arg) {
-    if (!is_eqp(app_fn(e), new_fn) || !is_eqp(app_arg(e), new_arg))
-        return mk_app(new_fn, new_arg);
-    else
-        return e;
-}
-
-expr update_binding(expr const & e, expr const & new_domain, expr const & new_body) {
-    if (!is_eqp(binding_domain(e), new_domain) || !is_eqp(binding_body(e), new_body))
-        return mk_binding(e.kind(), binding_name(e), new_domain, new_body, binding_info(e));
-    else
-        return e;
-}
-
-expr update_binding(expr const & e, expr const & new_domain, expr const & new_body, binder_info bi) {
-    if (!is_eqp(binding_domain(e), new_domain) || !is_eqp(binding_body(e), new_body) || bi != binding_info(e))
-        return mk_binding(e.kind(), binding_name(e), new_domain, new_body, bi);
-    else
-        return e;
-}
-
-expr update_mlocal(expr const & e, expr const & new_type) {
-    if (is_eqp(mlocal_type(e), new_type))
-        return e;
-    else if (is_metavar(e))
-        return mk_metavar(mlocal_name(e), mlocal_pp_name(e), new_type);
-    else
-        return mk_local(mlocal_name(e), mlocal_pp_name(e), new_type, local_info(e));
-}
-
-expr update_local(expr const & e, expr const & new_type, binder_info bi) {
-    if (is_eqp(mlocal_type(e), new_type) && local_info(e) == bi)
-        return e;
-    else
-        return mk_local(mlocal_name(e), mlocal_pp_name(e), new_type, bi);
-}
-
-expr update_local(expr const & e, binder_info bi) {
-    return update_local(e, mlocal_type(e), bi);
-}
-
-expr update_sort(expr const & e, level const & new_level) {
-    if (!is_eqp(sort_level(e), new_level))
-        return mk_sort(new_level);
-    else
-        return e;
-}
-
-expr update_constant(expr const & e, levels const & new_levels) {
-    if (!is_eqp(const_levels(e), new_levels))
-        return mk_constant(const_name(e), new_levels);
-    else
-        return e;
-}
-
-expr update_let(expr const & e, expr const & new_type, expr const & new_value, expr const & new_body) {
-    if (!is_eqp(let_type(e), new_type) || !is_eqp(let_value(e), new_value) || !is_eqp(let_body(e), new_body))
-        return mk_let(let_name(e), new_type, new_value, new_body);
-    else
-        return e;
-}
 
 bool is_atomic(expr const & e) {
     switch (e.kind()) {
@@ -896,4 +1121,6 @@ void expr_quote::dealloc(buffer<expr_cell*> & todelete) {
 expr mk_quote(bool reflected, expr const & val) {
     return expr(new expr_quote(reflected, val));
 }
+
+#endif
 }

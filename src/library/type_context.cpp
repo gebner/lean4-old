@@ -2452,7 +2452,7 @@ static optional<expr> is_eta_expanded(expr const & e) {
         if (!is_app(it))
             return none_expr();
         expr const & a = app_arg(it);
-        if (!is_var(a) || var_idx(a) != i)
+        if (!is_bvar(a) || bvar_idx(a) != i)
             return none_expr();
         it = app_fn(it);
     }

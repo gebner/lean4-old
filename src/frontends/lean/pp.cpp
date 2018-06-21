@@ -635,8 +635,7 @@ auto pretty_fn::pp_child(expr const & e, unsigned bp, bool ignore_hide) -> resul
 }
 
 auto pretty_fn::pp_var(expr const & e) -> result {
-    unsigned vidx = var_idx(e);
-    return result(compose(format("#"), format(vidx)));
+    return result(compose(format("#"), format(bvar_idx(e).to_std_string())));
 }
 
 auto pretty_fn::pp_sort(expr const & e) -> result {
@@ -1235,8 +1234,8 @@ bool pretty_fn::match(expr const & p, expr const & e, buffer<optional<expr>> & a
         return match(get_explicit_arg(p), e, args);
     } else if (is_as_atomic(p)) {
         return match(get_app_fn(get_as_atomic_arg(p)), e, args);
-    } else if (is_var(p)) {
-        unsigned vidx = var_idx(p);
+    } else if (is_bvar(p) && bvar_idx(p).is_small()) {
+        unsigned vidx = bvar_idx(p).get_small_value();
         if (vidx >= args.size())
             return false;
         unsigned i = args.size() - vidx - 1;

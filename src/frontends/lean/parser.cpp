@@ -1731,7 +1731,7 @@ static expr quote(expr const & e) {
         }
         lean_unreachable();
     case expr_kind::BVar:
-        return mk_app(mk_constant({"expr", "bvar"}), quote(var_idx(e)));
+        return mk_app(mk_constant({"expr", "bvar"}), quote(bvar_idx(e).get_small_value()));
     case expr_kind::Sort:
         return mk_app(mk_constant({"expr", "sort"}), mk_expr_placeholder());
     case expr_kind::Constant:
@@ -1902,7 +1902,7 @@ optional<expr> parser::resolve_local(name const & id, pos_info const & p, names 
     unsigned vidx = 0;
     for (name const & extra : extra_locals) {
         if (id == extra)
-            return some_expr(save_pos(mk_var(vidx), p));
+            return some_expr(save_pos(mk_bvar(vidx), p));
         vidx++;
     }
 

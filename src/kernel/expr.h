@@ -90,8 +90,277 @@ inductive expr
 | quote : bool → expr → expr
 
 */
-class expr;
 enum class expr_kind { BVar, FVar, Sort, Constant, MVar, App, Lambda, Pi, Let, Lit, MData, Proj, Quote };
+
+#if 1
+
+class expr : public object_ref {
+    explicit expr(object * o):object_ref(o) { inc(o); }
+    explicit expr(object_ref && o):object_ref(o) {}
+
+    friend expr mk_lit(literal const & lit);
+    friend expr mk_mdata(kvmap const & d, expr const & e);
+    friend expr mk_proj(nat const & idx, expr const & e);
+    friend expr mk_bvar(nat const & idx);
+    friend expr mk_local(name const & n, name const & pp_n, expr const & t, binder_info bi);
+
+public:
+    expr();
+    expr(expr const & other):object_ref(other) {}
+    expr(expr && other):object_ref(other) {}
+    expr_kind kind() const { return static_cast<expr_kind>(cnstr_tag(raw())); }
+
+    expr & operator=(expr const & other) { object_ref::operator=(other); return *this; }
+    expr & operator=(expr && other) { object_ref::operator=(other); return *this; }
+
+    friend bool is_eqp(expr const & e1, expr const & e2) { return e1.raw() == e2.raw(); }
+    void serialize(serializer & s) const { s.write_object(raw()); }
+    static expr deserialize(deserializer & d) { return expr(d.read_object()); }
+};
+
+typedef list_ref<expr> exprs;
+
+inline serializer & operator<<(serializer & s, expr const & e) { e.serialize(s); return s; }
+inline serializer & operator<<(serializer & s, exprs const & es) { es.serialize(s); return s; }
+inline expr read_expr(deserializer & d) { return expr::deserialize(d); }
+inline exprs read_exprs(deserializer & d) { return read_list_ref<expr>(d); }
+inline deserializer & operator>>(deserializer & d, expr & e) { e = read_expr(d); return d; }
+
+inline optional<expr> none_expr() { return optional<expr>(); }
+inline optional<expr> some_expr(expr const & e) { return optional<expr>(e); }
+inline optional<expr> some_expr(expr && e) { return optional<expr>(std::forward<expr>(e)); }
+
+inline bool is_eqp(optional<expr> const & a, optional<expr> const & b) {
+    return static_cast<bool>(a) == static_cast<bool>(b) && (!a || is_eqp(*a, *b));
+}
+
+unsigned hash(expr const & e);
+bool has_expr_mvar(expr const & e);
+bool has_univ_mvar(expr const & e);
+inline bool has_mvar(expr const & e) { return has_expr_mvar(e) || has_univ_mvar(e); }
+bool has_fvar(expr const & e);
+bool has_univ_param(expr const & e);
+unsigned get_weight(expr const & e);
+unsigned get_depth(expr const & e);
+unsigned get_loose_bvar_range(expr const & e);
+
+struct expr_hash { unsigned operator()(expr const & e) const { return hash(e); } };
+
+// =======================================
+// Testers
+inline bool is_bvar(expr const & e)        { return e.kind() == expr_kind::BVar; }
+inline bool is_fvar(expr const & e)        { return e.kind() == expr_kind::FVar; }
+inline bool is_const(expr const & e)       { return e.kind() == expr_kind::Constant; }
+inline bool is_mvar(expr const & e)        { return e.kind() == expr_kind::MVar; }
+inline bool is_app(expr const & e)         { return e.kind() == expr_kind::App; }
+inline bool is_lambda(expr const & e)      { return e.kind() == expr_kind::Lambda; }
+inline bool is_pi(expr const & e)          { return e.kind() == expr_kind::Pi; }
+inline bool is_let(expr const & e)         { return e.kind() == expr_kind::Let; }
+inline bool is_sort(expr const & e)        { return e.kind() == expr_kind::Sort; }
+inline bool is_lit(expr const & e)         { return e.kind() == expr_kind::Lit; }
+inline bool is_mdata(expr const & e)       { return e.kind() == expr_kind::MData; }
+inline bool is_proj(expr const & e)        { return e.kind() == expr_kind::Proj; }
+inline bool is_binding(expr const & e)     { return is_lambda(e) || is_pi(e); }
+
+bool is_atomic(expr const & e);
+bool is_arrow(expr const & t);
+bool is_default_var_name(name const & n);
+// =======================================
+
+// =======================================
+// Constructors
+expr mk_lit(literal const & lit);
+expr mk_mdata(kvmap const & d, expr const & e);
+expr mk_proj(nat const & idx, expr const & e);
+inline expr mk_proj(unsigned idx, expr const & e) { return mk_proj(nat(idx), e); }
+expr mk_bvar(nat const & idx);
+inline expr mk_bvar(unsigned idx) { return mk_bvar(nat(idx)); }
+expr mk_fvar(name const & n);
+expr mk_const(name const & n, levels const & ls);
+inline expr mk_const(name const & n) { return mk_const(n, levels()); }
+expr mk_mvar(name const & n, expr const & t);
+expr mk_mvar(name const & n, name const & pp_n, expr const & t);
+expr mk_app(expr const & f, expr const & a);
+expr mk_app(expr const & f, unsigned num_args, expr const * args);
+expr mk_app(unsigned num_args, expr const * args);
+inline expr mk_app(std::initializer_list<expr> const & l) { return mk_app(l.size(), l.begin()); }
+inline expr mk_app(buffer<expr> const & args) { return mk_app(args.size(), args.data()); }
+inline expr mk_app(expr const & f, buffer<expr> const & args) { return mk_app(f, args.size(), args.data()); }
+expr mk_app(expr const & f, list<expr> const & args);
+inline expr mk_app(expr const & e1, expr const & e2, expr const & e3) { return mk_app({e1, e2, e3}); }
+inline expr mk_app(expr const & e1, expr const & e2, expr const & e3, expr const & e4) { return mk_app({e1, e2, e3, e4}); }
+inline expr mk_app(expr const & e1, expr const & e2, expr const & e3, expr const & e4, expr const & e5) { return mk_app({e1, e2, e3, e4, e5}); }
+expr mk_rev_app(expr const & f, unsigned num_args, expr const * args);
+expr mk_rev_app(unsigned num_args, expr const * args);
+inline expr mk_rev_app(buffer<expr> const & args) { return mk_rev_app(args.size(), args.data()); }
+inline expr mk_rev_app(expr const & f, buffer<expr> const & args) { return mk_rev_app(f, args.size(), args.data()); }
+expr mk_binding(expr_kind k, name const & n, expr const & t, expr const & e, binder_info i = mk_binder_info());
+inline expr mk_lambda(name const & n, expr const & t, expr const & e, binder_info i = mk_binder_info()) { return mk_binding(expr_kind::Lambda, n, t, e, i); }
+inline expr mk_pi(name const & n, expr const & t, expr const & e, binder_info i = mk_binder_info()) { return mk_binding(expr_kind::Pi, n, t, e, i); }
+expr mk_arrow(expr const & t, expr const & e);
+expr mk_let(name const & n, expr const & t, expr const & v, expr const & b);
+expr mk_sort(level const & l);
+expr mk_Prop();
+expr mk_Type();
+// =======================================
+
+// =======================================
+// Accessors
+inline literal const & lit_value(expr const & e)             { lean_assert(is_lit(e)); return static_cast<literal const &>(cnstr_obj_ref(e, 0)); }
+expr const & lit_type(expr const & e);
+inline kvmap const &   mdata_data(expr const & e)            { lean_assert(is_mdata(e)); return static_cast<kvmap const &>(cnstr_obj_ref(e, 0)); }
+inline expr const &    mdata_expr(expr const & e)            { lean_assert(is_mdata(e)); return static_cast<expr const &>(cnstr_obj_ref(e, 1)); }
+inline nat const &     proj_idx(expr const & e)              { lean_assert(is_proj(e)); return static_cast<nat const &>(cnstr_obj_ref(e, 0)); }
+inline expr const &    proj_expr(expr const & e)             { lean_assert(is_proj(e)); return static_cast<expr const &>(cnstr_obj_ref(e, 1)); }
+inline nat const &     bvar_idx(expr const & e)              { lean_assert(is_bvar(e)); return static_cast<nat const &>(cnstr_obj_ref(e, 0)); }
+inline bool            is_bvar(expr const & e, unsigned i)   { return is_bvar(e) && bvar_idx(e) == i; }
+inline name const &    fvar_name(expr const & e)             { lean_assert(is_fvar(e)); return static_cast<name const &>(cnstr_obj_ref(e, 0)); }
+inline level const &   sort_level(expr const & e)            { lean_assert(is_sort(e)); return static_cast<level const &>(cnstr_obj_ref(e, 0)); }
+inline name const &    mvar_name(expr const & e)             { lean_assert(is_mvar(e)); return static_cast<name const &>(cnstr_obj_ref(e, 0)); }
+inline expr const &    mvar_type(expr const & e)             { lean_assert(is_mvar(e)); return static_cast<expr const &>(cnstr_obj_ref(e, 2)); }
+inline name const &    const_name(expr const & e)            { lean_assert(is_const(e)); return static_cast<name const &>(cnstr_obj_ref(e, 0)); }
+inline levels const &  const_levels(expr const & e)          { lean_assert(is_const(e)); return static_cast<levels const &>(cnstr_obj_ref(e, 1)); }
+inline bool is_const(expr const & e, name const & n)         { return is_const(e) && const_name(e) == n; }
+inline expr const &    app_fn(expr const & e)                { lean_assert(is_app(e));   return static_cast<expr const &>(cnstr_obj_ref(e, 0)); }
+inline expr const &    app_arg(expr const & e)               { lean_assert(is_app(e));   return static_cast<expr const &>(cnstr_obj_ref(e, 1)); }
+inline name const &    binding_name(expr const & e)          { lean_assert(is_binding(e)); return static_cast<name const &>(cnstr_obj_ref(e, 0)); }
+inline expr const &    binding_domain(expr const & e)        { lean_assert(is_binding(e)); return static_cast<expr const &>(cnstr_obj_ref(e, 1)); }
+inline expr const &    binding_body(expr const & e)          { lean_assert(is_binding(e)); return static_cast<expr const &>(cnstr_obj_ref(e, 2)); }
+binder_info binding_info(expr const & e);
+inline name const &    let_name(expr const & e)              { lean_assert(is_let(e)); return static_cast<name const &>(cnstr_obj_ref(e, 0)); }
+inline expr const &    let_type(expr const & e)              { lean_assert(is_let(e)); return static_cast<expr const &>(cnstr_obj_ref(e, 1)); }
+inline expr const &    let_value(expr const & e)             { lean_assert(is_let(e)); return static_cast<expr const &>(cnstr_obj_ref(e, 2)); }
+inline expr const &    let_body(expr const & e)              { lean_assert(is_let(e)); return static_cast<expr const &>(cnstr_obj_ref(e, 3)); }
+inline bool            is_shared(expr const & e)             { return is_shared(e.raw()); }
+//
+
+// =======================================
+// Update
+expr update_app(expr const & e, expr const & new_fn, expr const & new_arg);
+expr update_binding(expr const & e, expr const & new_domain, expr const & new_body);
+expr update_binding(expr const & e, expr const & new_domain, expr const & new_body, binder_info bi);
+expr update_sort(expr const & e, level const & new_level);
+expr update_const(expr const & e, levels const & new_levels);
+expr update_let(expr const & e, expr const & new_type, expr const & new_value, expr const & new_body);
+expr update_mdata(expr const & e, expr const & new_e);
+expr update_proj(expr const & e, expr const & new_e);
+expr update_mvar(expr const & e, expr const & new_type);
+// =======================================
+
+
+/** \brief Given \c e of the form <tt>(...(f a1) ... an)</tt>, store a1 ... an in args.
+    If \c e is not an application, then nothing is stored in args.
+
+    It returns the f. */
+expr const & get_app_args(expr const & e, buffer<expr> & args);
+/** \brief Similar to \c get_app_args, but stores at most num args.
+    Examples:
+    1) get_app_args_at_most(f a b c, 2, args);
+    stores {b, c} in args and returns (f a)
+
+    2) get_app_args_at_most(f a b c, 4, args);
+    stores {a, b, c} in args and returns f */
+expr const & get_app_args_at_most(expr const & e, unsigned num, buffer<expr> & args);
+
+/** \brief Similar to \c get_app_args, but arguments are stored in reverse order in \c args.
+    If e is of the form <tt>(...(f a1) ... an)</tt>, then the procedure stores [an, ..., a1] in \c args. */
+expr const & get_app_rev_args(expr const & e, buffer<expr> & args);
+/** \brief Given \c e of the form <tt>(...(f a_1) ... a_n)</tt>, return \c f. If \c e is not an application, then return \c e. */
+expr const & get_app_fn(expr const & e);
+/** \brief Given \c e of the form <tt>(...(f a_1) ... a_n)</tt>, return \c n. If \c e is not an application, then return 0. */
+unsigned get_app_num_args(expr const & e);
+
+/** \brief Return true iff \c e is a metavariable or an application of a metavariable */
+inline bool is_mvar_app(expr const & e) { return is_mvar(get_app_fn(e)); }
+
+
+// =======================================
+// Loose bound variable management
+
+/** \brief Return true iff the given expression has loose bound variables. */
+inline bool has_loose_bvars(expr const & e) { return get_loose_bvar_range(e) > 0; }
+
+/** \brief Return true iff \c e contains the loose bound variable <tt>(var i)</tt>. */
+bool has_loose_bvar(expr const & e, unsigned i);
+
+/** \brief Lower the loose bound variables >= s in \c e by \c d. That is, a loose bound variable <tt>(var i)</tt> s.t.
+    <tt>i >= s</tt> is mapped into <tt>(var i-d)</tt>.
+
+    \pre s >= d */
+expr lower_loose_bvars(expr const & e, unsigned s, unsigned d);
+expr lower_loose_bvars(expr const & e, unsigned d);
+
+/** \brief Lift loose bound variables >= s in \c e by d. */
+expr lift_loose_bvars(expr const & e, unsigned s, unsigned d);
+expr lift_loose_bvars(expr const & e, unsigned d);
+// =======================================
+
+
+// =======================================
+// Implicit argument inference
+/**
+   \brief Given \c t of the form <tt>Pi (x_1 : A_1) ... (x_k : A_k), B</tt>,
+   mark the first \c num_params as implicit if they are not already marked, and
+   they occur in the remaining arguments. If \c strict is false, then we
+   also mark it implicit if it occurs in \c B.
+*/
+expr infer_implicit(expr const & t, unsigned num_params, bool strict);
+expr infer_implicit(expr const & t, bool strict);
+// =======================================
+
+// =======================================
+// Low level (raw) printing
+std::ostream & operator<<(std::ostream & out, expr_kind const & k);
+std::ostream & operator<<(std::ostream & out, expr const & e);
+// =======================================
+
+void initialize_expr();
+void finalize_expr();
+
+/* ================= LEGACY ============== */
+inline bool has_expr_metavar(expr const & e) { return has_expr_mvar(e); }
+inline bool has_univ_metavar(expr const & e) { return has_univ_mvar(e); }
+inline bool has_metavar(expr const & e) { return has_mvar(e); }
+inline bool has_param_univ(expr const & e) { return has_univ_param(e); }
+inline bool is_var(expr const & e) { return is_bvar(e); }
+inline bool is_var(expr const & e, unsigned idx) { return is_bvar(e, idx); }
+inline bool is_metavar(expr const & e) { return is_mvar(e); }
+inline bool is_metavar_app(expr const & e) { return is_mvar_app(e); }
+inline expr mk_metavar(name const & n, expr const & t) { return mk_mvar(n, t); }
+inline expr mk_metavar(name const & n, name const & pp_n, expr const & t) { return mk_mvar(n, pp_n, t); }
+expr mk_local(name const & n, name const & pp_n, expr const & t, binder_info bi);
+inline expr mk_local(name const & n, expr const & t) { return mk_local(n, n, t, mk_binder_info()); }
+inline expr mk_local(name const & n, expr const & t, binder_info bi) { return mk_local(n, n, t, bi); }
+inline expr Local(name const & n, expr const & t, binder_info bi = mk_binder_info()) { return mk_local(n, t, bi); }
+inline name const & mlocal_name(expr const & e) { return static_cast<name const &>(cnstr_obj_ref(e, 0)); }
+inline name const & mlocal_pp_name(expr const & e) { return static_cast<name const &>(cnstr_obj_ref(e, 1)); }
+inline expr const & mlocal_type(expr const & e) { return static_cast<expr const &>(cnstr_obj_ref(e, 2)); }
+inline expr mk_constant(name const & n, levels const & ls) { return mk_const(n, ls); }
+inline expr mk_constant(name const & n) { return mk_constant(n, levels()); }
+inline expr Const(name const & n) { return mk_constant(n); }
+inline expr BVar(unsigned idx) { return mk_bvar(idx); }
+inline expr Var(unsigned idx) { return mk_bvar(idx); }
+inline bool is_constant(expr const & e) { return is_const(e); }
+expr const & mk_quote(bool is_reflected, expr const & e);
+inline expr const & quote_value(expr const & e) { return static_cast<expr const &>(cnstr_obj_ref(e, 0)); }
+inline bool is_local(expr const & e) { return is_fvar(e); }
+bool quote_is_reflected(expr const & e);
+expr update_mlocal(expr const & e, expr const & new_type);
+expr update_local(expr const & e, expr const & new_type, binder_info bi);
+expr update_local(expr const & e, binder_info bi);
+binder_info local_info(expr const & e);
+inline expr update_constant(expr const & e, levels const & new_levels) { return update_const(e, new_levels); }
+/** \brief Similar to \c has_expr_metavar, but ignores metavariables occurring in local constant types.
+    It also returns the meta-variable application found in \c e. */
+optional<expr> has_expr_metavar_strict(expr const & e);
+inline bool is_constant(expr const & e, name const & n) { return is_const(e, n); }
+inline bool is_quote(expr const & e) { return e.kind() == expr_kind::Quote; }
+inline bool is_mlocal(expr const & e) { return is_local(e) || is_metavar(e); }
+inline bool has_local(expr const & e) { return has_fvar(e); }
+
+#else
+
+class expr;
 class expr_cell {
 protected:
     // The bits of the following field mean:
@@ -517,34 +786,6 @@ inline unsigned get_loose_bvar_range(expr const & e) {
     default:                                        return static_cast<expr_composite*>(e.raw())->m_loose_bvar_range;
     }
 }
-/** \brief Return true iff the given expression has loose bound variables. */
-inline bool has_loose_bvars(expr const & e) { return get_loose_bvar_range(e) > 0; }
-/**
-    \brief Given \c e of the form <tt>(...(f a1) ... an)</tt>, store a1 ... an in args.
-    If \c e is not an application, then nothing is stored in args.
-
-    It returns the f.
-*/
-expr const & get_app_args(expr const & e, buffer<expr> & args);
-/** \brief Similar to \c get_app_args, but stores at most num args.
-    Examples:
-    1) get_app_args_at_most(f a b c, 2, args);
-    stores {b, c} in args and returns (f a)
-
-    2) get_app_args_at_most(f a b c, 4, args);
-    stores {a, b, c} in args and returns f
-*/
-expr const & get_app_args_at_most(expr const & e, unsigned num, buffer<expr> & args);
-
-/**
-   \brief Similar to \c get_app_args, but arguments are stored in reverse order in \c args.
-   If e is of the form <tt>(...(f a1) ... an)</tt>, then the procedure stores [an, ..., a1] in \c args.
-*/
-expr const & get_app_rev_args(expr const & e, buffer<expr> & args);
-/** \brief Given \c e of the form <tt>(...(f a_1) ... a_n)</tt>, return \c f. If \c e is not an application, then return \c e. */
-expr const & get_app_fn(expr const & e);
-/** \brief Given \c e of the form <tt>(...(f a_1) ... a_n)</tt>, return \c n. If \c e is not an application, then return 0. */
-unsigned get_app_num_args(expr const & e);
 // =======================================
 
 // =======================================
@@ -553,63 +794,13 @@ unsigned get_app_num_args(expr const & e);
 struct expr_hash { unsigned operator()(expr const & e) const { return e.hash(); } };
 // =======================================
 
-// =======================================
-// Update
-expr update_app(expr const & e, expr const & new_fn, expr const & new_arg);
-expr update_binding(expr const & e, expr const & new_domain, expr const & new_body);
-expr update_binding(expr const & e, expr const & new_domain, expr const & new_body, binder_info bi);
-expr update_mlocal(expr const & e, expr const & new_type);
-expr update_local(expr const & e, expr const & new_type, binder_info bi);
-expr update_local(expr const & e, binder_info bi);
-expr update_sort(expr const & e, level const & new_level);
-expr update_constant(expr const & e, levels const & new_levels);
-expr update_let(expr const & e, expr const & new_type, expr const & new_value, expr const & new_body);
-expr update_mdata(expr const & e, expr const & t);
-expr update_proj(expr const & e, expr const & t);
-// =======================================
 
 
-// =======================================
-// Loose bound variable management
 
-/** \brief Return true iff \c e contains the loose bound variable <tt>(var i)</tt>. */
-bool has_loose_bvar(expr const & e, unsigned i);
-
-/**
-   \brief Lower the loose bound variables >= s in \c e by \c d. That is, a loose bound variable <tt>(var i)</tt> s.t.
-   <tt>i >= s</tt> is mapped into <tt>(var i-d)</tt>.
-
-   \pre s >= d */
-expr lower_loose_bvars(expr const & e, unsigned s, unsigned d);
-expr lower_loose_bvars(expr const & e, unsigned d);
-
-/** \brief Lift loose bound variables >= s in \c e by d. */
-expr lift_loose_bvars(expr const & e, unsigned s, unsigned d);
-expr lift_loose_bvars(expr const & e, unsigned d);
-// =======================================
-
-
-// =======================================
-// Implicit argument inference
-/**
-   \brief Given \c t of the form <tt>Pi (x_1 : A_1) ... (x_k : A_k), B</tt>,
-   mark the first \c num_params as implicit if they are not already marked, and
-   they occur in the remaining arguments. If \c strict is false, then we
-   also mark it implicit if it occurs in \c B.
-*/
-expr infer_implicit(expr const & t, unsigned num_params, bool strict);
-expr infer_implicit(expr const & t, bool strict);
-// =======================================
-
-std::ostream & operator<<(std::ostream & out, expr_kind const & k);
-std::ostream & operator<<(std::ostream & out, expr const & e);
 
 #ifdef LEAN_TRACK_LIVE_EXPRS
 unsigned get_num_live_exprs();
 #endif
-
-void initialize_expr();
-void finalize_expr();
 
 
 
@@ -660,5 +851,5 @@ inline bool has_local(expr const & e) { return has_fvar(e); }
 
 inline bool quote_is_reflected(expr const & e) { return to_quote(e)->is_reflected(); }
 inline expr const & quote_value(expr const & e) { return to_quote(e)->get_value(); }
-
+#endif
 }

@@ -633,13 +633,13 @@ static bool is_permutation(expr const & lhs, expr const & rhs, unsigned offset, 
     case expr_kind::MVar:     case expr_kind::FVar: case expr_kind::Lit:
         return lhs == rhs;
     case expr_kind::BVar:
-        if (var_idx(lhs) < offset) {
+        if (bvar_idx(lhs) < offset) {
             return lhs == rhs; // locally bound variable
-        } else if (var_idx(lhs) - offset < p.size()) {
-            if (p[var_idx(lhs) - offset]) {
-                return *(p[var_idx(lhs) - offset]) == var_idx(rhs) - offset;
+        } else if (bvar_idx(lhs) - nat(offset) < p.size()) {
+            if (p[bvar_idx(lhs).get_small_value() - offset]) {
+                return *(p[bvar_idx(lhs).get_small_value() - offset]) == bvar_idx(rhs).get_small_value() - offset;
             } else {
-                p[var_idx(lhs) - offset] = var_idx(rhs) - offset;
+                p[bvar_idx(lhs).get_small_value() - offset] = bvar_idx(rhs).get_small_value() - offset;
                 return true;
             }
         } else {
