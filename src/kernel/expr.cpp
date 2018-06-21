@@ -74,24 +74,48 @@ static unsigned hash(levels const & ls) {
 
 std::ostream & operator<<(std::ostream & out, expr_kind const & k) {
     switch (k) {
-    case expr_kind::MData:    out << "MData"; break;
-    case expr_kind::Proj:     out << "Proj"; break;
-    case expr_kind::Lit:      out << "Lit"; break;
-    case expr_kind::BVar:     out << "BVar"; break;
-    case expr_kind::FVar:     out << "FVar"; break;
-    case expr_kind::MVar:     out << "MVar"; break;
-    case expr_kind::Sort:     out << "Sort"; break;
-    case expr_kind::Constant: out << "Constant"; break;
-    case expr_kind::App:      out << "App"; break;
-    case expr_kind::Lambda:   out << "Lambda"; break;
-    case expr_kind::Pi:       out << "Pi"; break;
-    case expr_kind::Let:      out << "Let"; break;
-    case expr_kind::Quote:    out << "Quote"; break;
+    case expr_kind::MData:    out << "expr.mdata"; break;
+    case expr_kind::Proj:     out << "expr.proj"; break;
+    case expr_kind::Lit:      out << "expr.lit"; break;
+    case expr_kind::BVar:     out << "expr.bvar"; break;
+    case expr_kind::FVar:     out << "expr.fvar"; break;
+    case expr_kind::MVar:     out << "expr.mvar"; break;
+    case expr_kind::Sort:     out << "expr.sort"; break;
+    case expr_kind::Const:    out << "expr.const"; break;
+    case expr_kind::App:      out << "expr.app"; break;
+    case expr_kind::Lambda:   out << "expr.lam"; break;
+    case expr_kind::Pi:       out << "expr.pi"; break;
+    case expr_kind::Let:      out << "expr.elet"; break;
+    case expr_kind::Quote:    out << "expr.quote"; break;
     }
     return out;
 }
 
-/* Auxiliary functions for computing scalar data offset into expression objects. */
+// =======================================
+// Safe arithmetic
+
+static unsigned safe_add(unsigned w1, unsigned w2) {
+    unsigned r = w1 + w2;
+    if (r < w1)
+        r = std::numeric_limits<unsigned>::max(); // overflow
+    return r;
+}
+
+static unsigned safe_inc(unsigned w) {
+    if (w < std::numeric_limits<unsigned>::max())
+        return w+1;
+    else
+        return w;
+}
+
+static unsigned safe_dec(unsigned k) {
+    return k == 0 ? 0 : k - 1;
+}
+
+
+// =======================================
+// Scalar data offset calculation and setters/getters
+
 inline constexpr unsigned num_obj_fields(expr_kind k) {
     return
         k == expr_kind::App     ?  2 :
@@ -117,11 +141,18 @@ inline constexpr unsigned binder_info_offset(expr_kind k) {
     return scalar_offset(k);
 }
 
+/* Legacy support */
+inline constexpr unsigned reflected_offset(expr_kind k) {
+    // Only for: k == expr_kind::Quote
+    return scalar_offset(k);
+}
+
 inline constexpr unsigned hash_offset(expr_kind k) {
     return
         k == expr_kind::FVar   ? scalar_offset(k) + sizeof(unsigned char) : // for binder_info, TODO(Leo): delete after we remove support for legacy code
         k == expr_kind::Lambda ? scalar_offset(k) + sizeof(unsigned char) : // for binder_info
         k == expr_kind::Pi     ? scalar_offset(k) + sizeof(unsigned char) : // for binder_info
+        k == expr_kind::Quote  ? scalar_offset(k) + sizeof(unsigned char) : // for reflected
         scalar_offset(k);
 }
 
@@ -134,27 +165,6 @@ inline constexpr size_t expr_scalar_size(expr_kind k) { return flags_offset(k) +
 /* Size for scalar value area for recursive expression. */
 inline constexpr size_t rec_expr_scalar_size(expr_kind k) { return loose_bvar_range_offset(k) + sizeof(unsigned); }
 
-
-/* safe arith functions */
-static unsigned safe_add(unsigned w1, unsigned w2) {
-    unsigned r = w1 + w2;
-    if (r < w1)
-        r = std::numeric_limits<unsigned>::max(); // overflow
-    return r;
-}
-
-static unsigned safe_inc(unsigned w) {
-    if (w < std::numeric_limits<unsigned>::max())
-        return w+1;
-    else
-        return w;
-}
-
-static unsigned safe_dec(unsigned k) {
-    return k == 0 ? 0 : k - 1;
-}
-
-#if 1
 
 /* Set expr cached hash code and flags. All expressions contain them.
    We provide the kind `k` to allow the compiler to compute offsets at compilation time. */
@@ -182,6 +192,11 @@ template<expr_kind k> void set_rec_scalar(expr const & e, unsigned weight, unsig
 template<expr_kind k> void set_binder_info(expr const & e, binder_info bi) {
     lean_assert(e.kind() == k);
     cnstr_set_scalar<unsigned char>(e.raw(), binder_info_offset(k), static_cast<unsigned char>(bi));
+}
+
+/* Legacy support */
+void set_reflected(expr const & e, bool r) {
+    cnstr_set_scalar<unsigned char>(e.raw(), reflected_offset(expr_kind::Quote), r);
 }
 
 unsigned hash(expr const & e) { return cnstr_scalar<unsigned>(e.raw(), hash_offset(e.kind())); }
@@ -265,11 +280,39 @@ bool is_atomic(expr const & e) {
     lean_unreachable(); // LCOV_EXCL_LINE
 }
 
-static expr * g_dummy = nullptr;
-expr::expr():expr(*g_dummy) {}
+bool quote_is_reflected(expr const & e) {
+    lean_assert(is_quote(e));
+    return cnstr_scalar<unsigned char>(e.raw(), reflected_offset(expr_kind::Quote)) != 0;
+}
+
+binder_info binding_info(expr const & e) {
+    lean_assert(is_lambda(e) || is_pi(e));
+    // Remark: lambda and Pi have the same memory layout
+    return static_cast<binder_info>(cnstr_scalar<unsigned char>(e.raw(), binder_info_offset(expr_kind::Lambda)));
+}
+
+/* Legacy */
+binder_info local_info(expr const & e) {
+    lean_assert(is_local(e));
+    return static_cast<binder_info>(cnstr_scalar<unsigned char>(e.raw(), binder_info_offset(expr_kind::FVar)));
+}
+
+static expr * g_nat_type    = nullptr;
+static expr * g_string_type = nullptr;
+
+expr const & lit_type(expr const & e) {
+    switch (lit_value(e).kind()) {
+    case literal_kind::String: return *g_string_type;
+    case literal_kind::Nat:    return *g_nat_type;
+    }
+    lean_unreachable();
+}
 
 // =======================================
 // Constructors
+
+static expr * g_dummy = nullptr;
+expr::expr():expr(*g_dummy) {}
 
 expr mk_lit(literal const & l) {
     inc(l.raw());
@@ -399,28 +442,33 @@ expr mk_let(name const & n, expr const & t, expr const & v, expr const & b) {
     return r;
 }
 
-expr mk_metavar(name const & n, expr const & t);
-expr mk_metavar(name const & n, name const & pp_n, expr const & t);
+/* Legacy */
+expr mk_quote(bool reflected, expr const & val) {
+    inc(val.raw());
+    expr r(mk_cnstr(static_cast<unsigned>(expr_kind::Quote), val.raw(), expr_scalar_size(expr_kind::Quote)));
+    set_scalar<expr_kind::Quote>(r, hash(hash(val), reflected ? 17u : 11u), false, false, false, false);
+    set_reflected(r, reflected);
+    return r;
+}
+
+/* Legacy */
+expr mk_metavar(name const & n, name const & pp_n, expr const & t) {
+    inc(n.raw()); inc(pp_n.raw()); inc(t.raw());
+    expr r(mk_cnstr(static_cast<unsigned>(expr_kind::MVar), n.raw(), pp_n.raw(), t.raw(), rec_expr_scalar_size(expr_kind::MVar)));
+    set_scalar<expr_kind::MVar>(r, n.hash(), true, has_univ_mvar(t), has_fvar(t), has_univ_param(t));
+    set_rec_scalar<expr_kind::MVar>(r, 1, 1, get_loose_bvar_range(t));
+    return r;
+}
+
+expr mk_mvar(name const & n, expr const & t) {
+    return mk_metavar(n, n, t);
+}
 
 static expr * g_Prop  = nullptr;
 static expr * g_Type0 = nullptr;
 
 expr mk_Prop() { return *g_Prop; }
 expr mk_Type() { return *g_Type0; }
-
-// =======================================
-// Accessors
-
-static expr * g_nat_type    = nullptr;
-static expr * g_string_type = nullptr;
-
-expr const & lit_type(expr const & e) {
-    switch (lit_value(e).kind()) {
-    case literal_kind::String: return *g_string_type;
-    case literal_kind::Nat:    return *g_nat_type;
-    }
-    lean_unreachable();
-}
 
 // =======================================
 // Auxiliary constructors and accessors
@@ -512,11 +560,17 @@ unsigned get_app_num_args(expr const & e) {
 }
 
 bool is_arrow(expr const & t) {
-    return is_pi(t) && !has_loose_bvar(binding_body(t), 0);
+    if (!is_pi(t)) return false;
+    if (has_loose_bvars(t)) {
+        return !has_loose_bvar(binding_body(t), 0);
+    } else {
+        lean_assert(has_loose_bvars(binding_body(t)) == has_loose_bvar(binding_body(t), 0));
+        return !has_loose_bvars(binding_body(t));
+    }
 }
 
 bool is_default_var_name(name const & n) {
-    return n == get_default_var_name();
+    return n == *g_default_name;
 }
 
 /* Legacy */
@@ -622,41 +676,8 @@ expr update_mlocal(expr const & e, expr const & new_type) {
         return mk_local(mlocal_name(e), mlocal_pp_name(e), new_type, local_info(e));
 }
 
-void initialize_expr() {
-    g_dummy        = new expr(mk_constant("__expr_for_default_constructor__"));
-    g_default_name = new name("a");
-    g_Type0        = new expr(mk_sort(mk_level_one()));
-    g_Prop         = new expr(mk_sort(mk_level_zero()));
-    /* TODO(Leo): add support for builtin constants in the kernel.
-       Something similar to what we have in the library directory. */
-    g_nat_type     = new expr(mk_constant("nat"));
-    g_string_type  = new expr(mk_constant("string"));
-}
-
-void finalize_expr() {
-    delete g_Prop;
-    delete g_Type0;
-    delete g_dummy;
-    delete g_default_name;
-    delete g_nat_type;
-    delete g_string_type;
-}
-
-#else
-
-// Expr metavariables and local variables
-expr_mlocal::expr_mlocal(bool is_meta, name const & n, name const & pp_n, expr const & t):
-    expr_composite(is_meta ? expr_kind::MVar : expr_kind::FVar, n.hash(), is_meta || t.has_expr_metavar(), t.has_univ_metavar(),
-                   !is_meta || t.has_fvar(), t.has_param_univ(),
-                   1, get_loose_bvar_range(t)),
-    m_name(n),
-    m_pp_name(pp_n),
-    m_type(t) {}
-
-void expr_mlocal::dealloc(buffer<expr_cell*> & todelete) {
-    dec_ref(m_type, todelete);
-    delete this;
-}
+// =======================================
+// Loose bound variable management
 
 static bool has_loose_bvars_in_domain(expr const & b, unsigned vidx, bool strict) {
     if (is_pi(b)) {
@@ -681,7 +702,7 @@ bool has_loose_bvar(expr const & e, unsigned i) {
             if (n_i >= get_loose_bvar_range(e))
                 return false; // expression e does not contain bound variables with idx >= n_i
             if (is_var(e)) {
-                unsigned vidx = bvar_idx(e);
+                nat const & vidx = bvar_idx(e);
                 if (vidx == n_i)
                     found = true;
             }
@@ -700,14 +721,15 @@ expr lower_loose_bvars(expr const & e, unsigned s, unsigned d) {
                 return some_expr(e); // overflow, vidx can't be >= max unsigned
             if (s1 >= get_loose_bvar_range(e))
                 return some_expr(e); // expression e does not contain bound variables with idx >= s1
-            if (is_var(e) && bvar_idx(e) >= s1) {
+            if (is_bvar(e) && bvar_idx(e) >= s1) {
                 lean_assert(bvar_idx(e) >= offset + d);
-                return some_expr(mk_bvar(bvar_idx(e) - d));
+                return some_expr(mk_bvar(bvar_idx(e) - nat(d)));
             } else {
                 return none_expr();
             }
         });
 }
+
 expr lower_loose_bvars(expr const & e, unsigned d) {
     return lower_loose_bvars(e, d, d);
 }
@@ -722,10 +744,7 @@ expr lift_loose_bvars(expr const & e, unsigned s, unsigned d) {
             if (s1 >= get_loose_bvar_range(e))
                 return some_expr(e); // expression e does not contain bound variables with idx >= s1
             if (is_var(e) && bvar_idx(e) >= s + offset) {
-                unsigned new_idx = bvar_idx(e) + d;
-                if (new_idx < bvar_idx(e))
-                    throw exception("invalid lift_loose_bvars operation, index overflow");
-                return some_expr(mk_bvar(new_idx));
+                return some_expr(mk_bvar(bvar_idx(e) + nat(d)));
             } else {
                 return none_expr();
             }
@@ -735,6 +754,9 @@ expr lift_loose_bvars(expr const & e, unsigned s, unsigned d) {
 expr lift_loose_bvars(expr const & e, unsigned d) {
     return lift_loose_bvars(e, 0, d);
 }
+
+// =======================================
+// Implicit argument inference
 
 expr infer_implicit(expr const & t, unsigned num_params, bool strict) {
     if (num_params == 0) {
@@ -758,22 +780,42 @@ expr infer_implicit(expr const & t, bool strict) {
     return infer_implicit(t, std::numeric_limits<unsigned>::max(), strict);
 }
 
+// =======================================
+// Initialization & Finalization
 
-/* ================ LEGACY CODE ================ */
-
-expr_quote::expr_quote(bool r, expr const & v):
-    expr_cell(expr_kind::Quote, v.hash(), false, false, false, false),
-    m_reflected(r),
-    m_value(v) {
+void initialize_expr() {
+    g_dummy        = new expr(mk_constant("__expr_for_default_constructor__"));
+    g_default_name = new name("a");
+    g_Type0        = new expr(mk_sort(mk_level_one()));
+    g_Prop         = new expr(mk_sort(mk_level_zero()));
+    /* TODO(Leo): add support for builtin constants in the kernel.
+       Something similar to what we have in the library directory. */
+    g_nat_type     = new expr(mk_constant("nat"));
+    g_string_type  = new expr(mk_constant("string"));
 }
 
-void expr_quote::dealloc(buffer<expr_cell*> & todelete) {
-    dec_ref(m_value, todelete);
+void finalize_expr() {
+    delete g_Prop;
+    delete g_Type0;
+    delete g_dummy;
+    delete g_default_name;
+    delete g_nat_type;
+    delete g_string_type;
+}
+
+#if 0
+// Expr metavariables and local variables
+expr_mlocal::expr_mlocal(bool is_meta, name const & n, name const & pp_n, expr const & t):
+    expr_composite(is_meta ? expr_kind::MVar : expr_kind::FVar, n.hash(), is_meta || t.has_expr_metavar(), t.has_univ_metavar(),
+                   !is_meta || t.has_fvar(), t.has_param_univ(),
+                   1, get_loose_bvar_range(t)),
+    m_name(n),
+    m_pp_name(pp_n),
+    m_type(t) {}
+
+void expr_mlocal::dealloc(buffer<expr_cell*> & todelete) {
+    dec_ref(m_type, todelete);
     delete this;
-}
-
-expr mk_quote(bool reflected, expr const & val) {
-    return expr(new expr_quote(reflected, val));
 }
 
 #endif

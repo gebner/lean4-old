@@ -69,7 +69,6 @@ inline serializer & operator<<(serializer & s, literal const & l) { l.serialize(
 inline literal read_literal(deserializer & d) { return literal::deserialize(d); }
 inline deserializer & operator>>(deserializer & d, literal & l) { l = read_literal(d); return d; }
 
-
 /* =======================================
    Expressions
 
@@ -104,9 +103,9 @@ class expr : public object_ref {
     friend expr mk_sort(level const & l);
     template<expr_kind k> friend expr mk_binding(name const & n, expr const & t, expr const & e, binder_info bi);
     friend expr mk_let(name const & n, expr const & t, expr const & v, expr const & b);
-
+    friend expr mk_metavar(name const & n, name const & pp_n, expr const & t);
     friend expr mk_local(name const & n, name const & pp_n, expr const & t, binder_info bi);
-
+    friend expr mk_quote(bool reflected, expr const & val);
 public:
     expr();
     expr(expr const & other):object_ref(other) {}
@@ -331,8 +330,8 @@ inline bool is_var(expr const & e) { return is_bvar(e); }
 inline bool is_var(expr const & e, unsigned idx) { return is_bvar(e, idx); }
 inline bool is_metavar(expr const & e) { return is_mvar(e); }
 inline bool is_metavar_app(expr const & e) { return is_mvar_app(e); }
-inline expr mk_metavar(name const & n, expr const & t) { return mk_mvar(n, t); }
-inline expr mk_metavar(name const & n, name const & pp_n, expr const & t) { return mk_mvar(n, pp_n, t); }
+expr mk_metavar(name const & n, name const & pp_n, expr const & t);
+inline expr mk_metavar(name const & n, expr const & t) { return mk_metavar(n, n, t); }
 expr mk_local(name const & n, name const & pp_n, expr const & t, binder_info bi);
 inline expr mk_local(name const & n, expr const & t) { return mk_local(n, n, t, mk_binder_info()); }
 inline expr mk_local(name const & n, expr const & t, binder_info bi) { return mk_local(n, n, t, bi); }
@@ -346,7 +345,7 @@ inline expr Const(name const & n) { return mk_constant(n); }
 inline expr BVar(unsigned idx) { return mk_bvar(idx); }
 inline expr Var(unsigned idx) { return mk_bvar(idx); }
 inline bool is_constant(expr const & e) { return is_const(e); }
-expr const & mk_quote(bool is_reflected, expr const & e);
+expr mk_quote(bool is_reflected, expr const & e);
 inline expr const & quote_value(expr const & e) { return static_cast<expr const &>(cnstr_obj_ref(e, 0)); }
 inline bool is_local(expr const & e) { return is_fvar(e); }
 bool quote_is_reflected(expr const & e);
