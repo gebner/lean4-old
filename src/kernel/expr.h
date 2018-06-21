@@ -102,8 +102,13 @@ class expr : public object_ref {
     friend expr mk_mdata(kvmap const & d, expr const & e);
     friend expr mk_proj(nat const & idx, expr const & e);
     friend expr mk_bvar(nat const & idx);
-    friend expr mk_local(name const & n, name const & pp_n, expr const & t, binder_info bi);
     friend expr mk_const(name const & n, levels const & ls);
+    friend expr mk_app(expr const & f, expr const & a);
+    friend expr mk_sort(level const & l);
+    template<expr_kind k> friend expr mk_binding(name const & n, expr const & t, expr const & e, binder_info bi);
+    friend expr mk_let(name const & n, expr const & t, expr const & v, expr const & b);
+
+    friend expr mk_local(name const & n, name const & pp_n, expr const & t, binder_info bi);
 
 public:
     expr();
@@ -195,9 +200,11 @@ expr mk_rev_app(expr const & f, unsigned num_args, expr const * args);
 expr mk_rev_app(unsigned num_args, expr const * args);
 inline expr mk_rev_app(buffer<expr> const & args) { return mk_rev_app(args.size(), args.data()); }
 inline expr mk_rev_app(expr const & f, buffer<expr> const & args) { return mk_rev_app(f, args.size(), args.data()); }
-expr mk_binding(expr_kind k, name const & n, expr const & t, expr const & e, binder_info i = mk_binder_info());
-inline expr mk_lambda(name const & n, expr const & t, expr const & e, binder_info i = mk_binder_info()) { return mk_binding(expr_kind::Lambda, n, t, e, i); }
-inline expr mk_pi(name const & n, expr const & t, expr const & e, binder_info i = mk_binder_info()) { return mk_binding(expr_kind::Pi, n, t, e, i); }
+expr mk_lambda(name const & n, expr const & t, expr const & e, binder_info bi = mk_binder_info());
+expr mk_pi(name const & n, expr const & t, expr const & e, binder_info bi = mk_binder_info());
+inline expr mk_binding(expr_kind k, name const & n, expr const & t, expr const & e, binder_info bi = mk_binder_info()) {
+    return k == expr_kind::Pi ? mk_pi(n, t, e, bi) : mk_lambda(n, t, e, bi);
+}
 expr mk_arrow(expr const & t, expr const & e);
 expr mk_let(name const & n, expr const & t, expr const & v, expr const & b);
 expr mk_sort(level const & l);
