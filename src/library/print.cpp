@@ -225,7 +225,7 @@ struct print_expr_fn {
         case expr_kind::BVar:
             out() << "#" << bvar_idx(a);
             break;
-        case expr_kind::Constant:
+        case expr_kind::Const:
             print_const(a);
             break;
         case expr_kind::App:

@@ -79,8 +79,8 @@ class replace_rec_fn {
             return save_result(e, offset, *r, shared);
         } else {
             switch (e.kind()) {
-            case expr_kind::Constant: case expr_kind::Sort:
-            case expr_kind::BVar:     case expr_kind::Lit:
+            case expr_kind::Const: case expr_kind::Sort:
+            case expr_kind::BVar:  case expr_kind::Lit:
                 return save_result(e, offset, e, shared);
             case expr_kind::MData: {
                 expr new_e = apply(mdata_expr(e), offset);

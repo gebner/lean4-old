@@ -69,7 +69,7 @@ bool equiv_manager::is_equiv_core(expr const & a, expr const & b) {
     switch (a.kind()) {
     case expr_kind::BVar:
         lean_unreachable(); // LCOV_EXCL_LINE
-    case expr_kind::Constant:
+    case expr_kind::Const:
         result =
             const_name(a) == const_name(b) &&
             compare(const_levels(a), const_levels(b), [](level const & l1, level const & l2) { return l1 == l2; });

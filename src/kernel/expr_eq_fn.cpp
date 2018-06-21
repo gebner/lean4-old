@@ -82,7 +82,7 @@ class expr_eq_fn {
                 proj_idx(a) == proj_idx(b);
         case expr_kind::Lit:
             return lit_value(a) == lit_value(b);
-        case expr_kind::Constant:
+        case expr_kind::Const:
             return
                 const_name(a) == const_name(b) &&
                 compare(const_levels(a), const_levels(b), [](level const & l1, level const & l2) { return l1 == l2; });

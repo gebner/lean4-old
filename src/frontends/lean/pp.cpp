@@ -1759,7 +1759,7 @@ auto pretty_fn::pp(expr const & e, bool ignore_hide) -> result {
     case expr_kind::Sort:      return pp_sort(e);
     case expr_kind::MData:     return pp_mdata(e);
     case expr_kind::Proj:      return pp_proj(e);
-    case expr_kind::Constant:  return pp_const(e);
+    case expr_kind::Const:     return pp_const(e);
     case expr_kind::MVar:      return pp_meta(e);
     case expr_kind::App:       return pp_app(e);
     case expr_kind::Lambda:    return pp_lambda(e);

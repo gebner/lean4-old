@@ -153,7 +153,7 @@ unsigned expr_cases_on(vm_obj const & o, buffer<vm_obj> & data) {
     case expr_kind::Sort:
         data.push_back(to_obj(sort_level(e)));
         break;
-    case expr_kind::Constant:
+    case expr_kind::Const:
         data.push_back(to_obj(const_name(e)));
         data.push_back(to_obj(const_levels(e)));
         break;

@@ -70,7 +70,7 @@ class for_each_fn {
             unsigned offset = p.second;
 
             switch (e.kind()) {
-            case expr_kind::Constant: case expr_kind::BVar:
+            case expr_kind::Const: case expr_kind::BVar:
             case expr_kind::Sort:
                 m_f(e, offset);
                 goto begin_loop;
@@ -85,8 +85,8 @@ class for_each_fn {
                 goto begin_loop;
 
             switch (e.kind()) {
-            case expr_kind::Constant: case expr_kind::BVar:
-            case expr_kind::Sort:     case expr_kind::Lit:
+            case expr_kind::Const: case expr_kind::BVar:
+            case expr_kind::Sort:  case expr_kind::Lit:
                 goto begin_loop;
             case expr_kind::MData:
                 todo.emplace_back(mdata_expr(e), offset);

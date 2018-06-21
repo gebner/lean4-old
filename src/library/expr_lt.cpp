@@ -35,7 +35,7 @@ bool is_lt(expr const & a, expr const & b, bool use_hash, local_context const * 
             return is_lt(proj_expr(a), proj_expr(b), use_hash, lctx);
         else
             return proj_idx(a) < proj_idx(b);
-    case expr_kind::Constant:
+    case expr_kind::Const:
         if (const_name(a) != const_name(b))
             return const_name(a) < const_name(b);
         else
@@ -146,7 +146,7 @@ bool is_lt_no_level_params(expr const & a, expr const & b) {
             return is_lt_no_level_params(proj_expr(a), proj_expr(b));
         else
             return proj_idx(a) < proj_idx(b);
-    case expr_kind::Constant:
+    case expr_kind::Const:
         if (const_name(a) != const_name(b))
             return const_name(a) < const_name(b);
         else

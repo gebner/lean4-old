@@ -274,8 +274,8 @@ expr parser::rec_save_pos(expr const & e, pos_info p) {
 /** \brief Create a copy of \c e, and the position of new expression with p */
 expr parser::copy_with_new_pos(expr const & e, pos_info p) {
     switch (e.kind()) {
-    case expr_kind::Sort: case expr_kind::Constant: case expr_kind::MVar:
-    case expr_kind::BVar: case expr_kind::FVar:     case expr_kind::Lit:
+    case expr_kind::Sort: case expr_kind::Const: case expr_kind::MVar:
+    case expr_kind::BVar: case expr_kind::FVar:  case expr_kind::Lit:
         return save_pos(copy(e), p);
     case expr_kind::MData:
         return save_pos(::lean::mk_mdata(mdata_data(e), copy_with_new_pos(mdata_expr(e), p)), p);
@@ -1734,7 +1734,7 @@ static expr quote(expr const & e) {
         return mk_app(mk_constant({"expr", "bvar"}), quote(bvar_idx(e).get_small_value()));
     case expr_kind::Sort:
         return mk_app(mk_constant({"expr", "sort"}), mk_expr_placeholder());
-    case expr_kind::Constant:
+    case expr_kind::Const:
         return mk_app(mk_constant({"expr", "const"}), quote(const_name(e)), mk_expr_placeholder());
     case expr_kind::MVar:
         return mk_expr_placeholder();

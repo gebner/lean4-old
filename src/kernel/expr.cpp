@@ -65,21 +65,28 @@ static inline unsigned hash(literal const & a) {
     lean_unreachable();
 }
 
+static unsigned hash(levels const & ls) {
+    unsigned r = 23;
+    for (auto const & l : ls)
+        r = hash(hash(l), r);
+    return r;
+}
+
 /* Auxiliary functions for computing scalar data offset into expression objects. */
 inline constexpr unsigned num_obj_fields(expr_kind k) {
     return
-        k == expr_kind::App      ?  2 :
-        k == expr_kind::Constant ?  2 :
-        k == expr_kind::FVar     ?  3 : // TODO(Leo): it should be 1 after we remove support for legacy code
-        k == expr_kind::Lambda   ?  3 :
-        k == expr_kind::Pi       ?  3 :
-        k == expr_kind::BVar     ?  1 :
-        k == expr_kind::Let      ?  4 :
-        k == expr_kind::MVar     ?  3 : // TODO(Leo): it should be 2 after we remove support for legacy code
-        k == expr_kind::Sort     ?  1 :
-        k == expr_kind::Lit      ?  1 :
-        k == expr_kind::MData    ?  2 :
-        k == expr_kind::Proj     ?  2 :
+        k == expr_kind::App     ?  2 :
+        k == expr_kind::Const   ?  2 :
+        k == expr_kind::FVar    ?  3 : // TODO(Leo): it should be 1 after we remove support for legacy code
+        k == expr_kind::Lambda  ?  3 :
+        k == expr_kind::Pi      ?  3 :
+        k == expr_kind::BVar    ?  1 :
+        k == expr_kind::Let     ?  4 :
+        k == expr_kind::MVar    ?  3 : // TODO(Leo): it should be 2 after we remove support for legacy code
+        k == expr_kind::Sort    ?  1 :
+        k == expr_kind::Lit     ?  1 :
+        k == expr_kind::MData   ?  2 :
+        k == expr_kind::Proj    ?  2 :
         /* k == expr_kind::Quote */ 1;
 }
 
@@ -165,8 +172,8 @@ template<expr_kind k> unsigned get_weight_core(expr const & e) { return cnstr_sc
 
 unsigned get_weight(expr const & e) {
     switch (e.kind()) {
-    case expr_kind::BVar:  case expr_kind::Constant: case expr_kind::Sort:
-    case expr_kind::MVar:  case expr_kind::FVar:     case expr_kind::Lit:
+    case expr_kind::BVar:  case expr_kind::Const: case expr_kind::Sort:
+    case expr_kind::MVar:  case expr_kind::FVar:  case expr_kind::Lit:
     case expr_kind::Quote:
         return 1;
     case expr_kind::Lambda:  return get_weight_core<expr_kind::Lambda>(e);
@@ -183,8 +190,8 @@ template<expr_kind k> unsigned get_depth_core(expr const & e) { return cnstr_sca
 
 unsigned get_depth(expr const & e) {
     switch (e.kind()) {
-    case expr_kind::BVar:  case expr_kind::Constant: case expr_kind::Sort:
-    case expr_kind::MVar:  case expr_kind::FVar:     case expr_kind::Lit:
+    case expr_kind::BVar:  case expr_kind::Const: case expr_kind::Sort:
+    case expr_kind::MVar:  case expr_kind::FVar:  case expr_kind::Lit:
     case expr_kind::Quote:
         return 1;
     case expr_kind::Lambda:  return get_depth_core<expr_kind::Lambda>(e);
@@ -201,8 +208,8 @@ template<expr_kind k> unsigned get_loose_bvar_range_core(expr const & e) { retur
 
 unsigned get_loose_bvar_range(expr const & e) {
     switch (e.kind()) {
-    case expr_kind::Constant: case expr_kind::Sort:
-    case expr_kind::Quote:    case expr_kind::Lit:
+    case expr_kind::Const: case expr_kind::Sort:
+    case expr_kind::Quote: case expr_kind::Lit:
         return 0;
     case expr_kind::BVar:    {
         nat const & idx = bvar_idx(e);
@@ -222,14 +229,14 @@ unsigned get_loose_bvar_range(expr const & e) {
 
 bool is_atomic(expr const & e) {
     switch (e.kind()) {
-    case expr_kind::Constant: case expr_kind::Sort:
-    case expr_kind::BVar:     case expr_kind::Lit:
+    case expr_kind::Const: case expr_kind::Sort:
+    case expr_kind::BVar:  case expr_kind::Lit:
     case expr_kind::Quote:
         return true;
-    case expr_kind::App:      case expr_kind::MVar:
-    case expr_kind::FVar:     case expr_kind::Lambda:
-    case expr_kind::Pi:       case expr_kind::Let:
-    case expr_kind::MData:    case expr_kind::Proj:
+    case expr_kind::App:   case expr_kind::MVar:
+    case expr_kind::FVar:  case expr_kind::Lambda:
+    case expr_kind::Pi:    case expr_kind::Let:
+    case expr_kind::MData: case expr_kind::Proj:
         return false;
     }
     lean_unreachable(); // LCOV_EXCL_LINE
@@ -288,7 +295,14 @@ expr mk_fvar(name const & n) {
     return mk_local(n, n, expr(), mk_binder_info());
 }
 
-expr mk_constant(name const & n, levels const & ls);
+expr mk_const(name const & n, levels const & ls) {
+    inc(n.raw()); inc(ls.raw());
+    expr r(mk_cnstr(static_cast<unsigned>(expr_kind::Const), n.raw(), ls.raw(), expr_scalar_size(expr_kind::Const)));
+    set_scalar<expr_kind::Const>(r, hash(n.hash(), hash(ls)), false, has_meta(ls), false, has_param(ls));
+    return r;
+}
+
+
 expr mk_metavar(name const & n, expr const & t);
 expr mk_metavar(name const & n, name const & pp_n, expr const & t);
 expr mk_app(expr const & f, expr const & a);
@@ -417,13 +431,6 @@ static expr * g_string_type = nullptr;
 
 static expr * g_dummy = nullptr;
 expr::expr():expr(*g_dummy) {}
-
-unsigned hash_levels(levels const & ls) {
-    unsigned r = 23;
-    for (auto const & l : ls)
-        r = hash(hash(l), r);
-    return r;
-}
 
 #ifdef LEAN_TRACK_LIVE_EXPRS
 static atomic<unsigned> g_num_live_exprs(0);

@@ -967,7 +967,7 @@ expr elaborator::visit_function(expr const & fn, bool has_args, optional<expr> c
     // The expr_kind::App case can only happen when nary notation is used
     case expr_kind::App:       r = visit(fn, expected_type); break;
     case expr_kind::FVar:      r = fn; break;
-    case expr_kind::Constant:  r = visit_const_core(fn); break;
+    case expr_kind::Const:     r = visit_const_core(fn); break;
     case expr_kind::MData:     r = visit_mdata(fn, expected_type, true); break;
     case expr_kind::Lambda:    r = visit_lambda(fn, expected_type); break;
     case expr_kind::Let:       r = visit_let(fn, expected_type); break;
@@ -3646,7 +3646,7 @@ expr elaborator::visit(expr const & e, optional<expr> const & expected_type) {
                     return copy_pos(e, visit_sort(e));
                 case expr_kind::FVar:
                     return copy_pos(e, visit_local(e, expected_type));
-                case expr_kind::Constant:
+                case expr_kind::Const:
                     return copy_pos(e, visit_constant(e, expected_type));
                 case expr_kind::Lambda:
                     return copy_pos(e, visit_lambda(e, expected_type));

@@ -90,7 +90,7 @@ inductive expr
 | quote : bool → expr → expr
 
 */
-enum class expr_kind { BVar, FVar, Sort, Constant, MVar, App, Lambda, Pi, Let, Lit, MData, Proj, Quote };
+enum class expr_kind { BVar, FVar, Sort, Const, MVar, App, Lambda, Pi, Let, Lit, MData, Proj, Quote };
 
 #if 1
 
@@ -103,6 +103,7 @@ class expr : public object_ref {
     friend expr mk_proj(nat const & idx, expr const & e);
     friend expr mk_bvar(nat const & idx);
     friend expr mk_local(name const & n, name const & pp_n, expr const & t, binder_info bi);
+    friend expr mk_const(name const & n, levels const & ls);
 
 public:
     expr();
@@ -150,7 +151,7 @@ struct expr_hash { unsigned operator()(expr const & e) const { return hash(e); }
 // Testers
 inline bool is_bvar(expr const & e)        { return e.kind() == expr_kind::BVar; }
 inline bool is_fvar(expr const & e)        { return e.kind() == expr_kind::FVar; }
-inline bool is_const(expr const & e)       { return e.kind() == expr_kind::Constant; }
+inline bool is_const(expr const & e)       { return e.kind() == expr_kind::Const; }
 inline bool is_mvar(expr const & e)        { return e.kind() == expr_kind::MVar; }
 inline bool is_app(expr const & e)         { return e.kind() == expr_kind::App; }
 inline bool is_lambda(expr const & e)      { return e.kind() == expr_kind::Lambda; }
