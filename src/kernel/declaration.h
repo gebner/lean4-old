@@ -173,33 +173,21 @@ public:
 
 /*
 inductive declaration
-| const_decl  (val : constant_val)
-| defn_decl   (val : definition_val)
-| axiom_decl  (val : axiom_val)
-| thm_decl    (val : theorem_val)
-| induct_decl (val : inductive_val)
-| cnstr_decl  (val : constructor_val)
-| rec_decl    (val : recursor_val)
+| assump_decl      (val : assumption_val)
+| defn_decl        (val : definition_val)
+| axiom_decl       (val : axiom_val)
+| thm_decl         (val : theorem_val)
+| mutual_defn_decl (defns : list definition_val)
+| induct_decl      (lparams : list name) (nparams : nat) (types : list inductive_type) (is_meta : bool)
 */
-enum class declaration_kind { Constant, Definition, Axiom, Theorem, Inductive, Constructor, Recursor };
+enum class declaration_kind { Assumption, Definition, Axiom, Theorem, MutualDefinition, Inductive };
 class declaration : public object_ref {
-    explicit declaration(object * o):object_ref(o) {}
-    explicit declaration(object_ref const & o):object_ref(o) {}
-    static object * mk_declaration_val(name const & n, level_param_names const & params, expr const & t);
-    static object * mk_constant_val(name const & n, level_param_names const & params, expr const & t, bool meta);
-    static object * mk_definition_val(name const & n, level_param_names const & params, expr const & t, expr const & v, reducibility_hints const & h, bool meta);
-    static object * mk_axiom_val(name const & n, level_param_names const & params, expr const & t);
-    static object * mk_theorem_val(name const & n, level_param_names const & params, expr const & t, expr const & v);
-    static object * mk_inductive_val(name const & n, level_param_names const & params, expr const & t, unsigned nparams, unsigned nindices,
-                                     names const & all, names const & cnstrs, names const & recs, bool is_rec, bool is_meta);
-    static object * mk_constructor_val(name const & n, level_param_names const & params, expr const & t, name const & induct, unsigned nparams, bool is_meta);
-    static object * mk_recursor_val(name const & id, level_param_names const & params, expr const & t, name const & induct, unsigned nparams,
-                                    unsigned nindices, unsigned nmotives, unsigned nminor, bool k, recursor_rules const & rules, bool is_meta);
-
     object * get_val_obj() const { return cnstr_obj(raw(), 0); }
     object_ref const & to_val() const { return cnstr_obj_ref(*this, 0); }
     declaration_val const & to_declaration_val() const { return static_cast<declaration_val const &>(kind() == declaration_kind::Axiom ? to_val() : cnstr_obj_ref(to_val(), 0)); }
 public:
+    explicit declaration(object * o):object_ref(o) {}
+    explicit declaration(object_ref const & o):object_ref(o) {}
     declaration();
     declaration(declaration const & other):object_ref(other) {}
     declaration(declaration && other):object_ref(other) {}
@@ -210,7 +198,7 @@ public:
 
     friend bool is_eqp(declaration const & d1, declaration const & d2) { return d1.raw() == d2.raw(); }
 
-    bool is_constant_assumption() const { return kind() == declaration_kind::Constant; }
+    bool is_assumption() const { return kind() == declaration_kind::Constant; }
     bool is_definition() const { return kind() == declaration_kind::Definition; }
     bool is_axiom() const { return kind() == declaration_kind::Axiom; }
     bool is_theorem() const { return kind() == declaration_kind::Theorem; }
@@ -249,13 +237,52 @@ public:
     static declaration deserialize(deserializer & d) { object * o = d.read_object(); inc(o); return declaration(o); }
 };
 
-inline serializer & operator<<(serializer & s, declaration const & l) { l.serialize(s); return s; }
+inline serializer & operator<<(serializer & s, declaration const & decl) { decl.serialize(s); return s; }
 inline declaration read_declaration(deserializer & d) { return declaration::deserialize(d); }
-inline deserializer & operator>>(deserializer & d, declaration & l) { l = read_declaration(d); return d; }
+inline deserializer & operator>>(deserializer & d, declaration & decl) { decl = read_declaration(d); return d; }
 
-inline optional<declaration> none_declaration() { return optional<declaration>(); }
-inline optional<declaration> some_declaration(declaration const & o) { return optional<declaration>(o); }
-inline optional<declaration> some_declaration(declaration && o) { return optional<declaration>(std::forward<declaration>(o)); }
+enum class constant_info_kind { Assumption, Definition, Axiom, Theorem, Inductive, Constructor, Recursor };
+class constant_info : public object_ref {
+    explicit constant_info(object * o):object_ref(o) {}
+    explicit constant_info(object_ref const & o):object_ref(o) {}
+public:
+    constant_info();
+    constant_info(constant_info const & other):object_ref(other) {}
+    constant_info(constant_info && other):object_ref(other) {}
+    constant_info_kind kind() const { return static_cast<constant_info_kind>(cnstr_tag(raw())); }
+    constant_info & operator=(constant_info const & other) { object_ref::operator=(other); return *this; }
+    constant_info & operator=(constant_info && other) { object_ref::operator=(other); return *this; }
+
+    bool is_assumption() const { return kind() == constant_info_kind::Assumption; }
+    bool is_definition() const { return kind() == constant_info_kind::Definition; }
+    bool is_axiom() const { return kind() == constant_info_kind::Axiom; }
+    bool is_theorem() const { return kind() == constant_info_kind::Theorem; }
+    bool is_inductive() const { return kind() == constant_info_kind::Inductive; }
+    bool is_constructor() const { return kind() == constant_info_kind::Constructor; }
+    bool is_recursor() const { return kind() == constant_info_kind::Recursor; }
+    bool is_meta() const;
+    bool has_value() const { return is_theorem() || is_definition(); }
+
+    name const & get_name() const { return to_declaration_val().get_name(); }
+    level_param_names const & get_univ_params() const { return to_declaration_val().get_lparams(); }
+    unsigned get_num_univ_params() const { return length(get_univ_params()); }
+    expr const & get_type() const { return to_declaration_val().get_type(); }
+    expr const & get_value() const { lean_assert(has_value()); return static_cast<expr const &>(cnstr_obj_ref(to_val(), 1)); }
+    reducibility_hints const & get_hints() const;
+
+    void serialize(serializer & s) const { s.write_object(raw()); }
+    static constant_info deserialize(deserializer & d) { object * o = d.read_object(); inc(o); return declaration(o); }
+};
+
+inline optional<constant_info> none_constant_info() { return optional<constant_info>(); }
+inline optional<constant_info> some_constant_info(constant_info const & o) { return optional<constant_info>(o); }
+inline optional<constant_info> some_constant_info(constant_info && o) { return optional<constant_info>(std::forward<constant_info>(o)); }
+
+inline serializer & operator<<(serializer & s, constant_info const & ci) { ci.serialize(s); return s; }
+inline declaration read_constant_info(deserializer & d) { return constant_info::deserialize(d); }
+inline deserializer & operator>>(deserializer & d, constant_info & ci) { ci = read_declaration(d); return d; }
+
+
 
 declaration mk_definition(name const & n, level_param_names const & params, expr const & t, expr const & v,
                           reducibility_hints const & hints, bool meta = false);

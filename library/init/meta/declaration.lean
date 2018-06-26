@@ -6,7 +6,7 @@ Authors: Leonardo de Moura
 prelude
 import init.lean.declaration
 
-export lean (declaration reducibility_hints)
+export lean (declaration reducibility_hints constant_info)
 
 namespace lean
 namespace declaration

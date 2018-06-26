@@ -41,7 +41,7 @@ structure declaration_val :=
 
 structure axiom_val extends declaration_val
 
-structure constant_val extends declaration_val :=
+structure assumption_val extends declaration_val :=
 (is_meta : bool)
 
 /- TODO(Leo): the `value` field for `definition_val` and `theorem_val` should be a thunk. We will make this change
@@ -54,15 +54,31 @@ structure definition_val extends declaration_val :=
 structure theorem_val extends declaration_val :=
 (value : expr)
 
-/-- The kernel compiles (mutual) inductive declarations (see `inductive_decls`) into a set of
-    - `declaration.induct_decl` (for each inductive datatype in the mutual declaration),
-    - `declaration.cnstr_decl` (for each constructor in the mutual declaration),
-    - `declaration.rec_decl` (automatically generated recursors).
+structure constructor :=
+(id : name) (type : expr)
+
+structure inductive_type :=
+(id : name) (type : expr) (cnstrs : list constructor)
+
+/-- Declaration object that can be sent to the kernel. -/
+inductive declaration
+| assump_decl      (val : assumption_val)
+| defn_decl        (val : definition_val)
+| axiom_decl       (val : axiom_val)
+| thm_decl         (val : theorem_val)
+| quot_decl
+| mutual_defn_decl (defns : list definition_val) -- All definitions must be marked as `meta`
+| induct_decl      (lparams : list name) (nparams : nat) (types : list inductive_type) (is_meta : bool)
+
+/-- The kernel compiles (mutual) inductive declarations (see `declaration.induct_decl`) into a set of
+    - `constant_info.induct` (for each inductive datatype in the mutual declaration),
+    - `constant_info.cnstr`  (for each constructor in the mutual declaration),
+    - `constant_info.rec`    (automatically generated recursors).
 
     This data is used to implement iota-reduction efficiently and compile nested inductive
     declarations.
 
-    A series of checks are performed by the kernel to check whether a `inductive_decls`
+    A series of checks are performed by the kernel to check whether a `declaration.induct_decl`
     is valid or not. -/
 structure inductive_val extends declaration_val :=
 (nparams : nat)       -- Number of parameters
@@ -96,63 +112,64 @@ structure recursor_val extends declaration_val :=
 (rules : list recursor_rule) -- A reduction for each constructor
 (is_meta : bool)
 
-inductive declaration
-| const_decl  (val : constant_val)
-| defn_decl   (val : definition_val)
-| axiom_decl  (val : axiom_val)
-| thm_decl    (val : theorem_val)
-| induct_decl (val : inductive_val)
-| cnstr_decl  (val : constructor_val)
-| rec_decl    (val : recursor_val)
+inductive quot_kind
+| type  -- `quot`
+| cnstr -- `quot.mk`
+| lift  -- `quot.lift`
+| ind   -- `quot.ind`
 
-namespace declaration
+structure quot_val extends declaration_val :=
+(kind : quot_kind)
 
-def to_declaration_val : declaration → declaration_val
-| (const_decl  {to_declaration_val := d, ..}) := d
-| (defn_decl   {to_declaration_val := d, ..}) := d
-| (axiom_decl  {to_declaration_val := d, ..}) := d
-| (thm_decl    {to_declaration_val := d, ..}) := d
-| (induct_decl {to_declaration_val := d, ..}) := d
-| (cnstr_decl  {to_declaration_val := d, ..}) := d
-| (rec_decl    {to_declaration_val := d, ..}) := d
+/-- Information associated with constant declarations. -/
+inductive constant_info
+| assump_info   (val : assumption_val)
+| defn_info     (val : definition_val)
+| axiom_info    (val : axiom_val)
+| thm_info      (val : theorem_val)
+| quot_info     (val : quot_val)
+| induct_info   (val : inductive_val)
+| cnstr_info    (val : constructor_val)
+| rec_info      (val : recursor_val)
 
-def id (d : declaration) : name :=
+namespace constant_info
+
+def to_declaration_val : constant_info → declaration_val
+| (assump_info   {to_declaration_val := d, ..}) := d
+| (defn_info     {to_declaration_val := d, ..}) := d
+| (axiom_info    {to_declaration_val := d, ..}) := d
+| (thm_info      {to_declaration_val := d, ..}) := d
+| (quot_info     {to_declaration_val := d, ..}) := d
+| (induct_info   {to_declaration_val := d, ..}) := d
+| (cnstr_info    {to_declaration_val := d, ..}) := d
+| (rec_info      {to_declaration_val := d, ..}) := d
+
+def id (d : constant_info) : name :=
 d.to_declaration_val.id
 
-def lparams (d : declaration) : list name :=
+def lparams (d : constant_info) : list name :=
 d.to_declaration_val.lparams
 
-def type (d : declaration) : expr :=
+def type (d : constant_info) : expr :=
 d.to_declaration_val.type
 
-def value : declaration → option expr
-| (defn_decl {value := r, ..}) := some r
-| (thm_decl  {value := r, ..}) := some r
+def value : constant_info → option expr
+| (defn_info {value := r, ..}) := some r
+| (thm_info  {value := r, ..}) := some r
 | _                            := none
 
-def hints : declaration → reducibility_hints
-| (defn_decl {hints := r, ..}) := r
+def hints : constant_info → reducibility_hints
+| (defn_info {hints := r, ..}) := r
 | _                            := reducibility_hints.opaque
 
-def is_meta : declaration → bool
-| (const_decl  {is_meta := r, ..}) := r
-| (defn_decl   {is_meta := r, ..}) := r
-| (induct_decl {is_meta := r, ..}) := r
-| (cnstr_decl  {is_meta := r, ..}) := r
-| (rec_decl    {is_meta := r, ..}) := r
-| _                                := ff
+def is_meta : constant_info → bool
+| (assump_info  {is_meta := r, ..}) := r
+| (defn_info    {is_meta := r, ..}) := r
+| (induct_info  {is_meta := r, ..}) := r
+| (cnstr_info   {is_meta := r, ..}) := r
+| (rec_info     {is_meta := r, ..}) := r
+| _                                 := ff
 
-end declaration
-
-structure constructor :=
-(id : name) (type : expr)
-
-structure inductive_type :=
-(id : name) (type : expr) (cnstrs : list constructor)
-
-/-- A (mutual) inductive declaration. This declaration created by the frontend is compiled by the kernel
-    into a set of `declaration.induct_decl`, `declaration.cnstr_decl` and `declaration.rec_decl`. -/
-structure inductive_decl :=
-(lparams : list name) (nparams : nat) (types : list inductive_type) (is_meta : bool)
+end constant_info
 
 end lean
