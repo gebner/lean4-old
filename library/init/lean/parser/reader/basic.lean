@@ -46,6 +46,7 @@ instance : monad read_m := infer_instance
 instance : alternative read_m := infer_instance
 instance : monad_reader reader_config read_m := infer_instance
 instance : monad_state reader_state read_m := infer_instance
+set_option class.instance_max_depth 128
 instance : monad_parser read_m := infer_instance
 
 --TODO(Sebastian): expose `reader_state.errors`

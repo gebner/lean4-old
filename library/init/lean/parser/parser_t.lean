@@ -200,6 +200,15 @@ def not_followed_by (p : parser_t m α) (msg : string := "input") : parser_t m u
            | ok _ _       := error { pos := it.offset, unexpected := msg } ff
            | ok_eps _ _ _ := error { pos := it.offset, unexpected := msg } ff
            | error _ _    := mk_eps () it
+
+/-- Parse `p`, returning errors explicitly.
+    If `p` does not fail, `observing p` behaves like `except.ok <$> p`. -/
+def observing (p : parser_t m α) : parser_t m (except message α) :=
+λ it, do r ← p it,
+         pure $ match r with
+           | ok a it'        := ok (except.ok a) it'
+           | ok_eps a it' ex := ok_eps (except.ok a) it' ex
+           | error msg _     := ok (except.error msg) it
 end parser_t
 
 /- Type class for abstracting from concrete monad stacks containing a `parser_t` somewhere. -/
@@ -208,15 +217,46 @@ class monad_parser (m : Type → Type) :=
 (lift {} {α : Type} : parser α → m α)
 -- Analogous to e.g. `monad_reader_adapter.map` before simplification (see there).
 -- Its usage seems to be way too common to justify moving it into a separate type class.
-(map {} {α : Type} : (∀ {n α} [monad n], parser_t n α → parser_t n α) → m α → m α)
+(map {} {α : Type} : (∀ {n} [monad n] {α}, parser_t n α → parser_t n α) → m α → m α)
+(map_except {} {α : Type} : (∀ {n} [monad n] {α}, parser_t n α → parser_t n (except message α)) → m α → m (except message α))
+(map_unit {} {α : Type} : (∀ {n} [monad n] {α}, parser_t n α → parser_t n unit) → m α → m unit)
 
 instance {m : Type → Type} [monad m] : monad_parser (parser_t m) :=
 { lift := λ α p it, pure $ p it,
-  map  := λ α f x, f x }
+  map  := λ α f x, f x,
+  map_except := λ α f x, f x,
+  map_unit := λ α f x, f x }
 
-instance monad_parser_trans {m n : Type → Type} [has_monad_lift m n] [monad_functor m m n n] [monad_parser m] : monad_parser n :=
+structure void_t (m : Type → Type) (α : Type) := mk {} ::
+(run : m unit)
+
+instance (m) [monad m] : monad (void_t m) :=
+{ pure := λ α a, ⟨pure ()⟩,
+  bind := λ α β x f, ⟨pure ()⟩ }
+
+def reader_t.comm_void_t {ρ m α} [monad m] (x : reader_t ρ (void_t m) α) : void_t (reader_t ρ m) α :=
+⟨⟨λ r, (x.run r).run⟩⟩
+
+instance reader_t.has_comm_void_t (ρ) : comm_monad_t (reader_t ρ) void_t :=
+⟨@reader_t.comm_void_t _⟩
+
+def state_t.comm_void_t {σ m α} [monad m] (x : state_t σ (void_t m) α) : void_t (state_t σ m) α :=
+⟨⟨λ st, do a ← (x.run st).run, pure (a, st)⟩⟩
+
+instance state_t.has_comm_void_t (σ) : comm_monad_t (state_t σ) void_t :=
+⟨@state_t.comm_void_t _⟩
+
+instance monad_parser_trans {m n : Type → Type} [has_monad_lift m n] [monad_functor m m n n]
+  [monad_functor m (except_t message m) n (except_t message n)]
+  [monad_functor m (void_t m) n (void_t n)]
+  [monad_parser m] : monad_parser n :=
 { lift := λ α p, monad_lift (monad_parser.lift p : m α),
-  map  := λ α f x, monad_map (λ β x, (monad_parser.map @f x : m β)) x }
+  map  := λ α f x,
+    monad_map (λ β x, (monad_parser.map @f x : m β)) x,
+  map_except := λ α f x,
+    except_t.run (monad_map (λ β x, (⟨monad_parser.map_except @f x⟩ : except_t message m β)) x),
+  map_unit := λ α f x,
+    void_t.run (@monad_map m (void_t m) n (void_t n) _ α (λ β x, void_t.mk (monad_parser.map_unit @f x)) x) }
 
 namespace monad_parser
 variables {m : Type → Type} [monad m] [monad_parser m] [alternative m] {α β : Type}
@@ -224,11 +264,14 @@ variables {m : Type → Type} [monad m] [monad_parser m] [alternative m] {α β 
 @[inline] def error {α : Type} (unexpected : string := "") (expected : dlist string := dlist.empty) : m α :=
 lift $ λ it, result.error ⟨it.offset, unexpected, expected⟩ ff
 
-def left_over : m iterator :=
+@[inline] def left_over : m iterator :=
 lift $ λ it, result.mk_eps it it
 
+@[inline] def set_left_over (it : iterator) : m unit :=
+lift $ λ _, result.mk_eps () it
+
 @[inline] def label (p : m α) (ex : string) : m α :=
-map (λ _ _ inst p, @parser_t.label _ inst _ p ex) p
+map (λ n inst α p, @parser_t.label _ inst _ p ex) p
 
 infixr ` <?> `:2 := label
 
@@ -250,18 +293,20 @@ together.
 Without the `try` combinator we will not be able to backtrack on the `let` keyword.
 -/
 @[inline] def try (p : m α) : m α :=
-map (λ _ _ inst p, @parser_t.try _ inst _ p) p
+map @parser_t.try p
 
 /-- Parse `p` without consuming any input. -/
 @[inline] def lookahead (p : m α) : m α :=
-map (λ _ _ inst p, @parser_t.lookahead _ inst _ p) p
+map @parser_t.lookahead p
 
--- TODO(Sebastian): `monad_functor` is too weak to lift this, probably needs something like `monad_control`
-/-
+/-- Parse `p`, returning errors explicitly.
+    If `p` does not fail, `observing p` behaves like `except.ok <$> p`. -/
+def observing (p : m α) : m (except message α) :=
+map_except @parser_t.observing p
+
 /-- `not_followed_by p` succeeds when parser `p` fails -/
 @[inline] def not_followed_by (p : m α) (msg : string := "input") : m unit :=
-map (λ _ _ inst p, @parser_t.not_followed_by _ inst _ p msg) p
--/
+map_unit (λ _ inst _ p, @parser_t.not_followed_by _ inst _ p msg) p
 
 /-- Faster version of `not_followed_by (satisfy p)` -/
 @[inline] def not_followed_by_sat (p : char → bool) : m unit :=

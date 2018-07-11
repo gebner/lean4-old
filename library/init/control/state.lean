@@ -66,6 +66,15 @@ section
   instance (σ m m') [monad m] [monad m'] : monad_functor m m' (state_t σ m) (state_t σ m') :=
   ⟨@state_t.monad_map σ m m' _ _⟩
 
+  def comm_except_t {ε m α} [monad m] (x : state_t σ (except_t ε m) α) : except_t ε (state_t σ m) α :=
+  ⟨⟨λ st, do e ← (x.run st).run,
+      pure $ match e with
+      | except.ok (a, st') := (except.ok a, st')
+      | except.error e     := (except.error e, st)⟩⟩
+
+  instance {ε} : comm_monad_t (state_t σ) (except_t ε) :=
+  ⟨@comm_except_t _ _⟩
+
   @[inline] protected def adapt {σ σ' σ'' α : Type u} {m : Type u → Type v} [monad m] (split : σ → σ' × σ'')
     (join : σ' → σ'' → σ) (x : state_t σ' m α) : state_t σ m α :=
   ⟨λ st, do let (st, ctx) := split st,

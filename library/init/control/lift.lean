@@ -68,6 +68,24 @@ instance monad_functor_t_refl (m m') : monad_functor_t m m' m m' :=
 @[simp] lemma monad_map_refl {m m' : Type u → Type v} (f : ∀ {α}, m α → m' α) {α} : (monad_map @f : m α → m' α) = f := rfl
 
 
+/-- A function for switching the order of two monad transformers.
+    Note: Commuting two transformers does not have to be "semantics preserving".
+    For example, turning a `state_t σ (except_t ε m) α` into an
+    `except_t ε (state_t σ m) α` makes the state non-backtracking. While this may
+    at first seem almost dangerous, the fact that monad transformers don't naturally
+    commute is often lamented by people advocating for other forms of effect handling
+    where effects may commute arbitrarily. This class offers an explicit function
+    for such transformations. -/
+class comm_monad_t (t t' : (Type u → Type v) → Type u → Type v) :=
+(comm : ∀ {m α} [monad m], t (t' m) α → t' (t m) α)
+
+instance monad_functor_comm (m) (t t' : (Type u → Type u) → Type u → Type u) [monad m]
+  [comm_monad_t t' t]
+  [monad_functor m (t m) (t' m) (t' (t m))]
+  : monad_functor m (t m) (t' m) (t (t' m)) :=
+⟨λ α f x, comm_monad_t.comm (monad_map @f x)⟩
+
+
 /-- Run a monad stack to completion.
     `run` should be the composition of the transformers' individual `run` functions.
     This class mostly saves some typing when using highly nested monad stacks:

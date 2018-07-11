@@ -53,6 +53,12 @@ section
   @[inline] protected def adapt {ρ' : Type u} [monad m] {α : Type u} (f : ρ' → ρ) : reader_t ρ m α → reader_t ρ' m α :=
   λ x, ⟨λ r, x.run (f r)⟩
 
+  def comm_except_t {ε m α} [monad m] (x : reader_t ρ (except_t ε m) α) : except_t ε (reader_t ρ m) α :=
+  ⟨⟨λ r, (x.run r).run⟩⟩
+
+  instance {ε} : comm_monad_t (reader_t ρ) (except_t ε) :=
+  ⟨@comm_except_t _ _⟩
+
   protected def orelse [alternative m] {α : Type u} (x₁ x₂ : reader_t ρ m α) : reader_t ρ m α :=
   ⟨λ s, x₁.run s <|> x₂.run s⟩
 
