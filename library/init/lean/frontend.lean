@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Author: Sebastian Ullrich
 -/
 
-import init.lean.parser.module init.lean.expander init.lean.elaborator init.io
+import init.lean.parser.module init.lean.expander init.lean.elaborator init.io init.data.json
 
 namespace lean
 open lean.parser
@@ -78,14 +78,18 @@ def process_file (f s : string) (json : bool) : io bool := do
   --let s := (s.mk_iterator.nextn 10000).prev_to_string,
   let print_msg : message → except_t string io unit := λ msg,
     if json then
-      io.println $ "{\"file_name\": \"<stdin>\", \"pos_line\": " ++ to_string msg.pos.line ++
-        ", \"pos_col\": " ++ to_string msg.pos.column ++
-        ", \"severity\": " ++ repr (match msg.severity with
-          | message_severity.information := "information"
-          | message_severity.warning := "warning"
-          | message_severity.error := "error") ++
-        ", \"caption\": " ++ repr msg.caption ++
-        ", \"text\": " ++ repr msg.text ++ "}"
+      let severity := match msg.severity with
+        | message_severity.information := "information"
+        | message_severity.warning := "warning"
+        | message_severity.error := "error" in
+      let j := json.obj [
+        ("file_name", "<stdin>"),
+        ("pos_line", msg.pos.line),
+        ("pos_col", msg.pos.column),
+        ("severity", severity),
+        ("caption", msg.caption),
+        ("text", msg.text)
+      ] in io.println j.pretty,
     else io.println msg.to_string,
   ex ← (run_frontend f s print_msg).run,
   match ex with
