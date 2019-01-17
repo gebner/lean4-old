@@ -271,3 +271,25 @@ private def to_nat_core : string.iterator → nat → nat → nat
 
 def string.to_nat (s : string) : nat :=
 to_nat_core s.mk_iterator s.length 0
+
+private def find_core (c : char) : ℕ → string.iterator → option string.iterator
+| 0 it := none
+| (n+1) it := if ¬ it.has_next then none else
+        if it.curr = c then some it else
+        find_core n it
+
+def string.find (c : char) (s : string) : option string.iterator :=
+find_core c s.length s.mk_iterator
+
+private def utf8_length_core : ℕ → string.iterator → ℕ → ℕ
+| 0 it acc := acc
+| (n+1) it acc :=
+  let c := it.curr.val in
+  let l := if c < 0x80 then 1
+           else if c < 0x800 then 2
+           else if c < 0x10000 then 3
+           else 4 in
+  utf8_length_core n it.next (acc + l)
+
+def string.utf8_length (s : string) : ℕ :=
+utf8_length_core s.length s.mk_iterator 0

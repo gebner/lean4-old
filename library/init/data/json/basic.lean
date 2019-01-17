@@ -7,6 +7,15 @@ structure json_number :=
 
 namespace json_number
 
+instance : decidable_eq json_number :=
+{ dec_eq := λ ⟨m1, e1⟩ ⟨m2, e2⟩,
+  match dec_eq m1 m2 with
+  | (is_true hm) :=
+    (match dec_eq e1 e2 with
+    | (is_true he) := is_true (hm ▸ he ▸ rfl)
+    | (is_false he) := is_false (λ h, json_number.no_confusion h (λ hm he2, he he2)) )
+  | (is_false hm) := is_false (λ h, json_number.no_confusion h (λ hm2 he, hm hm2)) }
+
 protected def from_nat (n : nat) : json_number := ⟨n, 0⟩
 protected def from_int (n : int) : json_number := ⟨n, 0⟩
 
@@ -46,6 +55,47 @@ inductive json
 namespace json
 
 instance : has_coe nat json := ⟨λ n, json.num n⟩
+instance has_coe_int : has_coe int json := ⟨λ n, json.num n⟩
 instance has_coe_str : has_coe string json := ⟨json.str⟩
+instance has_coe_bool : has_coe _root_.bool json := ⟨json.bool⟩
+
+def to_obj : json → option (list (string × json))
+| (obj kvs) := kvs
+| _ := none
+
+def to_arr : json → option (list json)
+| (arr a) := a
+| _ := none
+
+def to_string : json → option string
+| (str s) := some s
+| _ := none
+
+def to_nat : json → option nat
+| (n : ℕ) := some n
+| _ := none
+
+def to_int : json → option int
+| (i : ℤ) := some i
+| _ := none
+
+def to_bool : json → option _root_.bool
+| (b : _root_.bool) := some b
+| _ := none
+
+def to_num : json → option json_number
+| (json.num n) := n
+| _ := none
+
+def get : json → string → option json
+| (obj kvs) k := kvs.lookup k
+| _         _ := none
+
+def nth : json → nat → option json
+| (arr a) i := a.nth i
+| _       _ := none
+
+def get_or_null (j : json) (k : string) : json :=
+(j.get k).get_or_else null
 
 end json
