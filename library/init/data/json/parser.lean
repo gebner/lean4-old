@@ -58,21 +58,17 @@ def nat_core : nat → nat → nat → m (nat × nat)
   (do c ← satisfy (between '0' '9'), nat_core i (10*acc + (c.val - '0'.val)) (ds+1)) <|>
   pure (acc, ds)
 
-@[inline]
 def lookahead_char (p : char → bool) (desc : string) : m unit :=
 lookahead (satisfy p *> pure ()) <|> unexpected desc
 
-@[inline]
 def natnonzero : m nat := do
 lookahead_char (between '1' '9') "1-9",
 r ← remaining, (n, _) ← nat_core (r+1) 0 0, pure n
 
-@[inline]
 def nat_num_digits : m (nat × nat) := do
 lookahead_char (between '0' '9') "digit",
 r ← remaining, nat_core (r+1) 0 0
 
-@[inline]
 def natmaybezero : m nat := do
 (n, _) ← nat_num_digits, pure n
 
