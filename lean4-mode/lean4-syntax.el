@@ -158,8 +158,12 @@
      ;; Types
      (,(rx word-start (or "Prop" "Type" "Type*" "Sort" "Sort*") symbol-end) . 'font-lock-type-face)
      (,(rx word-start (group (or "Prop" "Type" "Sort")) ".") (1 'font-lock-type-face))
+     ;; Character
+     ("'\\(\\\\[\\\"'nt]\\|\\\\[xu][0-9A-Fa-f]+\\|[^\\']\\)'" . 'font-lock-string-face)
+     ("'/'" . 'font-lock-string-face)
      ;; String
-     ("\"[^\"]*\"" . 'font-lock-string-face)
+     ("\"\\(\\\\[\\\"'nt]\\|\\\\[xu][0-9A-Fa-f]+\\|[^\\\"]\\)*\"" . 'font-lock-string-face)
+     ("\"\"" . 'font-lock-string-face)
      ;; ;; Constants
      (,lean4-constants-regexp . 'font-lock-constant-face)
      (,lean4-numerals-regexp . 'font-lock-constant-face)
@@ -171,8 +175,8 @@
      (,(rx (and (group "«") (group (one-or-more (not (any "»")))) (group "»")))
       (1 font-lock-comment-face t)
       (2 nil t)
-      (3 font-lock-comment-face t))
-     )))
+      (3 font-lock-comment-face t)))
+    t))
 
 ;; Syntax Highlighting for Lean Info Mode
 (defconst lean4-info-font-lock-defaults
