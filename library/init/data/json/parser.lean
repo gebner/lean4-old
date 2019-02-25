@@ -16,10 +16,10 @@ def invalid_hex_ch : string := "invalid hex character"
 def between (a : char) (b : char) : char → bool
 | c := a ≤ c ∧ c ≤ b
 
-def between' (a : nat) (b : nat) : char → bool
+def between' (a : uint32) (b : uint32) : char → bool
 | c := a ≤ c.val ∧ c.val ≤ b
 
-def hex_char : m nat :=
+def hex_char : m uint32 :=
 (do c ← satisfy (between '0' '9'), pure (c.val - '0'.val)) <|>
 (do c ← satisfy (between 'a' 'f'), pure (10 + (c.val - 'a'.val))) <|>
 (do c ← satisfy (between 'A' 'F'), pure (10 + (c.val - 'A'.val))) <|>
@@ -38,7 +38,7 @@ def escaped_char : m char :=
     | 't' := pure '\t'
     | 'u' := do
         u1 ← hex_char, u2 ← hex_char, u3 ← hex_char, u4 ← hex_char,
-        pure $ char.of_nat $ 4096*u1 + 256*u2 + 16*u3 + u4
+        pure $ char.of_nat $ uint32.to_nat $ 4096*u1 + 256*u2 + 16*u3 + u4
     | _ := error "illegal escape") <|>
 satisfy (between' 0x0020 0x10ffff) <|>
 unexpected "character in string"
@@ -46,16 +46,16 @@ unexpected "character in string"
 def string_lit_core : nat → string → m string
 | 0 _ := error "error in str_core"
 | (i+1) acc :=
-  (do ch '"', pure acc) <|>
+  (do ch '"', pure acc) <|> -- "
   (do c ← escaped_char, string_lit_core i (acc.push c))
 
 def string_lit : m string :=
-do ch '"', r ← remaining, string_lit_core (r+1) ""
+do ch '"', r ← remaining, string_lit_core (r+1) "" -- "
 
 def nat_core : nat → nat → nat → m (nat × nat)
 | 0 _ _ := error "error in nat_core"
 | (i+1) acc ds :=
-  (do c ← satisfy (between '0' '9'), nat_core i (10*acc + (c.val - '0'.val)) (ds+1)) <|>
+  (do c ← satisfy (between '0' '9'), nat_core i (10*acc + (c.val - '0'.val).to_nat) (ds+1)) <|>
   pure (acc, ds)
 
 def lookahead_char (p : char → bool) (desc : string) : m unit :=

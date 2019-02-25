@@ -74,10 +74,10 @@ def run_frontend (filename input : string) (print_msg : message → except_t str
     }
 
 @[export lean_process_file]
-def process_file (f s : string) (json : bool) : io bool := do
+def process_file (f s : string) (use_json : bool) : io bool := do
   --let s := (s.mk_iterator.nextn 10000).prev_to_string,
   let print_msg : message → except_t string io unit := λ msg,
-    if json then
+    if use_json then
       let severity := match msg.severity with
         | message_severity.information := "information"
         | message_severity.warning := "warning"
@@ -89,7 +89,7 @@ def process_file (f s : string) (json : bool) : io bool := do
         ("severity", severity),
         ("caption", msg.caption),
         ("text", msg.text)
-      ] in io.println j.pretty,
+      ] in io.println j.dump
     else io.println msg.to_string,
   ex ← (run_frontend f s print_msg).run,
   match ex with

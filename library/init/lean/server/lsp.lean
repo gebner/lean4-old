@@ -66,6 +66,6 @@ structure diagnostic :=
 (message : string)
 (related_information : list diagnostic_related_information)
 
-#eval (to_json (⟨"file:///foo", ⟨⟨0,10⟩, ⟨1,20⟩⟩⟩ : location)).dump
+-- #eval (to_json (⟨"file:///foo", ⟨⟨0,10⟩, ⟨1,20⟩⟩⟩ : location)).dump
 
 end lsp

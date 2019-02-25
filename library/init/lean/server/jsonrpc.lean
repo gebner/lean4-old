@@ -24,7 +24,7 @@ def read_header (h : io.fs.handle) : ℕ → m (list (string × string))
 def read_msg_raw (h : io.fs.handle) : m json := do
 hdr ← read_header h 100,
 some bytes ← pure ((hdr.lookup "Content-Length").map string.to_nat) | throw ↑"no Content-Length header",
-content ← h.read bytes,
+content ← h.get_line, -- HACK(gabriel): we need to read `bytes` bytes as a UTF-8 string
 match json.parse content with
 | (except.error e) := throw ↑e
 | (except.ok j) := pure j
@@ -34,7 +34,8 @@ let json_string := json.dump msg ++ "\x15\n", len := json_string.utf8_length in
 "Content-Length: " ++ to_string len ++ "\x15\n\x15\n" ++ json_string
 
 def write_msg_raw (h : io.fs.handle) (msg : json) : m unit :=
-h.write (mk_msg_raw msg)
+-- h.write (mk_msg_raw msg)
+io.print (mk_msg_raw msg) -- HACK(gabriel): should write to handle `h` instead
 
 private def mk_field {β} [has_to_json β] (a : string) (b : β) := (a, to_json b)
 local infix `⇒ `:65 := mk_field
@@ -69,8 +70,6 @@ instance : has_to_json message :=
   "error" ⇒ json.obj ["code" ⇒ code, "message" ⇒ message, "data" ⇒ data]]
 | notification_message method params := json.obj ["jsonrpc" ⇒ "2.0", "method" ⇒ method, "params" ⇒ params]
 ⟩
-
-local attribute [inline] option.orelse json.get'
 
 instance : has_from_json message :=
 ⟨λ j, do "2.0" ← j.get "jsonrpc" | none,
