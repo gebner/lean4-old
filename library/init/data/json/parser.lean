@@ -46,11 +46,11 @@ unexpected "character in string"
 def string_lit_core : nat → string → m string
 | 0 _ := error "error in str_core"
 | (i+1) acc :=
-  (do ch '"', pure acc) <|> -- "
+  (do ch '"', pure acc) <|>
   (do c ← escaped_char, string_lit_core i (acc.push c))
 
 def string_lit : m string :=
-do ch '"', r ← remaining, string_lit_core (r+1) "" -- "
+do ch '"', r ← remaining, string_lit_core (r+1) ""
 
 def nat_core : nat → nat → nat → m (nat × nat)
 | 0 _ _ := error "error in nat_core"
