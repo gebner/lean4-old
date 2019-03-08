@@ -55,6 +55,11 @@ def to_position (m : file_map) (off : nat) : position :=
 match m.lines.lower_bound off with
 | some ⟨start, l⟩ := ⟨l, off - start⟩
 | none            := ⟨1, off⟩
+
+-- TODO(gabriel): optimize
+def from_position (m : file_map) (pos : position) : nat :=
+((rbmap_of (m.lines.to_list.map (λ ⟨o,l⟩, ⟨l,o⟩)) (<)).find pos.line).get_or_else 0 + pos.column
+
 end file_map
 
 end lean

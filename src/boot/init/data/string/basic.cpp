@@ -1430,30 +1430,32 @@ x_9 = lean::string_iterator_curr(x_2);
 x_10 = x_9 == x_0;
 if (x_10 == 0)
 {
-obj* x_11; obj* x_12; 
+obj* x_11; obj* x_12; obj* x_14; 
 x_11 = lean::mk_nat_obj(1u);
 x_12 = lean::nat_sub(x_1, x_11);
 lean::dec(x_1);
+x_14 = lean::string_iterator_next(x_2);
 x_1 = x_12;
+x_2 = x_14;
 goto _start;
 }
 else
 {
-obj* x_16; 
+obj* x_17; 
 lean::dec(x_1);
-x_16 = lean::alloc_cnstr(1, 1, 0);
-lean::cnstr_set(x_16, 0, x_2);
-return x_16;
+x_17 = lean::alloc_cnstr(1, 1, 0);
+lean::cnstr_set(x_17, 0, x_2);
+return x_17;
 }
 }
 }
 else
 {
-obj* x_19; 
+obj* x_20; 
 lean::dec(x_1);
 lean::dec(x_2);
-x_19 = lean::box(0);
-return x_19;
+x_20 = lean::box(0);
+return x_20;
 }
 }
 }

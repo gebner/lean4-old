@@ -276,7 +276,7 @@ private def find_core (c : char) : ℕ → string.iterator → option string.ite
 | 0 it := none
 | (n+1) it := if ¬ it.has_next then none else
         if it.curr = c then some it else
-        find_core n it
+        find_core n it.next
 
 def string.find (c : char) (s : string) : option string.iterator :=
 find_core c s.length s.mk_iterator

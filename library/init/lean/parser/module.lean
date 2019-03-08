@@ -28,6 +28,7 @@ instance module_parser_config_coe : has_coe module_parser_config command_parser_
 structure module_parser_output :=
 (cmd : syntax)
 (messages : message_log)
+(end_pos : parsec.position)
 -- to access the profile data inside
 (cache : parser_cache)
 
@@ -57,7 +58,8 @@ namespace module
 def yield_command (cmd : syntax) : module_parser_m unit :=
 do st ← get,
    cache ← monad_lift get_cache,
-   yield {cmd := cmd, messages := st.messages, cache := cache},
+   end_pos ← lean.parser.monad_parsec.pos,
+   yield {cmd := cmd, messages := st.messages, end_pos := end_pos, cache := cache},
    put {st with messages := message_log.empty}
 
 @[derive parser.has_view parser.has_tokens]

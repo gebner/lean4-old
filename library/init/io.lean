@@ -73,6 +73,8 @@ iterate a $ λ r, do
 constant put_str (s: @& string) : eio unit
 @[extern 1 "lean_io_prim_get_line"]
 constant get_line : eio string
+@[extern 2 "lean_io_prim_get_bytes"]
+constant get_bytes (nbytes : nat) : eio string
 @[extern 4 "lean_io_prim_handle_mk"]
 constant handle.mk (s : @& string) (m : mode) (bin : bool := ff) : eio handle
 @[extern 2 "lean_io_prim_handle_is_eof"]
@@ -104,6 +106,12 @@ put_str ∘ to_string $ s
 
 def println {α} [has_to_string α] (s : α) : m unit :=
 print s *> put_str "\n"
+
+def get_line : m string :=
+prim.lift_eio prim.get_line
+
+def get_bytes : nat → m string :=
+prim.lift_eio ∘ prim.get_bytes
 end
 
 namespace fs
@@ -236,6 +244,26 @@ meta instance eio_unit.has_eval {ε : Type} [has_to_string ε] : has_eval (excep
    | except.error e := io.println' ("Error: " ++ to_string e)⟩
 
 local attribute [reducible] io
+
+@[noinline, extern 4 "lean_io_wait_any"]
+def io.wait_any {α : Type} : Π (xs : list (task α)), xs ≠ [] → io (task α)
+| (x::_) _ := pure x
+| []     h := absurd rfl h
+
+structure btask := {α : Type u} (t : task α)
+
+@[noinline, extern 2 "lean_io_wait_any_2"]
+def io.wait_any' (xs : list btask) : io unit :=
+pure ()
+
+@[noinline, extern 3 "lean_task_has_finished"]
+def task.has_finished {α : Type u} (t : task α) : io bool :=
+pure tt
+
+@[noinline, extern 3 "lean_io_mk_task"]
+def io.mk_task {α : Type} (f : io α) : io (task α) :=
+λ s, (task.pure (f s).1, s)
+
 /-- A variant of `coroutine` on top of `io`
     TODO(Leo): replace `state_t io.real_world id` with `io` as soon as we fix inductive_cmd
 -/

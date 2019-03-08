@@ -156,6 +156,7 @@ int getopt_long(int argc, char *in_argv[], const char *optstring, const option *
 using namespace lean; // NOLINT
 
 object * lean_process_file(object * filename, object * contents, uint8 json, object * world);
+object * lean_server_run(object * stdin, object * stdout, object * world);
 
 #ifndef LEAN_SERVER_DEFAULT_MAX_MEMORY
 #define LEAN_SERVER_DEFAULT_MAX_MEMORY 1024
@@ -196,11 +197,11 @@ static void display_help(std::ostream & out) {
     std::cout << "  --tstack=num -s    thread stack size in Kb\n";
 #endif
     std::cout << "  --deps             just print dependencies of a Lean input\n";
+    std::cout << "  --server           start lean in server mode\n";
+    std::cout << "  --server=file      start lean in server mode, redirecting standard input from the specified file (for debugging)\n";
 #if defined(LEAN_JSON)
     std::cout << "  --path             display the path used for finding Lean libraries and extensions\n";
     std::cout << "  --json             print JSON-formatted structured error messages\n";
-    std::cout << "  --server           start lean in server mode\n";
-    std::cout << "  --server=file      start lean in server mode, redirecting standard input from the specified file (for debugging)\n";
 #endif
     std::cout << "  --new-frontend     use new frontend\n";
     std::cout << "  --profile          display elaboration/type checking time for each definition/theorem\n";
@@ -224,10 +225,10 @@ static struct option g_long_options[] = {
     {"deps",         no_argument,       0, 'd'},
     {"timeout",      optional_argument, 0, 'T'},
     {"cpp",          optional_argument, 0, 'c'},
+    {"server",       optional_argument, 0, 'S'},
 #if defined(LEAN_JSON)
     {"json",         no_argument,       0, 'J'},
     {"path",         no_argument,       0, 'p'},
-    {"server",       optional_argument, 0, 'S'},
 #endif
     {"new-frontend", optional_argument, 0, 'n'},
 #if defined(LEAN_MULTI_THREAD)
@@ -320,6 +321,7 @@ int main(int argc, char ** argv) {
     unsigned trust_lvl = LEAN_BELIEVER_TRUST_LEVEL + 1;
     bool only_deps = false;
     bool new_frontend = false;
+    bool server = false;
     // unsigned num_threads    = 0;
 #if defined(LEAN_MULTI_THREAD)
     // num_threads = hardware_concurrency();
@@ -387,6 +389,12 @@ int main(int argc, char ** argv) {
                     return 1;
                 }
                 break;
+            case 'S':
+                server = true;
+                opts = opts.update("server", true);
+                opts = opts.update(lean::name{"trace", "as_messages"}, true);
+                if (optarg) server_in = optional<std::string>(optarg);
+                break;
 #if defined(LEAN_JSON)
             case 'J':
                 opts = opts.update(lean::name{"trace", "as_messages"}, true);
@@ -445,6 +453,23 @@ int main(int argc, char ** argv) {
     scope_global_ios scope_ios(ios);
     type_context_old trace_ctx(env, opts);
     scope_trace_env scope_trace(env, opts, trace_ctx);
+
+    if (server) {
+        scoped_task_manager tmanager(hardware_concurrency());
+        std::unique_ptr<std::ifstream> file_in;
+        if (server_in) {
+            file_in.reset(new std::ifstream(*server_in));
+            if (!file_in->is_open()) {
+                std::cerr << "cannot open file " << *server_in << std::endl;
+                return 1;
+            }
+            std::cin.rdbuf(file_in->rdbuf());
+        }
+        object * stdin = box(0); // HACK(gabriel): handles not yet implemented
+        object * stdout = box(0); // HACK(gabriel): handles not yet implemented
+        object_ref res { lean_server_run(stdin, stdout, box(0)) };
+        return 0;
+    }
 
     std::string mod_fn, contents;
     if (use_stdin) {

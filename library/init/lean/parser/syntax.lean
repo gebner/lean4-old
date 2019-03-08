@@ -39,7 +39,7 @@ structure syntax_node_kind :=
     This node kind is special-cased by `syntax.format` to be printed as brackets `[...]` without a node kind. -/
 @[pattern] def no_kind : syntax_node_kind := ⟨`lean.parser.no_kind⟩
 
-/-- A hygiene marker introduced by a macro expansion. -/
+/-- A hygiene .marker introduced by a macro expansion. -/
 @[derive decidable_eq has_to_format]
 def macro_scope := nat
 abbreviation macro_scopes := list macro_scope

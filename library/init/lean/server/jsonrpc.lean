@@ -11,27 +11,27 @@ variables {m : Type → Type} {ε : Type} [monad_io m] [monad_except ε m]
 def read_header (h : io.fs.handle) : ℕ → m (list (string × string))
 | 0 := throw ↑"maximum header length exceeded"
 | (n+1) := do
-  l ← h.get_line,
-  if l = "\x15\n" then
+  l ← io.get_line, -- HACK(gabriel): handles not yet implemented
+  if l = "\x0d" then
     pure []
   else do
-    some colon ← pure (l.find ':') | throw ↑"no : found in header",
-    some key ← pure (l.mk_iterator.extract colon) | throw ↑"no key before :",
-    some value ← pure (colon.next.extract l.mk_iterator.to_end.prev) | throw ↑"invalid value",
+    some colon ← pure (l.find ':') | throw ↑("no `:` found in header: " ++ l),
+    some key ← pure (l.mk_iterator.extract colon) | throw ↑("no key before `:`: `" ++ l),
+    some value ← pure (colon.next.extract l.mk_iterator.to_end.prev) | throw ↑("invalid value: " ++ l),
     rest ← read_header n,
     pure ((key,value) :: rest)
 
 def read_msg_raw (h : io.fs.handle) : m json := do
 hdr ← read_header h 100,
 some bytes ← pure ((hdr.lookup "Content-Length").map string.to_nat) | throw ↑"no Content-Length header",
-content ← h.get_line, -- HACK(gabriel): we need to read `bytes` bytes as a UTF-8 string
+content ← io.get_bytes bytes, -- HACK(gabriel): read from handle
 match json.parse content with
 | (except.error e) := throw ↑e
 | (except.ok j) := pure j
 
 def mk_msg_raw (msg : json) : string :=
-let json_string := json.dump msg ++ "\x15\n", len := json_string.utf8_length in
-"Content-Length: " ++ to_string len ++ "\x15\n\x15\n" ++ json_string
+let json_string := json.dump msg ++ "\x0d\n", len := json_string.utf8_length in
+"Content-Length: " ++ to_string len ++ "\x0d\n\x0d\n" ++ json_string
 
 def write_msg_raw (h : io.fs.handle) (msg : json) : m unit :=
 -- h.write (mk_msg_raw msg)
@@ -43,14 +43,15 @@ local infix `⇒ `:65 := mk_field
 inductive request_id
 | str (s : string)
 | num (n : json_number)
+| null
 
 namespace request_id
 
 instance : has_to_json request_id :=
-⟨λ r, match r with str s := s | num n := json.num n⟩
+⟨λ r, match r with str s := s | num n := json.num n | null := json.null⟩
 
 instance : has_from_json request_id :=
-⟨λ j, match j with json.num n := num n | json.str s := str s | _ := none⟩
+⟨λ j, match j with json.num n := num n | json.str s := str s | json.null := null | _ := none⟩
 
 end request_id
 
