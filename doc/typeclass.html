@@ -1,0 +1,651 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Type classes - Lean Manual</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <link rel="stylesheet" href="css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="whatIsLean.html"><strong aria-hidden="true">1.</strong> What is Lean</a></li><li class="chapter-item expanded "><a href="tour.html"><strong aria-hidden="true">2.</strong> Tour of Lean</a></li><li class="chapter-item expanded "><a href="setup.html"><strong aria-hidden="true">3.</strong> Setting Up Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="quickstart.html"><strong aria-hidden="true">3.1.</strong> Quickstart</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Language Manual</li><li class="chapter-item expanded "><a href="deptypes.html"><strong aria-hidden="true">4.</strong> Dependent Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="simptypes.html"><strong aria-hidden="true">4.1.</strong> Simple Type Theory</a></li><li class="chapter-item expanded "><a href="typeobjs.html"><strong aria-hidden="true">4.2.</strong> Types as objects</a></li><li class="chapter-item expanded "><a href="funabst.html"><strong aria-hidden="true">4.3.</strong> Function Abstraction and Evaluation</a></li><li class="chapter-item expanded "><a href="introdef.html"><strong aria-hidden="true">4.4.</strong> Introducing Definitions</a></li><li class="chapter-item expanded "><a href="dep.html"><strong aria-hidden="true">4.5.</strong> What makes dependent type theory dependent?</a></li></ol></li><li class="chapter-item expanded "><a href="organization.html"><strong aria-hidden="true">5.</strong> Organizational features</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sections.html"><strong aria-hidden="true">5.1.</strong> Sections</a></li><li class="chapter-item expanded "><a href="namespaces.html"><strong aria-hidden="true">5.2.</strong> Namespaces</a></li><li class="chapter-item expanded "><a href="implicit.html"><strong aria-hidden="true">5.3.</strong> Implicit Arguments</a></li><li class="chapter-item expanded "><a href="autobound.html"><strong aria-hidden="true">5.4.</strong> Auto Bound Implicit Arguments</a></li></ol></li><li class="chapter-item expanded "><a href="decltypes.html"><strong aria-hidden="true">6.</strong> Declaring New Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="enum.html"><strong aria-hidden="true">6.1.</strong> Enumerated Types</a></li><li class="chapter-item expanded "><a href="inductive.html"><strong aria-hidden="true">6.2.</strong> Inductive Types</a></li><li class="chapter-item expanded "><a href="struct.html"><strong aria-hidden="true">6.3.</strong> Structures</a></li><li class="chapter-item expanded "><a href="typeclass.html" class="active"><strong aria-hidden="true">6.4.</strong> Type classes</a></li><li class="chapter-item expanded "><a href="unifhint.html"><strong aria-hidden="true">6.5.</strong> Unification Hints</a></li></ol></li><li class="chapter-item expanded "><a href="builtintypes.html"><strong aria-hidden="true">7.</strong> Builtin Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="nat.html"><strong aria-hidden="true">7.1.</strong> Natural number</a></li><li class="chapter-item expanded "><a href="int.html"><strong aria-hidden="true">7.2.</strong> Integer</a></li><li class="chapter-item expanded "><a href="uint.html"><strong aria-hidden="true">7.3.</strong> Fixed precision unsigned integer</a></li><li class="chapter-item expanded "><a href="float.html"><strong aria-hidden="true">7.4.</strong> Float</a></li><li class="chapter-item expanded "><a href="array.html"><strong aria-hidden="true">7.5.</strong> Array</a></li><li class="chapter-item expanded "><a href="list.html"><strong aria-hidden="true">7.6.</strong> List</a></li><li class="chapter-item expanded "><a href="char.html"><strong aria-hidden="true">7.7.</strong> Character</a></li><li class="chapter-item expanded "><a href="string.html"><strong aria-hidden="true">7.8.</strong> String</a></li><li class="chapter-item expanded "><a href="option.html"><strong aria-hidden="true">7.9.</strong> Option</a></li><li class="chapter-item expanded "><a href="thunk.html"><strong aria-hidden="true">7.10.</strong> Thunk</a></li><li class="chapter-item expanded "><a href="task.html"><strong aria-hidden="true">7.11.</strong> Task and Thread</a></li></ol></li><li class="chapter-item expanded "><a href="functions.html"><strong aria-hidden="true">8.</strong> Functions</a></li><li class="chapter-item expanded "><a href="tactics.html"><strong aria-hidden="true">9.</strong> Tactics</a></li><li class="chapter-item expanded "><a href="syntax.html"><strong aria-hidden="true">10.</strong> Syntax Extensions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="do.html"><strong aria-hidden="true">10.1.</strong> The do Notation</a></li><li class="chapter-item expanded "><a href="stringinterp.html"><strong aria-hidden="true">10.2.</strong> String Interpolation</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Other</li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">11.</strong> Frequently Asked Questions</a></li><li class="chapter-item expanded "><a href="lean3changes.html"><strong aria-hidden="true">12.</strong> Significant Changes from Lean 3</a></li><li class="chapter-item expanded "><a href="syntax_highlight_in_latex.html"><strong aria-hidden="true">13.</strong> Syntax Highlighting Lean in LaTeX</a></li><li class="chapter-item expanded affix "><li class="part-title">Development</li><li class="chapter-item expanded "><a href="commit_convention.html"><strong aria-hidden="true">14.</strong> Commit Convention</a></li><li class="chapter-item expanded "><a href="make/index.html"><strong aria-hidden="true">15.</strong> Building Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="make/ubuntu-16.04.html"><strong aria-hidden="true">15.1.</strong> Ubuntu Setup</a></li><li class="chapter-item expanded "><a href="make/osx-10.9.html"><strong aria-hidden="true">15.2.</strong> macOS Setup</a></li><li class="chapter-item expanded "><a href="make/msys2.html"><strong aria-hidden="true">15.3.</strong> Windows Setup</a></li><li class="chapter-item expanded "><a href="make/nix.html"><strong aria-hidden="true">15.4.</strong> Nix Setup (Experimental)</a></li></ol></li><li class="chapter-item expanded "><a href="mdbook.html"><strong aria-hidden="true">16.</strong> Building This Manual</a></li><li class="chapter-item expanded "><a href="fixing_tests.html"><strong aria-hidden="true">17.</strong> Fixing Tests</a></li><li class="chapter-item expanded "><a href="debugging.html"><strong aria-hidden="true">18.</strong> Debugging</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Lean Manual</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                        <a href="https://github.com/leanprover/lean4" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#type-classes" id="type-classes">Type classes</a></h1>
+<p>Typeclasses were introduced as a principled way of enabling
+ad-hoc polymorphism in functional programming languages. We first observe that it
+would be easy to implement an ad-hoc polymorphic function (such as addition) if the
+function simply took the type-specific implementation of addition as an argument
+and then called that implementation on the remaining arguments. For example,
+suppose we declare a structure in Lean to hold implementations of addition</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span>structure Add (a : Type) where
+  add : a -&gt; a -&gt; a
+
+#check @Add.add
+-- Add.add : {a : Type} → Add a → a → a → a
+<span class="boring">end Ex
+</span></code></pre>
+<p>In the above Lean code, the field <code>add</code> has type
+<code>Add.add : {α : Type} → Add α → α → α → α</code>
+where the curly braces around the type <code>a</code> mean that it is an implicit argument.
+We could implement <code>double</code> by</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span><span class="boring">structure Add (a : Type) where
+</span><span class="boring"> add : a -&gt; a -&gt; a
+</span>def double (s : Add a) (x : a) : a :=
+  s.add x x
+
+#eval double { add := Nat.add } 10
+-- 20
+
+#eval double { add := Nat.mul } 10
+-- 100
+
+#eval double { add := Int.add } 10
+-- 20
+
+<span class="boring">end Ex
+</span></code></pre>
+<p>Note that you can double a natural number <code>n</code> by <code>double { add := Nat.add } n</code>.
+Of course, it would be highly cumbersome for users to manually pass the
+implementations around in this way.
+Indeed, it would defeat most of the potential benefits of ad-hoc
+polymorphism.</p>
+<p>The main idea behind typeclasses is to make arguments such as <code>Add a</code> implicit,
+and to use a database of user-defined instances to synthesize the desired instances
+automatically through a process known as typeclass resolution. In Lean, by changing
+<code>structure</code> to <code>class</code> in the example above, the type of <code>Add.add</code> becomes</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span>class Add (a : Type) where
+  add : a -&gt; a -&gt; a
+
+#check @Add.add
+-- Add.add : {a : Type} → [self : Add a] → a → a → a
+<span class="boring">end Ex
+</span></code></pre>
+<p>where the square brackets indicate that the argument of type <code>Add a</code> is <em>instance implicit</em>,
+i.e. that it should be synthesized using typeclass resolution. This version of
+<code>add</code> is the Lean analogue of the Haskell term <code>add :: Add a =&gt; a -&gt; a -&gt; a</code>.
+Similarly, we can register an instance by</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span><span class="boring">class Add (a : Type) where
+</span><span class="boring"> add : a -&gt; a -&gt; a
+</span>instance : Add Nat where
+  add := Nat.add
+
+<span class="boring">end Ex
+</span></code></pre>
+<p>Then for <code>n : Nat</code> and <code>m : Nat</code>, the term <code>Add.add n m</code> triggers typeclass resolution with the goal
+of <code>Add Nat</code>, and typeclass resolution will synthesize the instance above. In
+general, instances may depend on other instances in complicated ways. For example,
+you can declare an (anonymous) instance stating that if <code>a</code> has addition, then <code>Array a</code>
+has addition:</p>
+<pre><code class="language-lean">instance [Add a] : Add (Array a) where
+  add x y := Array.zipWith x y (. + .)
+
+#eval Add.add #[1, 2] #[3, 4]
+-- #[4, 6]
+
+#eval #[1, 2] + #[3, 4]
+-- #[4, 6]
+</code></pre>
+<p>Note that <code>x + y</code> is notation for <code>Add.add x y</code> in Lean.</p>
+<p>The example above demonstrates how type classes are used to overload notation.
+Now, we explore another application. We often need an arbitrary element of a given type.
+Recall that types may not have any elements in Lean.
+It often happens that we would like a definition to return an arbitrary element in a &quot;corner case.&quot;
+For example, we may like the expression <code>head xs</code> to be of type <code>a</code> when <code>xs</code> is of type <code>List a</code>.
+Similarly, many theorems hold under the additional assumption that a type is not empty.
+For example, if <code>a</code> is a type, <code>exists x : a, x = x</code> is true only if <code>a</code> is not empty.
+The standard library defines a type class <code>Inhabited</code> to enable type class inference to infer a
+&quot;default&quot; or &quot;arbitrary&quot; element of an inhabited type.
+Let us start with the first step of the program above, declaring an appropriate class:</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span>class Inhabited (a : Type u) where
+  default : a
+
+#check @Inhabited.default
+-- Inhabited.default : {a : Type u} → [self : Inhabited a] → a
+<span class="boring">end Ex
+</span></code></pre>
+<p>Note <code>Inhabited.default</code> doesn't have any explicit argument.</p>
+<p>An element of the class <code>Inhabited a</code> is simply an expression of the form <code>Inhabited.mk x</code>, for some element <code>x : a</code>.
+The projection <code>Inhabited.default</code> will allow us to &quot;extract&quot; such an element of <code>a</code> from an element of <code>Inhabited a</code>.
+Now we populate the class with some instances:</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span><span class="boring">class Inhabited (a : Type _) where
+</span><span class="boring"> default : a
+</span>instance : Inhabited Bool where
+  default := true
+
+instance : Inhabited Nat where
+  default := 0
+
+instance : Inhabited Unit where
+  default := ()
+
+instance : Inhabited Prop where
+  default := True
+
+#eval (Inhabited.default : Nat)
+-- 0
+
+#eval (Inhabited.default : Bool)
+-- true
+<span class="boring">end Ex
+</span></code></pre>
+<p>You can use the command <code>export</code> to create the alias <code>default</code> for <code>Inhabited.default</code></p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span><span class="boring">class Inhabited (a : Type _) where
+</span><span class="boring"> default : a
+</span><span class="boring">instance : Inhabited Bool where
+</span><span class="boring"> default := true
+</span><span class="boring">instance : Inhabited Nat where
+</span><span class="boring"> default := 0
+</span><span class="boring">instance : Inhabited Unit where
+</span><span class="boring"> default := ()
+</span><span class="boring">instance : Inhabited Prop where
+</span><span class="boring"> default := True
+</span>export Inhabited (default)
+
+#eval (default : Nat)
+-- 0
+
+#eval (default : Bool)
+-- true
+<span class="boring">end Ex
+</span></code></pre>
+<p>Sometimes we want to think of the default element of a type as being an <em>arbitrary</em> element, whose specific value should not play a role in our proofs.
+For that purpose, we can write <code>arbitrary</code> instead of <code>default</code>. We define <code>arbitrary</code> as an <em>opaque</em> constant.
+Opaque constants are never unfolded by the type checker.</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span><span class="boring">export Inhabited (default)
+</span>theorem defNatEq0 : (default : Nat) = 0 :=
+  rfl
+
+constant arbitrary [Inhabited a] : a :=
+  Inhabited.default
+
+-- theorem arbitraryNatEq0 : (arbitrary : Nat) = 0 :=
+--   rfl
+/-
+error: type mismatch
+  rfl
+has type
+  arbitrary = arbitrary
+but is expected to have type
+  arbitrary = 0
+-/
+<span class="boring">end Ex
+</span></code></pre>
+<p>The theorem <code>defNatEq0</code> type checks because the type checker can unfold <code>(default : Nat)</code> and reduce it to <code>0</code>. This is not the case in the theorem <code>arbitraryNatEq0</code> because <code>arbitrary</code> is an opaque constant.</p>
+<h2><a class="header" href="#chaining-instances" id="chaining-instances">Chaining Instances</a></h2>
+<p>If that were the extent of type class inference, it would not be all that impressive;
+it would be simply a mechanism of storing a list of instances for the elaborator to find in a lookup table.
+What makes type class inference powerful is that one can <em>chain</em> instances. That is,
+an instance declaration can in turn depend on an implicit instance of a type class.
+This causes class inference to chain through instances recursively, backtracking when necessary, in a Prolog-like search.</p>
+<p>For example, the following definition shows that if two types <code>a</code> and <code>b</code> are inhabited, then so is their product:</p>
+<pre><code class="language-lean">instance [Inhabited a] [Inhabited b] : Inhabited (a × b) where
+  default := (arbitrary, arbitrary)
+</code></pre>
+<p>With this added to the earlier instance declarations, type class instance can infer, for example, a default element of <code>Nat × Bool</code>:</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span><span class="boring">class Inhabited (a : Type u) where
+</span><span class="boring"> default : a
+</span><span class="boring">instance : Inhabited Bool where
+</span><span class="boring"> default := true
+</span><span class="boring">instance : Inhabited Nat where
+</span><span class="boring"> default := 0
+</span><span class="boring">constant arbitrary [Inhabited a] : a :=
+</span><span class="boring"> Inhabited.default
+</span>instance [Inhabited a] [Inhabited b] : Inhabited (a × b) where
+  default := (arbitrary, arbitrary)
+
+#eval (arbitrary : Nat × Bool)
+-- (0, true)
+<span class="boring">end Ex
+</span></code></pre>
+<p>Similarly, we can inhabit type function with suitable constant functions:</p>
+<pre><code class="language-lean">instance [Inhabited b] : Inhabited (a -&gt; b) where
+  default := fun _ =&gt; arbitrary
+</code></pre>
+<p>As an exercise, try defining default instances for other types, such as <code>List</code> and <code>Sum</code> types.</p>
+<p>The Lean standard library contains the definition <code>inferInstance</code>. It has type <code>{α : Sort u} → [i : α] → α</code>,
+and is useful for triggering the type class resolution procedure when the expected type is an instance.</p>
+<pre><code class="language-lean">#check (inferInstance : Inhabited Nat) -- Inhabited Nat
+
+def foo : Inhabited (Nat × Nat) :=
+  inferInstance
+
+theorem ex : foo.default = (arbitrary, arbitrary) :=
+  rfl
+</code></pre>
+<p>You can use the command <code>#print</code> to inspect how simple <code>inferInstance</code> is.</p>
+<pre><code class="language-lean">#print inferInstance
+</code></pre>
+<h2><a class="header" href="#tostring" id="tostring">ToString</a></h2>
+<p>The polymorphic method <code>toString</code> has type <code>{α : Type u} → [ToString α] → α → String</code>. You implement the instance
+for your own types and use chaining to convert complex values into strings. Lean comes with <code>ToString</code> instances
+for most builtin types.</p>
+<pre><code class="language-lean">structure Person where
+  name : String
+  age  : Nat
+
+instance : ToString Person where
+  toString p := p.name ++ &quot;@&quot; ++ toString p.age
+
+#eval toString { name := &quot;Leo&quot;, age := 542 : Person }
+#eval toString ({ name := &quot;Daniel&quot;, age := 18 : Person }, &quot;hello&quot;)
+</code></pre>
+<h2><a class="header" href="#numerals" id="numerals">Numerals</a></h2>
+<p>Numerals are polymorphic in Lean. You can use a numeral (e.g., <code>2</code>) to denote an element of any type that implements
+the type class <code>OfNat</code>.</p>
+<pre><code class="language-lean">structure Rational where
+  num : Int
+  den : Nat
+  inv : den ≠ 0
+
+instance : OfNat Rational n where
+  ofNat := { num := n, den := 1, inv := by decide }
+
+instance : ToString Rational where
+  toString r := s!&quot;{r.num}/{r.den}&quot;
+
+#eval (2 : Rational) -- 2/1
+
+#check (2 : Rational) -- Rational
+#check (2 : Nat)      -- Nat
+</code></pre>
+<p>Lean elaborate the terms <code>(2 : Nat)</code> and <code>(2 : Rational)</code> as
+<code>OfNat.ofNat Nat 2 (instOfNatNat 2)</code> and
+<code>OfNat.ofNat Rational 2 (instOfNatRational 2)</code> respectively.
+We say the numerals <code>2</code> occurring in the elaborated terms are <em>raw</em> natural numbers.
+You can input the raw natural number <code>2</code> using the macro <code>nat_lit 2</code>.</p>
+<pre><code class="language-lean">#check nat_lit 2  -- Nat
+</code></pre>
+<p>Raw natural numbers are <em>not</em> polymorphic.</p>
+<p>The <code>OfNat</code> instance is parametric on the numeral. So, you can define instances for particular numerals.
+The second argument is often a variable as in the example above, or a <em>raw</em> natural number.</p>
+<pre><code class="language-lean">class Monoid (α : Type u) where
+  unit : α
+  op   : α → α → α
+
+instance [s : Monoid α] : OfNat α (nat_lit 1) where
+  ofNat := s.unit
+
+def getUnit [Monoid α] : α :=
+  1
+</code></pre>
+<h2><a class="header" href="#output-parameters" id="output-parameters">Output parameters</a></h2>
+<p>By default, Lean only tries to synthesize an instance <code>Inhabited T</code> when the term <code>T</code> is known and does not
+contain missing parts. The following command produces the error
+&quot;failed to create type class instance for <code>Inhabited (Nat × ?m.1499)</code>&quot; because the type has a missing part (i.e., the <code>_</code>).</p>
+<pre><code class="language-lean">#check_failure (inferInstance : Inhabited (Nat × _))
+</code></pre>
+<p>You can view the parameter of the type class <code>Inhabited</code> as an <em>input</em> value for the type class synthesizer.
+When a type class has multiple parameters, you can mark some of them as output parameters.
+Lean will start type class synthesizer even when these parameters have missing parts.
+In the following example, we use output parameters to define a <em>heterogeneous</em> polymorphic
+multiplication.</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span>class HMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+  hMul : α → β → γ
+
+export HMul (hMul)
+
+instance : HMul Nat Nat Nat where
+  hMul := Nat.mul
+
+instance : HMul Nat (Array Nat) (Array Nat) where
+  hMul a bs := bs.map (fun b =&gt; hMul a b)
+
+#eval hMul 4 3           -- 12
+#eval hMul 4 #[2, 3, 4]  -- #[8, 12, 16]
+<span class="boring">end Ex
+</span></code></pre>
+<p>The parameters <code>α</code> and <code>β</code> are considered input parameters and <code>γ</code> an output one.
+Given an application <code>hMul a b</code>, after types of <code>a</code> and <code>b</code> are known, the type class
+synthesizer is invoked, and the resulting type is obtained from the output parameter <code>γ</code>.
+In the example above, we defined two instances. The first one is the homogeneous
+multiplication for natural numbers. The second is the scalar multiplication for arrays.
+Note that, you chain instances and generalize the second instance.</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span>class HMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+  hMul : α → β → γ
+
+export HMul (hMul)
+
+instance : HMul Nat Nat Nat where
+  hMul := Nat.mul
+
+instance : HMul Int Int Int where
+  hMul := Int.mul
+
+instance [HMul α β γ] : HMul α (Array β) (Array γ) where
+  hMul a bs := bs.map (fun b =&gt; hMul a b)
+
+#eval hMul 4 3                    -- 12
+#eval hMul 4 #[2, 3, 4]           -- #[8, 12, 16]
+#eval hMul (-2) #[3, -1, 4]       -- #[-6, 2, -8]
+#eval hMul 2 #[#[2, 3], #[0, 4]]  -- #[#[4, 6], #[0, 8]]
+<span class="boring">end Ex
+</span></code></pre>
+<p>You can use our new scalar array multiplication instance on arrays of type <code>Array β</code>
+with a scalar of type <code>α</code> whenever you have an instance <code>HMul α β γ</code>.
+In the last <code>#eval</code>, note that the instance was used twice on an array of arrays.</p>
+<h2><a class="header" href="#default-instances" id="default-instances">Default instances</a></h2>
+<p>In the class <code>HMul</code>, the parameters <code>α</code> and <code>β</code> are treated as input values.
+Thus, type class synthesis only starts after these two types are known. This may often
+be too restrictive.</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span>class HMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+  hMul : α → β → γ
+
+export HMul (hMul)
+
+instance : HMul Int Int Int where
+  hMul := Int.mul
+
+def xs : List Int := [1, 2, 3]
+
+-- Error &quot;failed to create type class instance for HMul Int ?m.1767 (?m.1797 x)&quot;
+#check_failure fun y =&gt; xs.map (fun x =&gt; hMul x y)
+<span class="boring">end Ex
+</span></code></pre>
+<p>The instance <code>HMul</code> is not synthesized by Lean because the type of <code>y</code> has not been provided.
+However, it is natural to assume that the type of <code>y</code> and <code>x</code> should be the same in
+this kind of situation. We can achieve exactly that using <em>default instances</em>.</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span>class HMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+  hMul : α → β → γ
+
+export HMul (hMul)
+
+@[defaultInstance]
+instance : HMul Int Int Int where
+  hMul := Int.mul
+
+def xs : List Int := [1, 2, 3]
+
+#check fun y =&gt; xs.map (fun x =&gt; hMul x y)  -- Int -&gt; List Int
+<span class="boring">end Ex
+</span></code></pre>
+<p>By tagging the instance above with the attribute <code>defaultInstance</code>, we are instructing Lean
+to use this instance on pending type class synthesis problems.
+The actual Lean implementation defines homogeneous and heterogeneous classes for arithmetical operators.
+Moreover, <code>a+b</code>, <code>a*b</code>, <code>a-b</code>, <code>a/b</code>, and <code>a%b</code> are notations for the heterogeneous versions.
+The instance <code>OfNat Nat n</code> is the default instance for the <code>OfNat</code> class. This is why the numeral
+<code>2</code> has type <code>Nat</code> when the expected type is not known. You can define default instances with higher
+priority to override the builtin ones.</p>
+<pre><code class="language-lean">structure Rational where
+  num : Int
+  den : Nat
+  inv : den ≠ 0
+
+@[defaultInstance 1]
+instance : OfNat Rational n where
+  ofNat := { num := n, den := 1, inv := by decide }
+
+instance : ToString Rational where
+  toString r := s!&quot;{r.num}/{r.den}&quot;
+
+#check 2 -- Rational
+</code></pre>
+<p>Priorities are also useful to control the interaction between different default instances.
+For example, suppose <code>xs</code> has type <code>α</code>, when elaboration <code>xs.map (fun x =&gt; 2 * x)</code>, we want the homogeneous instance for multiplication
+to have higher priority than the default instance for <code>OfNat</code>. This is particularly important when we have implemented only the instance
+<code>HMul α α α</code>, and did not implement <code>HMul Nat α α</code>.
+Now, we reveal how the notation <code>a*b</code> is defined in Lean.</p>
+<pre><code class="language-lean"><span class="boring">namespace Ex
+</span>class OfNat (α : Type u) (n : Nat) where
+  ofNat : α
+
+@[defaultInstance]
+instance (n : Nat) : OfNat Nat n where
+  ofNat := n
+
+class HMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+  hMul : α → β → γ
+
+class Mul (α : Type u) where
+  mul : α → α → α
+
+@[defaultInstance 10]
+instance [Mul α] : HMul α α α where
+  hMul a b := Mul.mul a b
+
+infixl:70 &quot; * &quot;  =&gt; HMul.hMul
+<span class="boring">end Ex
+</span></code></pre>
+<p>The <code>Mul</code> class is convenient for types that only implement the homogeneous multiplication.</p>
+<h2><a class="header" href="#scoped-instances" id="scoped-instances">Scoped Instances</a></h2>
+<p>TODO</p>
+<h2><a class="header" href="#local-instances" id="local-instances">Local Instances</a></h2>
+<p>TODO</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="struct.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="unifhint.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="struct.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="unifhint.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

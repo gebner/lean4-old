@@ -1,0 +1,355 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Functions - Lean Manual</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <link rel="stylesheet" href="css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="whatIsLean.html"><strong aria-hidden="true">1.</strong> What is Lean</a></li><li class="chapter-item expanded "><a href="tour.html"><strong aria-hidden="true">2.</strong> Tour of Lean</a></li><li class="chapter-item expanded "><a href="setup.html"><strong aria-hidden="true">3.</strong> Setting Up Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="quickstart.html"><strong aria-hidden="true">3.1.</strong> Quickstart</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Language Manual</li><li class="chapter-item expanded "><a href="deptypes.html"><strong aria-hidden="true">4.</strong> Dependent Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="simptypes.html"><strong aria-hidden="true">4.1.</strong> Simple Type Theory</a></li><li class="chapter-item expanded "><a href="typeobjs.html"><strong aria-hidden="true">4.2.</strong> Types as objects</a></li><li class="chapter-item expanded "><a href="funabst.html"><strong aria-hidden="true">4.3.</strong> Function Abstraction and Evaluation</a></li><li class="chapter-item expanded "><a href="introdef.html"><strong aria-hidden="true">4.4.</strong> Introducing Definitions</a></li><li class="chapter-item expanded "><a href="dep.html"><strong aria-hidden="true">4.5.</strong> What makes dependent type theory dependent?</a></li></ol></li><li class="chapter-item expanded "><a href="organization.html"><strong aria-hidden="true">5.</strong> Organizational features</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sections.html"><strong aria-hidden="true">5.1.</strong> Sections</a></li><li class="chapter-item expanded "><a href="namespaces.html"><strong aria-hidden="true">5.2.</strong> Namespaces</a></li><li class="chapter-item expanded "><a href="implicit.html"><strong aria-hidden="true">5.3.</strong> Implicit Arguments</a></li><li class="chapter-item expanded "><a href="autobound.html"><strong aria-hidden="true">5.4.</strong> Auto Bound Implicit Arguments</a></li></ol></li><li class="chapter-item expanded "><a href="decltypes.html"><strong aria-hidden="true">6.</strong> Declaring New Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="enum.html"><strong aria-hidden="true">6.1.</strong> Enumerated Types</a></li><li class="chapter-item expanded "><a href="inductive.html"><strong aria-hidden="true">6.2.</strong> Inductive Types</a></li><li class="chapter-item expanded "><a href="struct.html"><strong aria-hidden="true">6.3.</strong> Structures</a></li><li class="chapter-item expanded "><a href="typeclass.html"><strong aria-hidden="true">6.4.</strong> Type classes</a></li><li class="chapter-item expanded "><a href="unifhint.html"><strong aria-hidden="true">6.5.</strong> Unification Hints</a></li></ol></li><li class="chapter-item expanded "><a href="builtintypes.html"><strong aria-hidden="true">7.</strong> Builtin Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="nat.html"><strong aria-hidden="true">7.1.</strong> Natural number</a></li><li class="chapter-item expanded "><a href="int.html"><strong aria-hidden="true">7.2.</strong> Integer</a></li><li class="chapter-item expanded "><a href="uint.html"><strong aria-hidden="true">7.3.</strong> Fixed precision unsigned integer</a></li><li class="chapter-item expanded "><a href="float.html"><strong aria-hidden="true">7.4.</strong> Float</a></li><li class="chapter-item expanded "><a href="array.html"><strong aria-hidden="true">7.5.</strong> Array</a></li><li class="chapter-item expanded "><a href="list.html"><strong aria-hidden="true">7.6.</strong> List</a></li><li class="chapter-item expanded "><a href="char.html"><strong aria-hidden="true">7.7.</strong> Character</a></li><li class="chapter-item expanded "><a href="string.html"><strong aria-hidden="true">7.8.</strong> String</a></li><li class="chapter-item expanded "><a href="option.html"><strong aria-hidden="true">7.9.</strong> Option</a></li><li class="chapter-item expanded "><a href="thunk.html"><strong aria-hidden="true">7.10.</strong> Thunk</a></li><li class="chapter-item expanded "><a href="task.html"><strong aria-hidden="true">7.11.</strong> Task and Thread</a></li></ol></li><li class="chapter-item expanded "><a href="functions.html" class="active"><strong aria-hidden="true">8.</strong> Functions</a></li><li class="chapter-item expanded "><a href="tactics.html"><strong aria-hidden="true">9.</strong> Tactics</a></li><li class="chapter-item expanded "><a href="syntax.html"><strong aria-hidden="true">10.</strong> Syntax Extensions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="do.html"><strong aria-hidden="true">10.1.</strong> The do Notation</a></li><li class="chapter-item expanded "><a href="stringinterp.html"><strong aria-hidden="true">10.2.</strong> String Interpolation</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Other</li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">11.</strong> Frequently Asked Questions</a></li><li class="chapter-item expanded "><a href="lean3changes.html"><strong aria-hidden="true">12.</strong> Significant Changes from Lean 3</a></li><li class="chapter-item expanded "><a href="syntax_highlight_in_latex.html"><strong aria-hidden="true">13.</strong> Syntax Highlighting Lean in LaTeX</a></li><li class="chapter-item expanded affix "><li class="part-title">Development</li><li class="chapter-item expanded "><a href="commit_convention.html"><strong aria-hidden="true">14.</strong> Commit Convention</a></li><li class="chapter-item expanded "><a href="make/index.html"><strong aria-hidden="true">15.</strong> Building Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="make/ubuntu-16.04.html"><strong aria-hidden="true">15.1.</strong> Ubuntu Setup</a></li><li class="chapter-item expanded "><a href="make/osx-10.9.html"><strong aria-hidden="true">15.2.</strong> macOS Setup</a></li><li class="chapter-item expanded "><a href="make/msys2.html"><strong aria-hidden="true">15.3.</strong> Windows Setup</a></li><li class="chapter-item expanded "><a href="make/nix.html"><strong aria-hidden="true">15.4.</strong> Nix Setup (Experimental)</a></li></ol></li><li class="chapter-item expanded "><a href="mdbook.html"><strong aria-hidden="true">16.</strong> Building This Manual</a></li><li class="chapter-item expanded "><a href="fixing_tests.html"><strong aria-hidden="true">17.</strong> Fixing Tests</a></li><li class="chapter-item expanded "><a href="debugging.html"><strong aria-hidden="true">18.</strong> Debugging</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Lean Manual</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                        <a href="https://github.com/leanprover/lean4" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#functions" id="functions">Functions</a></h1>
+<p>Functions are the fundamental unit of program execution in any programming language.
+As in other languages, a Lean function has a name, can have parameters and take arguments, and has a body.
+Lean also supports functional programming constructs such as treating functions as values,
+using unnamed functions in expressions, composition of functions to form new functions,
+curried functions, and the implicit definition of functions by way of
+the partial application of function arguments.</p>
+<p>You define functions by using the <code>def</code> keyword followed by its name, a parameter list, return type and its body.
+The parameter list consists of successive parameters that are separated by spaces.
+You can specify an explicit type for each parameter.
+If you do not specify a specific argument type, the compiler tries to infer the type from the function body.
+An error is returned when it cannot be inferred.
+The expression that makes up the function body is typically a compound expression consisting of a number of expressions
+that culminate in a final expression that is the return value.
+The return type is a colon followed by a type and is optional.
+If you do not specify the type of the return value explicitly,
+the compiler tries to determine the return type from the final expression.</p>
+<pre><code class="language-lean">def f x := x + 1
+</code></pre>
+<p>In the previous example, the function name is <code>f</code>, the argument is <code>x</code>, which has type <code>Nat</code>,
+the function body is <code>x + 1</code>, and the return value is of type <code>Nat</code>.
+The following example defines the factorial recursive function using pattern matching.</p>
+<pre><code class="language-lean">def fact x :=
+  match x with
+  | 0   =&gt; 1
+  | n+1 =&gt; (n+1) * fact n
+
+#eval fact 100
+</code></pre>
+<p>By default, Lean only accepts total functions. The <code>partial</code> keyword should be used when Lean cannot
+establish that a function always terminates.</p>
+<pre><code class="language-lean">partial def g (x : Nat) (p : Nat -&gt; Bool) : Nat :=
+  if p x then
+    x
+  else
+    g (x+1) p
+
+#eval g 0 (fun x =&gt; x &gt; 10)
+</code></pre>
+<p>In the previous example, <code>g x p</code> only terminates if there is a <code>y &gt;= x</code> such that <code>p y</code> returns <code>true</code>.
+Of course, <code>g 0 (fun x =&gt; false)</code> never terminates.</p>
+<h1><a class="header" href="#lambda-expressions" id="lambda-expressions">Lambda expressions</a></h1>
+<p>A lambda expression is an unnamed function.
+You define lambda expressions by using the <code>fun</code> keyword. A lambda expression resembles a function definition, except that instead of the <code>:=</code> token,
+the <code>=&gt;</code> token is used to separate the argument list from the function body. As in a regular function definition,
+the argument types can be inferred or specified explicitly, and the return type of the lambda expression is inferred from the type of the
+last expression in the body.</p>
+<pre><code class="language-lean">def twice (f : Nat -&gt; Nat) (x : Nat) : Nat :=
+  f (f x)
+
+#eval twice (fun x =&gt; x + 1) 3
+#eval twice (fun (x : Nat) =&gt; x * 2) 3
+
+#eval List.map (fun x =&gt; x + 1) [1, 2, 3]
+-- [2, 3, 4]
+
+#eval List.map (fun (x, y) =&gt; x + y) [(1, 2), (3, 4)]
+-- [3, 7]
+</code></pre>
+<h1><a class="header" href="#syntax-sugar-for-simple-lambda-expressions" id="syntax-sugar-for-simple-lambda-expressions">Syntax sugar for simple lambda expressions</a></h1>
+<p>Simple functions can be defined using parentheses and <code>.</code> (or <code>·</code>) as a placeholder.</p>
+<pre><code class="language-lean">#check (. + 1)
+-- fun a =&gt; a + 1
+#check (· + 1)
+-- fun a =&gt; a + 1
+#check (2 - .)
+-- fun a =&gt; 2 - a
+#eval [1, 2, 3, 4, 5].foldl (. * .) 1
+-- 120
+
+def h (x y z : Nat) :=
+  x + y + z
+
+#check (h . 1 .)
+-- fun a b =&gt; h a 1 b
+
+#eval [(1, 2), (3, 4), (5, 6)].map (·.1)
+-- [1, 3, 5]
+</code></pre>
+<p>In the previous example, the term <code>(·.1)</code> is syntax sugar for <code>fun x =&gt; x.1</code>. Note that, the ASCII version <code>(..1)</code>
+is not supported because <code>..</code> is a reserved symbol.</p>
+<h1><a class="header" href="#pipelining" id="pipelining">Pipelining</a></h1>
+<p>Pipelining enables function calls to be chained together as successive operations. Pipelining works as follows:</p>
+<pre><code class="language-lean">def add1 x := x + 1
+def times2 x := x * 2
+
+#eval times2 (add1 100)
+#eval 100 |&gt; add1 |&gt; times2
+#eval times2 &lt;| add1 &lt;| 100
+</code></pre>
+<p>The result of the previous <code>#eval</code> commands is 202.
+The forward pipeline <code>|&gt;</code> operator takes a function and an argument and return a value.
+In contrast, the backward pipeline <code>&lt;|</code> operator takes an argument and a function and returns a value.
+These operators are useful for minimizing the number of parentheses.</p>
+<pre><code class="language-lean">def add1Times3FilterEven (xs : List Nat) :=
+  List.filter (. % 2 == 0) (List.map (. * 3) (List.map (. + 1) xs))
+
+#eval add1Times3FilterEven [1, 2, 3, 4]
+-- [6, 12]
+
+-- Define the same function using pipes
+def add1Times3FilterEven' (xs : List Nat) :=
+  xs |&gt; List.map (. + 1) |&gt; List.map (. * 3) |&gt; List.filter (. % 2 == 0)
+
+#eval add1Times3FilterEven' [1, 2, 3, 4]
+-- [6, 12]
+</code></pre>
+<p>Lean also supports the operator <code>|&gt;.</code> which combines forward pipeline <code>|&gt;</code> operator with the <code>.</code> field notation.</p>
+<pre><code class="language-lean">-- Define the same function using pipes
+def add1Times3FilterEven'' (xs : List Nat) :=
+  xs.map (. + 1) |&gt;.map (. * 3) |&gt;.filter (. % 2 == 0)
+
+#eval add1Times3FilterEven'' [1, 2, 3, 4]
+-- [6, 12]
+</code></pre>
+<p>For users familiar with the Haskell programming language,
+Lean also supports the notation <code>f $ a</code> for the backward pipeline <code>f &lt;| a</code>.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="task.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="tactics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="task.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="tactics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

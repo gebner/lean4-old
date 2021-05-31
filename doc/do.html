@@ -1,0 +1,560 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>The do Notation - Lean Manual</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <link rel="stylesheet" href="css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="whatIsLean.html"><strong aria-hidden="true">1.</strong> What is Lean</a></li><li class="chapter-item expanded "><a href="tour.html"><strong aria-hidden="true">2.</strong> Tour of Lean</a></li><li class="chapter-item expanded "><a href="setup.html"><strong aria-hidden="true">3.</strong> Setting Up Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="quickstart.html"><strong aria-hidden="true">3.1.</strong> Quickstart</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Language Manual</li><li class="chapter-item expanded "><a href="deptypes.html"><strong aria-hidden="true">4.</strong> Dependent Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="simptypes.html"><strong aria-hidden="true">4.1.</strong> Simple Type Theory</a></li><li class="chapter-item expanded "><a href="typeobjs.html"><strong aria-hidden="true">4.2.</strong> Types as objects</a></li><li class="chapter-item expanded "><a href="funabst.html"><strong aria-hidden="true">4.3.</strong> Function Abstraction and Evaluation</a></li><li class="chapter-item expanded "><a href="introdef.html"><strong aria-hidden="true">4.4.</strong> Introducing Definitions</a></li><li class="chapter-item expanded "><a href="dep.html"><strong aria-hidden="true">4.5.</strong> What makes dependent type theory dependent?</a></li></ol></li><li class="chapter-item expanded "><a href="organization.html"><strong aria-hidden="true">5.</strong> Organizational features</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sections.html"><strong aria-hidden="true">5.1.</strong> Sections</a></li><li class="chapter-item expanded "><a href="namespaces.html"><strong aria-hidden="true">5.2.</strong> Namespaces</a></li><li class="chapter-item expanded "><a href="implicit.html"><strong aria-hidden="true">5.3.</strong> Implicit Arguments</a></li><li class="chapter-item expanded "><a href="autobound.html"><strong aria-hidden="true">5.4.</strong> Auto Bound Implicit Arguments</a></li></ol></li><li class="chapter-item expanded "><a href="decltypes.html"><strong aria-hidden="true">6.</strong> Declaring New Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="enum.html"><strong aria-hidden="true">6.1.</strong> Enumerated Types</a></li><li class="chapter-item expanded "><a href="inductive.html"><strong aria-hidden="true">6.2.</strong> Inductive Types</a></li><li class="chapter-item expanded "><a href="struct.html"><strong aria-hidden="true">6.3.</strong> Structures</a></li><li class="chapter-item expanded "><a href="typeclass.html"><strong aria-hidden="true">6.4.</strong> Type classes</a></li><li class="chapter-item expanded "><a href="unifhint.html"><strong aria-hidden="true">6.5.</strong> Unification Hints</a></li></ol></li><li class="chapter-item expanded "><a href="builtintypes.html"><strong aria-hidden="true">7.</strong> Builtin Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="nat.html"><strong aria-hidden="true">7.1.</strong> Natural number</a></li><li class="chapter-item expanded "><a href="int.html"><strong aria-hidden="true">7.2.</strong> Integer</a></li><li class="chapter-item expanded "><a href="uint.html"><strong aria-hidden="true">7.3.</strong> Fixed precision unsigned integer</a></li><li class="chapter-item expanded "><a href="float.html"><strong aria-hidden="true">7.4.</strong> Float</a></li><li class="chapter-item expanded "><a href="array.html"><strong aria-hidden="true">7.5.</strong> Array</a></li><li class="chapter-item expanded "><a href="list.html"><strong aria-hidden="true">7.6.</strong> List</a></li><li class="chapter-item expanded "><a href="char.html"><strong aria-hidden="true">7.7.</strong> Character</a></li><li class="chapter-item expanded "><a href="string.html"><strong aria-hidden="true">7.8.</strong> String</a></li><li class="chapter-item expanded "><a href="option.html"><strong aria-hidden="true">7.9.</strong> Option</a></li><li class="chapter-item expanded "><a href="thunk.html"><strong aria-hidden="true">7.10.</strong> Thunk</a></li><li class="chapter-item expanded "><a href="task.html"><strong aria-hidden="true">7.11.</strong> Task and Thread</a></li></ol></li><li class="chapter-item expanded "><a href="functions.html"><strong aria-hidden="true">8.</strong> Functions</a></li><li class="chapter-item expanded "><a href="tactics.html"><strong aria-hidden="true">9.</strong> Tactics</a></li><li class="chapter-item expanded "><a href="syntax.html"><strong aria-hidden="true">10.</strong> Syntax Extensions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="do.html" class="active"><strong aria-hidden="true">10.1.</strong> The do Notation</a></li><li class="chapter-item expanded "><a href="stringinterp.html"><strong aria-hidden="true">10.2.</strong> String Interpolation</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Other</li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">11.</strong> Frequently Asked Questions</a></li><li class="chapter-item expanded "><a href="lean3changes.html"><strong aria-hidden="true">12.</strong> Significant Changes from Lean 3</a></li><li class="chapter-item expanded "><a href="syntax_highlight_in_latex.html"><strong aria-hidden="true">13.</strong> Syntax Highlighting Lean in LaTeX</a></li><li class="chapter-item expanded affix "><li class="part-title">Development</li><li class="chapter-item expanded "><a href="commit_convention.html"><strong aria-hidden="true">14.</strong> Commit Convention</a></li><li class="chapter-item expanded "><a href="make/index.html"><strong aria-hidden="true">15.</strong> Building Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="make/ubuntu-16.04.html"><strong aria-hidden="true">15.1.</strong> Ubuntu Setup</a></li><li class="chapter-item expanded "><a href="make/osx-10.9.html"><strong aria-hidden="true">15.2.</strong> macOS Setup</a></li><li class="chapter-item expanded "><a href="make/msys2.html"><strong aria-hidden="true">15.3.</strong> Windows Setup</a></li><li class="chapter-item expanded "><a href="make/nix.html"><strong aria-hidden="true">15.4.</strong> Nix Setup (Experimental)</a></li></ol></li><li class="chapter-item expanded "><a href="mdbook.html"><strong aria-hidden="true">16.</strong> Building This Manual</a></li><li class="chapter-item expanded "><a href="fixing_tests.html"><strong aria-hidden="true">17.</strong> Fixing Tests</a></li><li class="chapter-item expanded "><a href="debugging.html"><strong aria-hidden="true">18.</strong> Debugging</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Lean Manual</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                        <a href="https://github.com/leanprover/lean4" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#the-do-notation" id="the-do-notation">The <code>do</code> notation</a></h1>
+<p>Lean is a pure functional programming language, but you can write effectful code using the <code>do</code> embedded domain specific language (DSL). The following simple program prints two strings &quot;hello&quot; and &quot;world&quot; in the standard output and terminates with exit code 0. Note that the type of the program is <code>IO UInt32</code>. You can read this type as the type of values that perform input-output effects and produce a value of type <code>UInt32</code>.</p>
+<pre><code class="language-lean">def main : IO UInt32 := do
+  IO.println &quot;hello&quot;
+  IO.println &quot;world&quot;
+  return 0
+</code></pre>
+<p>The type of <code>IO.println</code> is <code>String → IO Unit</code>. That is, it is a function from <code>String</code> to <code>IO Unit</code> which indicates it may perform input-output effects and produce a value of type <code>Unit</code>. We often say that functions that may perform effects are <em>methods</em>.
+We also say a method application, such as <code>IO.println &quot;hello&quot;</code> is an <em>action</em>.
+Note that the examples above also demonstrates that braceless <code>do</code> blocks are whitespace sensitive.
+If you like <code>;</code>s and curly braces, you can write the example above as</p>
+<pre><code class="language-lean">def main : IO UInt32 := do {
+  IO.println &quot;hello&quot;;
+  IO.println &quot;world&quot;;
+  return 0;
+}
+</code></pre>
+<p>Semicolons can be used even when curly braces are not used. They are particularly useful when you want to &quot;pack&quot; more than one action in a single line.</p>
+<pre><code class="language-lean">def main : IO UInt32 := do
+  IO.println &quot;hello&quot;; IO.println &quot;world&quot;
+  return 0
+</code></pre>
+<p>Whitespace sensitivity in programming languages is a controversial topic
+among programmers. You should use your own style. We, the Lean developers, <strong>love</strong> the
+braceless and semicolon-free style.
+We believe it is clean and beautiful.</p>
+<p>The <code>do</code> DSL expands into the core Lean language. Let's inspect the different components using the commands <code>#print</code> and <code>#check</code>.</p>
+<pre><code class="language-lean"><span class="boring">def main : IO UInt32 := do
+</span><span class="boring"> IO.println &quot;hello&quot;
+</span><span class="boring"> IO.println &quot;world&quot;
+</span><span class="boring"> return 0
+</span>
+#check IO.println &quot;hello&quot;
+-- IO Unit
+#print main
+-- Output contains the infix operator `&gt;&gt;=` and `pure`
+-- The following `set_option` disables notation such as `&gt;&gt;=` in the output
+set_option pp.notation false in
+#print main
+-- Output contains `bind` and `pure`
+#print bind
+-- bind : {m : Type u → Type v} → [self : Bind m] → {α β : Type u} →
+--        m α → (α → m β) → m β
+#print pure
+-- pure : {m : Type u → Type v} → [self : Pure m] → {α : Type u} →
+--        α → m α
+
+-- IO implements the type classes `Bind` and `Pure`.
+#check (inferInstance : Bind IO)
+#check (inferInstance : Pure IO)
+</code></pre>
+<p>The types of <code>bind</code> and <code>pure</code> may look daunting at first sight.
+They both have many implicit arguments. Let's focus first on the explicit arguments.
+<code>bind</code> has two explicit arguments <code>m α</code> and <code>α → m β</code>. The first one should
+be viewed as an action with effects <code>m</code> and producing a value of type <code>α</code>.
+The second is a function that takes a value of type <code>α</code> and produces an action
+with effects <code>m</code> and a value of type <code>β</code>. The result is <code>m β</code>. The method <code>bind</code> is composing
+these two actions. We often say <code>bind</code> is an abstract semicolon. The method <code>pure</code> converts
+a value <code>α</code> into an action that produces an action <code>m α</code>.</p>
+<p>Here is the same function being defined using <code>bind</code> and <code>pure</code> without the <code>do</code> DSL.</p>
+<pre><code class="language-lean">def main : IO UInt32 :=
+  bind (IO.println &quot;hello&quot;) fun _ =&gt;
+  bind (IO.println &quot;world&quot;) fun _ =&gt;
+  pure 0
+</code></pre>
+<p>The notations <code>let x &lt;- action1; action2</code> and <code>let x ← action1; action2</code> are just syntax sugar for <code>bind action1 fun x =&gt; action2</code>.
+Here is a small example using it.</p>
+<pre><code class="language-lean">def isGreaterThan0 (x : Nat) : IO Bool := do
+  IO.println s!&quot;value: {x}&quot;
+  return x &gt; 0
+
+def f (x : Nat) : IO Unit := do
+  let c &lt;- isGreaterThan0 x
+  if c then
+    IO.println s!&quot;{x} is greater than 0&quot;
+  else
+    pure ()
+
+#eval f 10
+-- value: 10
+-- 10 is greater than 0
+</code></pre>
+<h2><a class="header" href="#nested-actions" id="nested-actions">Nested actions</a></h2>
+<p>Note that we cannot write <code>if isGreaterThan0 x then ... else ...</code> because the condition in a <code>if-then-else</code> is a <strong>pure</strong> value without effects, but <code>isGreaterThan0 x</code> has type <code>IO Bool</code>. You can use the nested action notation to avoid this annoyance. Here is an equivalent definition for <code>f</code> using a nested action.</p>
+<pre><code class="language-lean"><span class="boring">def isGreaterThan0 (x : Nat) : IO Bool := do
+</span><span class="boring"> IO.println s!&quot;x: {x}&quot;
+</span><span class="boring"> return x &gt; 0
+</span>
+def f (x : Nat) : IO Unit := do
+  if (&lt;- isGreaterThan0 x) then
+    IO.println s!&quot;{x} is greater than 0&quot;
+  else
+    pure ()
+
+#print f
+</code></pre>
+<p>Lean &quot;lifts&quot; the nested actions and introduces the <code>bind</code> for us.
+Here is an example with two nested actions. Note that both actions are executed
+even if <code>x = 0</code>.</p>
+<pre><code class="language-lean"><span class="boring">def isGreaterThan0 (x : Nat) : IO Bool := do
+</span><span class="boring"> IO.println s!&quot;x: {x}&quot;
+</span><span class="boring"> return x &gt; 0
+</span>
+def f (x y : Nat) : IO Unit := do
+  if (&lt;- isGreaterThan0 x) &amp;&amp; (&lt;- isGreaterThan0 y) then
+    IO.println s!&quot;{x} and {y} are greater than 0&quot;
+  else
+    pure ()
+
+#eval f 0 10
+-- value: 0
+-- value: 10
+
+-- The function `f` above is equivalent to
+def g (x y : Nat) : IO Unit := do
+  let c1 &lt;- isGreaterThan0 x
+  let c2 &lt;- isGreaterThan0 y
+  if c1 &amp;&amp; c2 then
+    IO.println s!&quot;{x} and {y} are greater than 0&quot;
+  else
+    pure ()
+
+theorem fgEqual : f = g :=
+  rfl -- proof by reflexivity
+</code></pre>
+<p>Here are two ways to achieve the short-circuit semantics in the example above</p>
+<pre><code class="language-lean"><span class="boring">def isGreaterThan0 (x : Nat) : IO Bool := do
+</span><span class="boring"> IO.println s!&quot;x: {x}&quot;
+</span><span class="boring"> return x &gt; 0
+</span>
+def f1 (x y : Nat) : IO Unit := do
+  if (&lt;- isGreaterThan0 x &lt;&amp;&amp;&gt; isGreaterThan0 y) then
+    IO.println s!&quot;{x} and {y} are greater than 0&quot;
+  else
+    pure ()
+
+-- `&lt;&amp;&amp;&gt;` is the effectful version of `&amp;&amp;`
+-- Given `x y : IO Bool`, `x &lt;&amp;&amp;&gt; y` : m Bool`
+-- It only executes `y` if `x` returns `true`.
+
+#eval f1 0 10
+-- value: 0
+#eval f1 1 10
+-- value: 1
+-- value: 10
+-- 1 and 10 are greater than 0
+
+def f2 (x y : Nat) : IO Unit := do
+  if (&lt;- isGreaterThan0 x) then
+    if (&lt;- isGreaterThan0 y) then
+      IO.println s!&quot;{x} and {y} are greater than 0&quot;
+    else
+      pure ()
+  else
+    pure ()
+</code></pre>
+<h2><a class="header" href="#if-then-notation" id="if-then-notation"><code>if-then</code> notation</a></h2>
+<p>In the <code>do</code> DSL, we can write <code>if c then action</code> as a shorthand for <code>if c then action else pure ()</code>. Here is the method <code>f2</code> using this shorthand.</p>
+<pre><code class="language-lean"><span class="boring">def isGreaterThan0 (x : Nat) : IO Bool := do
+</span><span class="boring"> IO.println s!&quot;x: {x}&quot;
+</span><span class="boring"> return x &gt; 0
+</span>
+def f2 (x y : Nat) : IO Unit := do
+  if (&lt;- isGreaterThan0 x) then
+    if (&lt;- isGreaterThan0 y) then
+      IO.println s!&quot;{x} and {y} are greater than 0&quot;
+</code></pre>
+<h2><a class="header" href="#reassignments" id="reassignments">Reassignments</a></h2>
+<p>When writing effectful code, it is natural to think imperatively.
+For example, suppose we want to create an empty array <code>xs</code>,
+add <code>0</code> if some condition holds, add <code>1</code> if another condition holds,
+and then print it. In the following example, we use variable
+&quot;shadowing&quot; to simulate this kind of &quot;update&quot;.</p>
+<pre><code class="language-lean">def f (b1 b2 : Bool) : IO Unit := do
+  let xs := #[]
+  let xs := if b1 then xs.push 0 else xs
+  let xs := if b2 then xs.push 1 else xs
+  IO.println xs
+
+#eval f true true
+-- #[0, 1]
+#eval f false true
+-- #[1]
+#eval f true false
+-- #[0]
+#eval f false false
+-- #[]
+</code></pre>
+<p>We can use tuples to simulate updates on multiple variables.</p>
+<pre><code class="language-lean">def f (b1 b2 : Bool) : IO Unit := do
+  let xs := #[]
+  let ys := #[]
+  let (xs, ys) := if b1 then (xs.push 0, ys) else (xs, ys.push 0)
+  let (xs, ys) := if b2 then (xs.push 1, ys) else (xs, ys.push 1)
+  IO.println s!&quot;xs: {xs}, ys: {ys}&quot;
+
+#eval f true false
+-- xs: #[0], ys: #[1]
+</code></pre>
+<p>We can also simulate the control-flow above using <em>join-points</em>.
+A join-point is a <code>let</code> that is always tail called and fully applied.
+The Lean compiler implements them using <code>goto</code>s.
+Here is the same example using join-points.</p>
+<pre><code class="language-lean">def f (b1 b2 : Bool) : IO Unit := do
+  let jp1 xs ys := IO.println s!&quot;xs: {xs}, ys: {ys}&quot;
+  let jp2 xs ys := if b2 then jp1 (xs.push 1) ys else jp1 xs (ys.push 1)
+  let xs := #[]
+  let ys := #[]
+  if b1 then jp2 (xs.push 0) ys else jp2 xs (ys.push 0)
+
+#eval f true false
+-- xs: #[0], ys: #[1]
+</code></pre>
+<p>You can capture complex control-flow using join-points.
+The <code>do</code> DSL offers the variable reassignment feature to make this kind of code more comfortable to write. In the following example, the <code>mut</code> modifier at <code>let mut xs := #[]</code> indicates that variable <code>xs</code> can be reassigned. The example contains two reassignments <code>xs := xs.push 0</code> and <code>xs := xs.push 1</code>. The reassignments are compiled using join-points. There is no hidden state being updated.</p>
+<pre><code class="language-lean">def f (b1 b2 : Bool) : IO Unit := do
+  let mut xs := #[]
+  if b1 then xs := xs.push 0
+  if b2 then xs := xs.push 1
+  IO.println xs
+
+#eval f true true
+-- #[0, 1]
+</code></pre>
+<p>The notation <code>x &lt;- action</code> reassigns <code>x</code> with the value produced by the action. It is equivalent to <code>x := (&lt;- action)</code></p>
+<h2><a class="header" href="#iteration" id="iteration">Iteration</a></h2>
+<p>The <code>do</code> DSL provides a unified notation for iterating over datastructures. Here are a few examples.</p>
+<pre><code class="language-lean">def sum (xs : Array Nat) : IO Nat := do
+  let mut s := 0
+  for x in xs do
+    IO.println s!&quot;x: {x}&quot;
+    s := s + x
+  return s
+
+#eval sum #[1, 2, 3]
+-- x: 1
+-- x: 2
+-- x: 3
+-- 6
+
+-- We can write pure code using the `do` DSL too.
+def sum' (xs : Array Nat) : Nat := do
+  let mut s := 0
+  for x in xs do
+    s := s + x
+  return s
+
+#eval sum' #[1, 2, 3]
+-- 6
+
+def sumEven (xs : Array Nat) : IO Nat := do
+  let mut s := 0
+  for x in xs do
+    if x % 2 == 0 then
+      IO.println s!&quot;x: {x}&quot;
+      s := s + x
+  return s
+
+#eval sumEven #[1, 2, 3, 6]
+-- x: 2
+-- x: 6
+-- 8
+
+def splitEvenOdd (xs : List Nat) : IO Unit := do
+  let mut evens := #[]
+  let mut odds  := #[]
+  for x in xs do
+    if x % 2 == 0 then
+      evens := evens.push x
+    else
+      odds := odds.push x
+  IO.println s!&quot;evens: {evens}, odds: {odds}&quot;
+
+#eval splitEvenOdd [1, 2, 3, 4]
+-- evens: #[2, 4], odds: #[1, 3]
+
+def findNatLessThan (x : Nat) (p : Nat → Bool) : IO Nat := do
+  -- [:x] is notation for the range [0, x)
+  for i in [:x] do
+    if p i then
+      return i -- `return` from the `do` block
+  throw (IO.userError &quot;value not found&quot;)
+
+#eval findNatLessThan 10 (fun x =&gt; x &gt; 5 &amp;&amp; x % 4 == 0)
+-- 8
+
+def sumOddUpTo (xs : List Nat) (threshold : Nat) : IO Nat := do
+  let mut s := 0
+  for x in xs do
+    if x % 2 == 0 then
+      continue -- it behaves like the `continue` statement in imperative languages
+    IO.println s!&quot;x: {x}&quot;
+    s := s + x
+    if s &gt; threshold then
+      break -- it behave like the `continue` statement in imperative languages
+  IO.println s!&quot;result: {s}&quot;
+  return s
+
+#eval sumOddUpTo [2, 3, 4, 11, 20, 31, 41, 51, 107] 40
+-- x: 3
+-- x: 11
+-- x: 31
+-- result: 45
+-- 45
+</code></pre>
+<p>TODO: describe <code>forIn</code></p>
+<h2><a class="header" href="#try-catch" id="try-catch">Try-catch</a></h2>
+<p>TODO</p>
+<h2><a class="header" href="#pattern-matching" id="pattern-matching">Pattern matching</a></h2>
+<p>TODO</p>
+<h2><a class="header" href="#monads" id="monads">Monads</a></h2>
+<p>TODO</p>
+<h2><a class="header" href="#readert" id="readert">ReaderT</a></h2>
+<p>TODO</p>
+<h2><a class="header" href="#statet" id="statet">StateT</a></h2>
+<p>TODO</p>
+<h2><a class="header" href="#statereft" id="statereft">StateRefT</a></h2>
+<p>TODO</p>
+<h2><a class="header" href="#exceptt" id="exceptt">ExceptT</a></h2>
+<p>TODO</p>
+<h2><a class="header" href="#monadlift-and-automatic-lifting" id="monadlift-and-automatic-lifting">MonadLift and automatic lifting</a></h2>
+<p>TODO</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="syntax.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="stringinterp.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="syntax.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="stringinterp.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

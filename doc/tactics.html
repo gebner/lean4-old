@@ -1,0 +1,545 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Tactics - Lean Manual</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <link rel="stylesheet" href="css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="whatIsLean.html"><strong aria-hidden="true">1.</strong> What is Lean</a></li><li class="chapter-item expanded "><a href="tour.html"><strong aria-hidden="true">2.</strong> Tour of Lean</a></li><li class="chapter-item expanded "><a href="setup.html"><strong aria-hidden="true">3.</strong> Setting Up Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="quickstart.html"><strong aria-hidden="true">3.1.</strong> Quickstart</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Language Manual</li><li class="chapter-item expanded "><a href="deptypes.html"><strong aria-hidden="true">4.</strong> Dependent Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="simptypes.html"><strong aria-hidden="true">4.1.</strong> Simple Type Theory</a></li><li class="chapter-item expanded "><a href="typeobjs.html"><strong aria-hidden="true">4.2.</strong> Types as objects</a></li><li class="chapter-item expanded "><a href="funabst.html"><strong aria-hidden="true">4.3.</strong> Function Abstraction and Evaluation</a></li><li class="chapter-item expanded "><a href="introdef.html"><strong aria-hidden="true">4.4.</strong> Introducing Definitions</a></li><li class="chapter-item expanded "><a href="dep.html"><strong aria-hidden="true">4.5.</strong> What makes dependent type theory dependent?</a></li></ol></li><li class="chapter-item expanded "><a href="organization.html"><strong aria-hidden="true">5.</strong> Organizational features</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sections.html"><strong aria-hidden="true">5.1.</strong> Sections</a></li><li class="chapter-item expanded "><a href="namespaces.html"><strong aria-hidden="true">5.2.</strong> Namespaces</a></li><li class="chapter-item expanded "><a href="implicit.html"><strong aria-hidden="true">5.3.</strong> Implicit Arguments</a></li><li class="chapter-item expanded "><a href="autobound.html"><strong aria-hidden="true">5.4.</strong> Auto Bound Implicit Arguments</a></li></ol></li><li class="chapter-item expanded "><a href="decltypes.html"><strong aria-hidden="true">6.</strong> Declaring New Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="enum.html"><strong aria-hidden="true">6.1.</strong> Enumerated Types</a></li><li class="chapter-item expanded "><a href="inductive.html"><strong aria-hidden="true">6.2.</strong> Inductive Types</a></li><li class="chapter-item expanded "><a href="struct.html"><strong aria-hidden="true">6.3.</strong> Structures</a></li><li class="chapter-item expanded "><a href="typeclass.html"><strong aria-hidden="true">6.4.</strong> Type classes</a></li><li class="chapter-item expanded "><a href="unifhint.html"><strong aria-hidden="true">6.5.</strong> Unification Hints</a></li></ol></li><li class="chapter-item expanded "><a href="builtintypes.html"><strong aria-hidden="true">7.</strong> Builtin Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="nat.html"><strong aria-hidden="true">7.1.</strong> Natural number</a></li><li class="chapter-item expanded "><a href="int.html"><strong aria-hidden="true">7.2.</strong> Integer</a></li><li class="chapter-item expanded "><a href="uint.html"><strong aria-hidden="true">7.3.</strong> Fixed precision unsigned integer</a></li><li class="chapter-item expanded "><a href="float.html"><strong aria-hidden="true">7.4.</strong> Float</a></li><li class="chapter-item expanded "><a href="array.html"><strong aria-hidden="true">7.5.</strong> Array</a></li><li class="chapter-item expanded "><a href="list.html"><strong aria-hidden="true">7.6.</strong> List</a></li><li class="chapter-item expanded "><a href="char.html"><strong aria-hidden="true">7.7.</strong> Character</a></li><li class="chapter-item expanded "><a href="string.html"><strong aria-hidden="true">7.8.</strong> String</a></li><li class="chapter-item expanded "><a href="option.html"><strong aria-hidden="true">7.9.</strong> Option</a></li><li class="chapter-item expanded "><a href="thunk.html"><strong aria-hidden="true">7.10.</strong> Thunk</a></li><li class="chapter-item expanded "><a href="task.html"><strong aria-hidden="true">7.11.</strong> Task and Thread</a></li></ol></li><li class="chapter-item expanded "><a href="functions.html"><strong aria-hidden="true">8.</strong> Functions</a></li><li class="chapter-item expanded "><a href="tactics.html" class="active"><strong aria-hidden="true">9.</strong> Tactics</a></li><li class="chapter-item expanded "><a href="syntax.html"><strong aria-hidden="true">10.</strong> Syntax Extensions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="do.html"><strong aria-hidden="true">10.1.</strong> The do Notation</a></li><li class="chapter-item expanded "><a href="stringinterp.html"><strong aria-hidden="true">10.2.</strong> String Interpolation</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Other</li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">11.</strong> Frequently Asked Questions</a></li><li class="chapter-item expanded "><a href="lean3changes.html"><strong aria-hidden="true">12.</strong> Significant Changes from Lean 3</a></li><li class="chapter-item expanded "><a href="syntax_highlight_in_latex.html"><strong aria-hidden="true">13.</strong> Syntax Highlighting Lean in LaTeX</a></li><li class="chapter-item expanded affix "><li class="part-title">Development</li><li class="chapter-item expanded "><a href="commit_convention.html"><strong aria-hidden="true">14.</strong> Commit Convention</a></li><li class="chapter-item expanded "><a href="make/index.html"><strong aria-hidden="true">15.</strong> Building Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="make/ubuntu-16.04.html"><strong aria-hidden="true">15.1.</strong> Ubuntu Setup</a></li><li class="chapter-item expanded "><a href="make/osx-10.9.html"><strong aria-hidden="true">15.2.</strong> macOS Setup</a></li><li class="chapter-item expanded "><a href="make/msys2.html"><strong aria-hidden="true">15.3.</strong> Windows Setup</a></li><li class="chapter-item expanded "><a href="make/nix.html"><strong aria-hidden="true">15.4.</strong> Nix Setup (Experimental)</a></li></ol></li><li class="chapter-item expanded "><a href="mdbook.html"><strong aria-hidden="true">16.</strong> Building This Manual</a></li><li class="chapter-item expanded "><a href="fixing_tests.html"><strong aria-hidden="true">17.</strong> Fixing Tests</a></li><li class="chapter-item expanded "><a href="debugging.html"><strong aria-hidden="true">18.</strong> Debugging</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Lean Manual</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                        <a href="https://github.com/leanprover/lean4" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#tactics" id="tactics">Tactics</a></h1>
+<p>Tactics are metaprograms, that is, programs that create programs.
+Lean is implemented in Lean, you can import its implementation using <code>import Lean</code>.
+The <code>Lean</code> package is part of the Lean distribution.
+You can use the functions in the <code>Lean</code> package to write your own metaprograms
+that automate repetitive tasks when writing programs and proofs.</p>
+<p>We provide the <strong>tactic</strong> domain specific language (DSL) for using the tactic framework.
+The tactic DSL provides commands for creating terms (and proofs). You
+don't need to import the <code>Lean</code> package for using the tactic DSL.
+Simple extensions can be implemented using macros. More complex extensions require
+the <code>Lean</code> package. Notation used to write Lean terms can be easily lifted to the tactic DSL.</p>
+<p>Tactics are instructions that tell Lean how to construct a term or proof.
+Tactics operate on holes also known as goals. Each hole represents a missing
+part of the term you are trying to build. Internally these holes are represented
+as metavariables. They have a type and a local context. The local context contains
+all local variables in scope.</p>
+<p>In the following example, we prove the same simple theorem using different tactics.
+The keyword <code>by</code> instructs Lean to use the tactic DSL to construct a term.
+Our initial goal is a hole with type <code>p ∨ q → q ∨ p</code>. The tactic <code>intro h</code>
+fills this hole using the term <code>fun h =&gt; ?m</code> where <code>?m</code> is a new hole we need to solve.
+This hole has type <code>q ∨ p</code>, and the local context contains <code>h : p ∨ q</code>.
+The tactic <code>cases</code> fills the hole using <code>Or.casesOn h (fun h1 =&gt; ?m1) (fun h2 =&gt; ?m2)</code>
+where <code>?m1</code> and <code>?m2</code> are new holes. The tactic <code>apply Or.inr</code> fills the hole <code>?m1</code>
+with the application <code>Or.inr ?m3</code>, and <code>exact h1</code> fills <code>?m3</code> with <code>h1</code>.
+The tactic <code>assumption</code> tries to fill a hole by searching the local context for a term with the same type.</p>
+<pre><code class="language-lean">theorem ex1 : p ∨ q → q ∨ p := by
+  intro h
+  cases h with
+  | inl h1 =&gt;
+    apply Or.inr
+    exact h1
+  | inr h2 =&gt;
+    apply Or.inl
+    assumption
+
+#print ex1
+/-
+theorem ex1 : {p q : Prop} → p ∨ q → q ∨ p :=
+fun {p q : Prop} (h : p ∨ q) =&gt;
+  Or.casesOn h (fun (h1 : p) =&gt; Or.inr h1) fun (h2 : q) =&gt; Or.inl h2
+-/
+
+-- You can use `match-with` in tactics.
+theorem ex2 : p ∨ q → q ∨ p := by
+  intro h
+  match h with
+  | Or.inl _  =&gt; apply Or.inr; assumption
+  | Or.inr h2 =&gt; apply Or.inl; exact h2
+
+-- As we have the `fun+match` syntax sugar for terms,
+-- we have the `intro+match` syntax sugar
+theorem ex3 : p ∨ q → q ∨ p := by
+  intro
+  | Or.inl h1 =&gt;
+    apply Or.inr
+    exact h1
+  | Or.inr h2 =&gt;
+    apply Or.inl
+    assumption
+</code></pre>
+<p>The examples above are all structured, but Lean 4 still supports unstructured
+proofs. Unstructured proofs are useful when creating reusable scripts that may
+discharge different goals.
+Here is an unstructured version of the example above.</p>
+<pre><code class="language-lean">theorem ex1 : p ∨ q → q ∨ p := by
+  intro h
+  cases h
+  apply Or.inr
+  assumption
+  apply Or.inl
+  assumption
+  done -- fails with an error here if there are unsolvable goals
+
+theorem ex2 : p ∨ q → q ∨ p := by
+  intro h
+  cases h
+  focus -- instructs Lean to `focus` on the first goal,
+    apply Or.inr
+    assumption
+    -- it will fail if there are still unsolvable goals here
+  focus
+    apply Or.inl
+    assumption
+
+theorem ex3 : p ∨ q → q ∨ p := by
+  intro h
+  cases h
+  -- You can still use curly braces and semicolons instead of
+  -- whitespace sensitive notation as in the previous example
+  { apply Or.inr;
+    assumption
+    -- It will fail if there are unsolved goals
+  }
+  { apply Or.inl;
+    assumption
+  }
+
+-- Many tactics tag subgoals. The tactic `cases` tag goals using constructor names.
+-- The tactic `case tag =&gt; tactics` instructs Lean to solve the goal
+-- with the matching tag.
+theorem ex4 : p ∨ q → q ∨ p := by
+  intro h
+  cases h
+  case inr =&gt;
+    apply Or.inl
+    assumption
+  case inl =&gt;
+    apply Or.inr
+    assumption
+
+-- Same example for curly braces and semicolons aficionados
+theorem ex5 : p ∨ q → q ∨ p := by {
+  intro h;
+  cases h;
+  case inr =&gt; {
+    apply Or.inl;
+    assumption
+  }
+  case inl =&gt; {
+    apply Or.inr;
+    assumption
+  }
+}
+</code></pre>
+<h2><a class="header" href="#rewrite" id="rewrite">Rewrite</a></h2>
+<p>TODO</p>
+<h2><a class="header" href="#pattern-matching" id="pattern-matching">Pattern matching</a></h2>
+<p>As a convenience, pattern-matching has been integrated into tactics such as <code>intro</code> and <code>funext</code>.</p>
+<pre><code class="language-lean">theorem ex1 : s ∧ q ∧ r → p ∧ r → q ∧ p := by
+  intro ⟨_, ⟨hq, _⟩⟩ ⟨hp, _⟩
+  exact ⟨hq, hp⟩
+
+theorem ex2 :
+    (fun (x : Nat × Nat) (y : Nat × Nat) =&gt; x.1 + y.2)
+    =
+    (fun (x : Nat × Nat) (z : Nat × Nat) =&gt; z.2 + x.1) := by
+  funext (a, b) (c, d)
+  show a + d = d + a
+  rw [Nat.add_comm]
+</code></pre>
+<h2><a class="header" href="#induction" id="induction">Induction</a></h2>
+<p>The <code>induction</code> tactic now supports user-defined induction principles with
+multiple targets (aka major premises).</p>
+<pre><code class="language-lean">/-
+theorem Nat.mod.inductionOn
+      {motive : Nat → Nat → Sort u}
+      (x y  : Nat)
+      (ind  : ∀ x y, 0 &lt; y ∧ y ≤ x → motive (x - y) y → motive x y)
+      (base : ∀ x y, ¬(0 &lt; y ∧ y ≤ x) → motive x y)
+      : motive x y :=
+-/
+
+theorem ex (x : Nat) {y : Nat} (h : y &gt; 0) : x % y &lt; y := by
+  induction x, y using Nat.mod.inductionOn with
+  | ind x y h₁ ih =&gt;
+    rw [Nat.mod_eq_sub_mod h₁.2]
+    exact ih h
+  | base x y h₁ =&gt;
+     have : ¬ 0 &lt; y ∨ ¬ y ≤ x := Iff.mp (Decidable.notAndIffOrNot ..) h₁
+     match this with
+     | Or.inl h₁ =&gt; exact absurd h h₁
+     | Or.inr h₁ =&gt;
+       have hgt : y &gt; x := Nat.gtOfNotLe h₁
+       rw [← Nat.mod_eq_of_lt hgt] at hgt
+       assumption
+</code></pre>
+<h2><a class="header" href="#cases" id="cases">Cases</a></h2>
+<p>TODO</p>
+<h2><a class="header" href="#injection" id="injection">Injection</a></h2>
+<p>TODO</p>
+<h2><a class="header" href="#dependent-pattern-matching" id="dependent-pattern-matching">Dependent pattern matching</a></h2>
+<p>The <code>match-with</code> expression implements dependent pattern matching. You can use it to create concise proofs.</p>
+<pre><code class="language-lean">inductive Mem : α → List α → Prop where
+  | head (a : α) (as : List α)   : Mem a (a::as)
+  | tail (a b : α) (bs : List α) : Mem a bs → Mem a (b::bs)
+
+infix:50 &quot;∈&quot; =&gt; Mem
+
+theorem mem_split {a : α} {as : List α} (h : a ∈ as) : ∃ s t, as = s ++ a :: t :=
+  match a, as, h with
+  | _, _, Mem.head a bs     =&gt; ⟨[], ⟨bs, rfl⟩⟩
+  | _, _, Mem.tail a b bs h =&gt;
+    match bs, mem_split h with
+    | _, ⟨s, ⟨t, rfl⟩⟩ =&gt; ⟨b::s, ⟨t, List.cons_append .. ▸ rfl⟩⟩
+</code></pre>
+<p>In the tactic DSL, the right-hand-side of each alternative in a <code>match-with</code> is a sequence of tactics instead of a term.
+Here is a similar proof using the tactic DSL.</p>
+<pre><code class="language-lean"><span class="boring">inductive Mem : α → List α → Prop where
+</span><span class="boring"> | head (a : α) (as : List α)   : Mem a (a::as)
+</span><span class="boring"> | tail (a b : α) (bs : List α) : Mem a bs → Mem a (b::bs)
+</span><span class="boring">infix:50 &quot;∈&quot; =&gt; Mem
+</span>theorem mem_split {a : α} {as : List α} (h : a ∈ as) : ∃ s t, as = s ++ a :: t := by
+  match a, as, h with
+  | _, _, Mem.head a bs     =&gt; exists []; exists bs; rfl
+  | _, _, Mem.tail a b bs h =&gt;
+    match bs, mem_split h with
+    | _, ⟨s, ⟨t, rfl⟩⟩ =&gt;
+      exists b::s; exists t;
+      rw [List.cons_append]
+</code></pre>
+<p>We can use <code>match-with</code> nested in tactics.
+Here is a similar proof that uses the <code>induction</code> tactic instead of recursion.</p>
+<pre><code class="language-lean"><span class="boring">inductive Mem : α → List α → Prop where
+</span><span class="boring"> | head (a : α) (as : List α)   : Mem a (a::as)
+</span><span class="boring"> | tail (a b : α) (bs : List α) : Mem a bs → Mem a (b::bs)
+</span><span class="boring">infix:50 &quot;∈&quot; =&gt; Mem
+</span>theorem mem_split {a : α} {as : List α} (h : a ∈ as) : ∃ s t, as = s ++ a :: t := by
+  induction as with
+  | nil          =&gt; cases h
+  | cons b bs ih =&gt; cases h with
+    | head a bs =&gt; exact ⟨[], ⟨bs, rfl⟩⟩
+    | tail a b bs h =&gt;
+      match bs, ih h with
+      | _, ⟨s, ⟨t, rfl⟩⟩ =&gt;
+        exists b::s; exists t
+        rw [List.cons_append]
+</code></pre>
+<p>You can create your own notation using existing tactics. In the following example,
+we define a simple <code>obtain</code> tactic using macros. We say it is simple because it takes only one
+discriminant. Later, we show how to create more complex automation using macros.</p>
+<pre><code class="language-lean"><span class="boring">inductive Mem : α → List α → Prop where
+</span><span class="boring"> | head (a : α) (as : List α)   : Mem a (a::as)
+</span><span class="boring"> | tail (a b : α) (bs : List α) : Mem a bs → Mem a (b::bs)
+</span><span class="boring">infix:50 &quot;∈&quot; =&gt; Mem
+</span>macro &quot;obtain &quot; p:term &quot; from &quot; d:term : tactic =&gt;
+  `(tactic| match $d:term with | $p:term =&gt; ?_)
+
+theorem mem_split {a : α} {as : List α} (h : a ∈ as) : ∃ s t, as = s ++ a :: t := by
+  induction as with
+  | cons b bs ih =&gt; cases h with
+    | tail a b bs h =&gt;
+      obtain ⟨s, ⟨t, h⟩⟩ from ih h
+      exists b::s; exists t
+      rw [h, List.cons_append]
+    | head a bs =&gt; exact ⟨[], ⟨bs, rfl⟩⟩
+  | nil =&gt; cases h
+
+</code></pre>
+<h2><a class="header" href="#extensible-tactics" id="extensible-tactics">Extensible tactics</a></h2>
+<p>In the following example, we define the notation <code>triv</code> for the tactic DSL using
+the command <code>syntax</code>. Then, we use the command <code>macro_rules</code> to specify what should
+be done when <code>triv</code> is used. You can provide different expansions, and the tactic DSL
+interpreter will try all of them until one succeeds.</p>
+<pre><code class="language-lean">-- Define a new notation for the tactic DSL
+syntax &quot;triv&quot; : tactic
+
+macro_rules
+  | `(tactic| triv) =&gt; `(tactic| assumption)
+
+theorem ex1 (h : p) : p := by
+  triv
+
+-- You cannot prove the following theorem using `triv`
+-- theorem ex2 (x : α) : x = x := by
+--  triv
+
+-- Let's extend `triv`. The `by` DSL interpreter
+-- tries all possible macro extensions for `triv` until one succeeds
+macro_rules
+  | `(tactic| triv) =&gt; `(tactic| rfl)
+
+theorem ex2 (x : α) : x = x := by
+  triv
+
+theorem ex3 (x : α) (h : p) : x = x ∧ p := by
+  apply And.intro &lt;;&gt; triv
+</code></pre>
+<h1><a class="header" href="#let-rec" id="let-rec"><code>let-rec</code></a></h1>
+<p>You can use <code>let rec</code> to write local recursive functions. We lifted it to the tactic DSL,
+and you can use it to create proofs by induction.</p>
+<pre><code class="language-lean">theorem length_replicate {α} (n : Nat) (a : α) : (List.replicate n a).length = n := by
+  let rec aux (n : Nat) (as : List α)
+      : (List.replicate.loop a n as).length = n + as.length := by
+    match n with
+    | 0   =&gt; rw [Nat.zero_add]; rfl
+    | n+1 =&gt;
+      show List.length (List.replicate.loop a n (a::as)) = Nat.succ n + as.length
+      rw [aux n, List.length_cons, Nat.add_succ, Nat.succ_add]
+  exact aux n []
+</code></pre>
+<p>You can also introduce auxiliary recursive declarations using <code>where</code> clause after your definition.
+Lean converts them into a <code>let rec</code>.</p>
+<pre><code class="language-lean">theorem length_replicate {α} (n : Nat) (a : α) : (List.replicate n a).length = n :=
+  loop n []
+where
+  loop n as : (List.replicate.loop a n as).length = n + as.length := by
+    match n with
+    | 0   =&gt; rw [Nat.zero_add]; rfl
+    | n+1 =&gt;
+      show List.length (List.replicate.loop a n (a::as)) = Nat.succ n + as.length
+      rw [loop n, List.length_cons, Nat.add_succ, Nat.succ_add]
+</code></pre>
+<h1><a class="header" href="#begin-end-lovers" id="begin-end-lovers"><code>begin-end</code> lovers</a></h1>
+<p>If you love Lean 3 <code>begin ... end</code> tactic blocks and commas, you can define this notation
+in Lean 4 using macros in a few lines of code.</p>
+<pre><code class="language-lean">open Lean in
+macro &quot;begin &quot; ts:tactic,*,? &quot;end&quot;%i : term =&gt; do
+  -- preserve position of the last token, which is used
+  -- as the error position in case of an unfinished proof
+  `(by { $[$ts:tactic]* }%$i)
+
+theorem ex1 (x : Nat) : x + 0 = 0 + x :=
+  begin
+    rw [Nat.zero_add],
+    rw [Nat.add_zero],
+  end
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="functions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="syntax.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="functions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="syntax.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

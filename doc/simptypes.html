@@ -1,0 +1,316 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Simple Type Theory - Lean Manual</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <link rel="stylesheet" href="css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="whatIsLean.html"><strong aria-hidden="true">1.</strong> What is Lean</a></li><li class="chapter-item expanded "><a href="tour.html"><strong aria-hidden="true">2.</strong> Tour of Lean</a></li><li class="chapter-item expanded "><a href="setup.html"><strong aria-hidden="true">3.</strong> Setting Up Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="quickstart.html"><strong aria-hidden="true">3.1.</strong> Quickstart</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Language Manual</li><li class="chapter-item expanded "><a href="deptypes.html"><strong aria-hidden="true">4.</strong> Dependent Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="simptypes.html" class="active"><strong aria-hidden="true">4.1.</strong> Simple Type Theory</a></li><li class="chapter-item expanded "><a href="typeobjs.html"><strong aria-hidden="true">4.2.</strong> Types as objects</a></li><li class="chapter-item expanded "><a href="funabst.html"><strong aria-hidden="true">4.3.</strong> Function Abstraction and Evaluation</a></li><li class="chapter-item expanded "><a href="introdef.html"><strong aria-hidden="true">4.4.</strong> Introducing Definitions</a></li><li class="chapter-item expanded "><a href="dep.html"><strong aria-hidden="true">4.5.</strong> What makes dependent type theory dependent?</a></li></ol></li><li class="chapter-item expanded "><a href="organization.html"><strong aria-hidden="true">5.</strong> Organizational features</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sections.html"><strong aria-hidden="true">5.1.</strong> Sections</a></li><li class="chapter-item expanded "><a href="namespaces.html"><strong aria-hidden="true">5.2.</strong> Namespaces</a></li><li class="chapter-item expanded "><a href="implicit.html"><strong aria-hidden="true">5.3.</strong> Implicit Arguments</a></li><li class="chapter-item expanded "><a href="autobound.html"><strong aria-hidden="true">5.4.</strong> Auto Bound Implicit Arguments</a></li></ol></li><li class="chapter-item expanded "><a href="decltypes.html"><strong aria-hidden="true">6.</strong> Declaring New Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="enum.html"><strong aria-hidden="true">6.1.</strong> Enumerated Types</a></li><li class="chapter-item expanded "><a href="inductive.html"><strong aria-hidden="true">6.2.</strong> Inductive Types</a></li><li class="chapter-item expanded "><a href="struct.html"><strong aria-hidden="true">6.3.</strong> Structures</a></li><li class="chapter-item expanded "><a href="typeclass.html"><strong aria-hidden="true">6.4.</strong> Type classes</a></li><li class="chapter-item expanded "><a href="unifhint.html"><strong aria-hidden="true">6.5.</strong> Unification Hints</a></li></ol></li><li class="chapter-item expanded "><a href="builtintypes.html"><strong aria-hidden="true">7.</strong> Builtin Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="nat.html"><strong aria-hidden="true">7.1.</strong> Natural number</a></li><li class="chapter-item expanded "><a href="int.html"><strong aria-hidden="true">7.2.</strong> Integer</a></li><li class="chapter-item expanded "><a href="uint.html"><strong aria-hidden="true">7.3.</strong> Fixed precision unsigned integer</a></li><li class="chapter-item expanded "><a href="float.html"><strong aria-hidden="true">7.4.</strong> Float</a></li><li class="chapter-item expanded "><a href="array.html"><strong aria-hidden="true">7.5.</strong> Array</a></li><li class="chapter-item expanded "><a href="list.html"><strong aria-hidden="true">7.6.</strong> List</a></li><li class="chapter-item expanded "><a href="char.html"><strong aria-hidden="true">7.7.</strong> Character</a></li><li class="chapter-item expanded "><a href="string.html"><strong aria-hidden="true">7.8.</strong> String</a></li><li class="chapter-item expanded "><a href="option.html"><strong aria-hidden="true">7.9.</strong> Option</a></li><li class="chapter-item expanded "><a href="thunk.html"><strong aria-hidden="true">7.10.</strong> Thunk</a></li><li class="chapter-item expanded "><a href="task.html"><strong aria-hidden="true">7.11.</strong> Task and Thread</a></li></ol></li><li class="chapter-item expanded "><a href="functions.html"><strong aria-hidden="true">8.</strong> Functions</a></li><li class="chapter-item expanded "><a href="tactics.html"><strong aria-hidden="true">9.</strong> Tactics</a></li><li class="chapter-item expanded "><a href="syntax.html"><strong aria-hidden="true">10.</strong> Syntax Extensions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="do.html"><strong aria-hidden="true">10.1.</strong> The do Notation</a></li><li class="chapter-item expanded "><a href="stringinterp.html"><strong aria-hidden="true">10.2.</strong> String Interpolation</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Other</li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">11.</strong> Frequently Asked Questions</a></li><li class="chapter-item expanded "><a href="lean3changes.html"><strong aria-hidden="true">12.</strong> Significant Changes from Lean 3</a></li><li class="chapter-item expanded "><a href="syntax_highlight_in_latex.html"><strong aria-hidden="true">13.</strong> Syntax Highlighting Lean in LaTeX</a></li><li class="chapter-item expanded affix "><li class="part-title">Development</li><li class="chapter-item expanded "><a href="commit_convention.html"><strong aria-hidden="true">14.</strong> Commit Convention</a></li><li class="chapter-item expanded "><a href="make/index.html"><strong aria-hidden="true">15.</strong> Building Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="make/ubuntu-16.04.html"><strong aria-hidden="true">15.1.</strong> Ubuntu Setup</a></li><li class="chapter-item expanded "><a href="make/osx-10.9.html"><strong aria-hidden="true">15.2.</strong> macOS Setup</a></li><li class="chapter-item expanded "><a href="make/msys2.html"><strong aria-hidden="true">15.3.</strong> Windows Setup</a></li><li class="chapter-item expanded "><a href="make/nix.html"><strong aria-hidden="true">15.4.</strong> Nix Setup (Experimental)</a></li></ol></li><li class="chapter-item expanded "><a href="mdbook.html"><strong aria-hidden="true">16.</strong> Building This Manual</a></li><li class="chapter-item expanded "><a href="fixing_tests.html"><strong aria-hidden="true">17.</strong> Fixing Tests</a></li><li class="chapter-item expanded "><a href="debugging.html"><strong aria-hidden="true">18.</strong> Debugging</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Lean Manual</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                        <a href="https://github.com/leanprover/lean4" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2><a class="header" href="#simple-type-theory" id="simple-type-theory">Simple Type Theory</a></h2>
+<p>&quot;Type theory&quot; gets its name from the fact that every expression has an associated <em>type</em>.
+For example, in a given context, <code>x + 0</code> may denote a natural number and <code>f</code> may denote a function on the natural numbers.
+For those that don't like math, a Lean natural number is an arbitrary-precision unsigned integer.</p>
+<p>Here are some examples of how we can declare objects in Lean and check their types.</p>
+<pre><code class="language-lean">/- Declare some constants. -/
+
+constant m  : Nat   -- m is a natural number
+constant n  : Nat
+constant b1 : Bool  -- b1 is a Boolean
+constant b2 : Bool
+
+/- Check their types. -/
+
+#check m            -- output: Nat
+#check n
+#check n + 0        -- Nat
+#check m * (n + 0)  -- Nat
+#check b1           -- Bool
+#check b1 &amp;&amp; b2     -- &quot;&amp;&amp;&quot; is the Boolean and
+#check b1 || b2     -- Boolean or
+#check true         -- Boolean &quot;true&quot;
+</code></pre>
+<p>Any text between <code>/-</code> and <code>-/</code> constitutes a comment block that is ignored by Lean.
+Similarly, two dashes <code>--</code> indicate that the rest of the line contains a comment that is also ignored.
+Comment blocks can be nested, making it possible to &quot;comment out&quot; chunks of code, just as in many programming languages.</p>
+<p>The <code>constant</code> command introduce new constant symbols into the working environment.
+The <code>#check</code> command asks Lean to report their types; in Lean, auxiliary commands that query the system for
+information typically begin with the hash symbol. You should try declaring some constants and type checking
+some expressions on your own. Declaring new objects in this way is a good way to experiment with the system.</p>
+<p>What makes simple type theory powerful is that one can build new types out of others.
+For example, if <code>a</code> and <code>b</code> are types, <code>a -&gt; b</code> denotes the type of functions from <code>a</code> to <code>b</code>,
+and <code>a × b</code> denotes the type of pairs consisting of an element of <code>a</code>
+paired with an element of <code>b</code>, also known as the <em>Cartesian product</em>.
+Note that <code>×</code> is a Unicode symbol. We believe that judicious use of Unicode improves legibility,
+and all modern editors have great support for it. In the Lean standard library, we often use
+Greek letters to denote types, and the Unicode symbol <code>→</code> as a more compact version of <code>-&gt;</code>.</p>
+<pre><code class="language-lean">constant m : Nat
+constant n : Nat
+
+constant f  : Nat → Nat         -- type the arrow as &quot;\to&quot; or &quot;\r&quot;
+constant f' : Nat -&gt; Nat        -- alternative ASCII notation
+constant p  : Nat × Nat         -- type the product as &quot;\times&quot;
+constant q  : Prod Nat Nat      -- alternative notation
+constant g  : Nat → Nat → Nat
+constant g' : Nat → (Nat → Nat) -- has the same type as g!
+constant h  : Nat × Nat → Nat
+constant F  : (Nat → Nat) → Nat -- a &quot;functional&quot;
+
+#check f            -- Nat → Nat
+#check f n          -- Nat
+#check g m n        -- Nat
+#check g m          -- Nat → Nat
+#check (m, n)       -- Nat × Nat
+#check p.1          -- Nat
+#check p.2          -- Nat
+#check (m, n).1     -- Nat
+#check (p.1, n)     -- Nat × Nat
+#check F f          -- Nat
+</code></pre>
+<p>Once again, you should try some examples on your own.</p>
+<p>Let us dispense with some basic syntax. You can enter the unicode arrow <code>→</code> by typing <code>\to</code> or <code>\r</code>.
+You can also use the ASCII alternative <code>-&gt;</code>, so the expressions <code>Nat -&gt; Nat</code> and <code>Nat → Nat</code> mean the same thing.
+Both expressions denote the type of functions that take a natural number as input and return a natural number as output.
+The unicode symbol <code>×</code> for the Cartesian product is entered as <code>\times</code>.
+We will generally use lower-case Greek letters like <code>α</code>, <code>β</code>, and <code>γ</code> to range over types.
+You can enter these particular ones with <code>\a</code>, <code>\b</code>, and <code>\g</code>.</p>
+<p>There are a few more things to notice here. First, the application of a function <code>f</code> to a value <code>x</code> is denoted <code>f x</code>.
+Second, when writing type expressions, arrows associate to the <em>right</em>; for example, the type of <code>g</code> is <code>Nat → (Nat → Nat)</code>.
+Thus we can view <code>g</code> as a function that takes natural numbers and returns another function that takes a natural number and
+returns a natural number.
+In type theory, this is generally more convenient than writing <code>g</code> as a function that takes a pair of natural numbers as input
+and returns a natural number as output. For example, it allows us to &quot;partially apply&quot; the function <code>g</code>.
+The example above shows that <code>g m</code> has type <code>Nat → Nat</code>, that is, the function that &quot;waits&quot; for a second argument, <code>n</code>,
+and then returns <code>g m n</code>. Taking a function <code>h</code> of type <code>Nat × Nat → Nat</code> and &quot;redefining&quot; it to look like <code>g</code> is a process
+known as <em>currying</em>, something we will come back to below.</p>
+<p>By now you may also have guessed that, in Lean, <code>(m, n)</code> denotes the ordered pair of <code>m</code> and <code>n</code>,
+and if <code>p</code> is a pair, <code>p.1</code> and <code>p.2</code> denote the two projections.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="deptypes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="typeobjs.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="deptypes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="typeobjs.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

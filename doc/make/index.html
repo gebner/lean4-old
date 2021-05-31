@@ -1,0 +1,401 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Building Lean - Lean Manual</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="../favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="../favicon.png">
+        
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../whatIsLean.html"><strong aria-hidden="true">1.</strong> What is Lean</a></li><li class="chapter-item expanded "><a href="../tour.html"><strong aria-hidden="true">2.</strong> Tour of Lean</a></li><li class="chapter-item expanded "><a href="../setup.html"><strong aria-hidden="true">3.</strong> Setting Up Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../quickstart.html"><strong aria-hidden="true">3.1.</strong> Quickstart</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Language Manual</li><li class="chapter-item expanded "><a href="../deptypes.html"><strong aria-hidden="true">4.</strong> Dependent Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../simptypes.html"><strong aria-hidden="true">4.1.</strong> Simple Type Theory</a></li><li class="chapter-item expanded "><a href="../typeobjs.html"><strong aria-hidden="true">4.2.</strong> Types as objects</a></li><li class="chapter-item expanded "><a href="../funabst.html"><strong aria-hidden="true">4.3.</strong> Function Abstraction and Evaluation</a></li><li class="chapter-item expanded "><a href="../introdef.html"><strong aria-hidden="true">4.4.</strong> Introducing Definitions</a></li><li class="chapter-item expanded "><a href="../dep.html"><strong aria-hidden="true">4.5.</strong> What makes dependent type theory dependent?</a></li></ol></li><li class="chapter-item expanded "><a href="../organization.html"><strong aria-hidden="true">5.</strong> Organizational features</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../sections.html"><strong aria-hidden="true">5.1.</strong> Sections</a></li><li class="chapter-item expanded "><a href="../namespaces.html"><strong aria-hidden="true">5.2.</strong> Namespaces</a></li><li class="chapter-item expanded "><a href="../implicit.html"><strong aria-hidden="true">5.3.</strong> Implicit Arguments</a></li><li class="chapter-item expanded "><a href="../autobound.html"><strong aria-hidden="true">5.4.</strong> Auto Bound Implicit Arguments</a></li></ol></li><li class="chapter-item expanded "><a href="../decltypes.html"><strong aria-hidden="true">6.</strong> Declaring New Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../enum.html"><strong aria-hidden="true">6.1.</strong> Enumerated Types</a></li><li class="chapter-item expanded "><a href="../inductive.html"><strong aria-hidden="true">6.2.</strong> Inductive Types</a></li><li class="chapter-item expanded "><a href="../struct.html"><strong aria-hidden="true">6.3.</strong> Structures</a></li><li class="chapter-item expanded "><a href="../typeclass.html"><strong aria-hidden="true">6.4.</strong> Type classes</a></li><li class="chapter-item expanded "><a href="../unifhint.html"><strong aria-hidden="true">6.5.</strong> Unification Hints</a></li></ol></li><li class="chapter-item expanded "><a href="../builtintypes.html"><strong aria-hidden="true">7.</strong> Builtin Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../nat.html"><strong aria-hidden="true">7.1.</strong> Natural number</a></li><li class="chapter-item expanded "><a href="../int.html"><strong aria-hidden="true">7.2.</strong> Integer</a></li><li class="chapter-item expanded "><a href="../uint.html"><strong aria-hidden="true">7.3.</strong> Fixed precision unsigned integer</a></li><li class="chapter-item expanded "><a href="../float.html"><strong aria-hidden="true">7.4.</strong> Float</a></li><li class="chapter-item expanded "><a href="../array.html"><strong aria-hidden="true">7.5.</strong> Array</a></li><li class="chapter-item expanded "><a href="../list.html"><strong aria-hidden="true">7.6.</strong> List</a></li><li class="chapter-item expanded "><a href="../char.html"><strong aria-hidden="true">7.7.</strong> Character</a></li><li class="chapter-item expanded "><a href="../string.html"><strong aria-hidden="true">7.8.</strong> String</a></li><li class="chapter-item expanded "><a href="../option.html"><strong aria-hidden="true">7.9.</strong> Option</a></li><li class="chapter-item expanded "><a href="../thunk.html"><strong aria-hidden="true">7.10.</strong> Thunk</a></li><li class="chapter-item expanded "><a href="../task.html"><strong aria-hidden="true">7.11.</strong> Task and Thread</a></li></ol></li><li class="chapter-item expanded "><a href="../functions.html"><strong aria-hidden="true">8.</strong> Functions</a></li><li class="chapter-item expanded "><a href="../tactics.html"><strong aria-hidden="true">9.</strong> Tactics</a></li><li class="chapter-item expanded "><a href="../syntax.html"><strong aria-hidden="true">10.</strong> Syntax Extensions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../do.html"><strong aria-hidden="true">10.1.</strong> The do Notation</a></li><li class="chapter-item expanded "><a href="../stringinterp.html"><strong aria-hidden="true">10.2.</strong> String Interpolation</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Other</li><li class="chapter-item expanded "><a href="../faq.html"><strong aria-hidden="true">11.</strong> Frequently Asked Questions</a></li><li class="chapter-item expanded "><a href="../lean3changes.html"><strong aria-hidden="true">12.</strong> Significant Changes from Lean 3</a></li><li class="chapter-item expanded "><a href="../syntax_highlight_in_latex.html"><strong aria-hidden="true">13.</strong> Syntax Highlighting Lean in LaTeX</a></li><li class="chapter-item expanded affix "><li class="part-title">Development</li><li class="chapter-item expanded "><a href="../commit_convention.html"><strong aria-hidden="true">14.</strong> Commit Convention</a></li><li class="chapter-item expanded "><a href="../make/index.html" class="active"><strong aria-hidden="true">15.</strong> Building Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../make/ubuntu-16.04.html"><strong aria-hidden="true">15.1.</strong> Ubuntu Setup</a></li><li class="chapter-item expanded "><a href="../make/osx-10.9.html"><strong aria-hidden="true">15.2.</strong> macOS Setup</a></li><li class="chapter-item expanded "><a href="../make/msys2.html"><strong aria-hidden="true">15.3.</strong> Windows Setup</a></li><li class="chapter-item expanded "><a href="../make/nix.html"><strong aria-hidden="true">15.4.</strong> Nix Setup (Experimental)</a></li></ol></li><li class="chapter-item expanded "><a href="../mdbook.html"><strong aria-hidden="true">16.</strong> Building This Manual</a></li><li class="chapter-item expanded "><a href="../fixing_tests.html"><strong aria-hidden="true">17.</strong> Fixing Tests</a></li><li class="chapter-item expanded "><a href="../debugging.html"><strong aria-hidden="true">18.</strong> Debugging</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Lean Manual</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                        <a href="https://github.com/leanprover/lean4" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h2><a class="header" href="#requirements" id="requirements">Requirements</a></h2>
+<ul>
+<li>C++14 compatible compiler</li>
+<li><a href="http://www.cmake.org">CMake</a></li>
+<li><a href="http://gmplib.org/">GMP (GNU multiprecision library)</a></li>
+</ul>
+<h2><a class="header" href="#platform-specific-setup" id="platform-specific-setup">Platform-Specific Setup</a></h2>
+<ul>
+<li><a href="ubuntu.html">Linux (Ubuntu)</a></li>
+<li><a href="msys2.html">Windows (msys2)</a></li>
+<li><a href="msvc.html">Windows (Visual Studio)</a></li>
+<li><a href="osx-10.9.html">macOS (homebrew)</a></li>
+<li>Linux/macOS/WSL via <a href="https://nixos.org/nix/">Nix</a>: Call <code>nix-shell</code> in the project root. That's it.</li>
+<li>There is also an <a href="nix.html"><strong>experimental</strong> setup based purely on Nix</a> that works fundamentally differently from the
+make/CMake setup described on this page.</li>
+</ul>
+<h2><a class="header" href="#generic-build-instructions" id="generic-build-instructions">Generic Build Instructions</a></h2>
+<p>Setting up a basic release build:</p>
+<pre><code class="language-bash">git clone https://github.com/leanprover/lean4
+cd lean4
+mkdir -p build/release
+cd build/release
+cmake ../..
+make
+</code></pre>
+<p>Setting up a basic debug build:</p>
+<pre><code class="language-bash">git clone https://github.com/leanprover/lean4
+cd lean4
+mkdir -p build/debug
+cd build/debug
+cmake -D CMAKE_BUILD_TYPE=DEBUG ../..
+make
+</code></pre>
+<p>This will compile the Lean library and binary into the <code>stage1</code> subfolder; see
+below for details. Add <code>-jN</code> for an appropriate <code>N</code> to <code>make</code> for a parallel
+build.</p>
+<h2><a class="header" href="#useful-cmake-configuration-settings" id="useful-cmake-configuration-settings">Useful CMake Configuration Settings</a></h2>
+<p>Pass these along with the <code>cmake ../..</code> command.</p>
+<ul>
+<li>
+<p><code>-D CMAKE_BUILD_TYPE=</code><br />
+Select the build type. Valid values are <code>RELEASE</code> (default), <code>DEBUG</code>,
+<code>RELWITHDEBINFO</code>, and <code>MINSIZEREL</code>.</p>
+</li>
+<li>
+<p><code>-D CMAKE_C_COMPILER=</code><br />
+<code>-D CMAKE_CXX_COMPILER=</code><br />
+Select the C/C++ compilers to use. Official Lean releases currently use Clang;
+see also <code>.github/workflows/ci.yml</code> for the CI config.</p>
+</li>
+</ul>
+<p>Lean will automatically use <a href="https://ccache.dev/">CCache</a> if available to avoid
+redundant builds, especially after stage 0 has been updated (see below).</p>
+<h2><a class="header" href="#lean-build-pipeline" id="lean-build-pipeline">Lean Build Pipeline</a></h2>
+<p>Since version 4, Lean is a partially bootstrapped program: most parts of the
+frontend and compiler are written in Lean itself and thus need to be built before
+building Lean itself - which is needed to again build those parts. This cycle is
+broken by using pre-built C files checked into the repository (which ultimately
+go back to a point where the Lean compiler was not written in Lean) in place of
+these Lean inputs and then compiling everything in multiple stages up to a fixed
+point. The build directory is organized in these stages:</p>
+<pre><code class="language-bash">stage0/
+  # Bootstrap binary built from stage0/src/.
+  # We do not use any other files from this directory in further stages.
+  bin/lean
+stage1/
+  include/
+    config.h  # config variables used to build `lean` such as use allocator
+    runtime/lean.h  # runtime headers, used by extracted C code, uses `config.h`
+  share/lean/
+    Makefile  # used by `leanmake`
+  lib/
+    lean/**/*.olean  # the Lean library (incl. the compiler) compiled by the previous stage's `lean`
+    temp/**/*.{c,o}  # the library extracted to C and compiled by `leanc`
+    libInit.a libStd.a libLean.a  # static libraries of the Lean library
+    libleancpp.a  # a static library of the C++ sources of Lean
+  bin/
+    lean  # the Lean compiler &amp; server linked together from the above libraries
+    leanc  # a wrapper around a C compiler supplying search paths etc
+    leanmake  # a wrapper around `make` supplying the Makefile above
+stage2/...
+stage3/...
+</code></pre>
+<p>Stage 0 can be viewed as a blackbox since it does not depend on any local
+changes and is equivalent to downloading a bootstrapping binary as done in other
+compilers. The build for any other stage starts by building the runtime and
+standard library from <code>src/</code>, using the <code>lean</code> binary from the previous stage in
+the latter case, which are then assembled into a new <code>bin/lean</code> binary.</p>
+<p>Each stage can be built by calling <code>make stageN</code> in the root build folder.
+Running just <code>make</code> will default to stage 1, which is usually sufficient for
+testing changes on the test suite or other files outside of the stdlib. However,
+it might happen that the stage 1 compiler is not able to load its own stdlib,
+e.g. when changing the .olean format: the stage 1 stdlib will use the format
+generated by the stage 0 compiler, but the stage 1 compiler will expect the new
+format. In this case, we should continue with building and testing stage 2
+instead, which will both build and expect the new format. Note that this is only
+possible because when building a stage's stdlib, we use the previous compiler
+but never load the previous stdlib (since everything is <code>prelude</code>). We can also
+use stage 2 to test changes in the compiler or other &quot;meta&quot; parts, i.e. changes
+that affect the produced (.olean or .c) code, on the stdlib and compiler itself.
+We are not aware of any &quot;meta-meta&quot; parts that influence more than two stages of
+compilation, so stage 3 should always be identical to stage 2 and only exists as
+a sanity check.</p>
+<p>In summary, doing a standard build via <code>make</code> involves these steps:</p>
+<ol>
+<li>compile the <code>stage0/src</code> archived sources into <code>stage0/bin/lean</code></li>
+<li>use it to compile the current library (<em>including</em> your changes) into <code>stage1/lib</code></li>
+<li>link that and the current C++ code from <code>src/</code> into <code>stage1/bin/lean</code></li>
+</ol>
+<p>You now have a Lean binary and library that include your changes, though their
+own compilation was not influenced by them, that you can use to test your
+changes on test programs whose compilation <em>will</em> be influenced by the changes.</p>
+<p>Finally, when we want to use new language features in the library, we need to
+update the stage 0 compiler, which can be done via <code>make -C stageN update-stage0</code>.
+<code>make update-stage0</code> without <code>-C</code> defaults to stage1.</p>
+<h2><a class="header" href="#development-setup" id="development-setup">Development Setup</a></h2>
+<p>After building a stage, you can invoke <code>make -C stageN test</code> (or, even better,
+<code>make -C stageN test ARGS=-jN</code> to make <code>ctest</code> parallel) to run the Lean test suite.
+<code>make test</code> without <code>-C</code> defaults to stage1. While the Lean tests will
+automatically use that stage's corresponding Lean executables, for running tests
+or compiling Lean programs manually, you need to put them into your <code>PATH</code>
+yourself. A simple option for doing that is to use
+<a href="https://github.com/leanprover/elan"><code>elan</code></a>, see the next section.</p>
+<p>You can use any of the <a href="../setup.html">supported editors</a> for editing the Lean source
+code. If you set up <code>elan</code> as below, opening <code>src/</code> as a <em>workspace folder</em> should
+ensure that stage 0 will be used for file in that directory. You should also set the
+<code>LEAN_SRC_PATH</code> environment variable to the path of the <code>src/</code> directory to enable
+go-to-definition in the stdlib (automatically set when using <code>nix-shell</code>).</p>
+<h2><a class="header" href="#dev-setup-using-elan" id="dev-setup-using-elan">Dev setup using elan</a></h2>
+<p>You can use <a href="https://github.com/leanprover/elan"><code>elan</code></a> to easily switch between
+stages and build configurations based on the current directory, both for the
+<code>lean/leanc/leanmake</code> binaries in your shell's PATH and inside your editor.</p>
+<p>If you haven't already installed elan, you can do so, without installing a
+default version of Lean, using</p>
+<pre><code class="language-bash">curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- --default-toolchain none
+</code></pre>
+<p>You can use <code>elan toolchain link</code> to give a specific stage build directory a
+reference name, then use <code>elan override set</code> to associate such a name to the
+current directory. We usually want to use <code>stage0</code> for editing files in <code>src</code>
+and <code>stage1</code> for everything else (e.g. tests).</p>
+<pre><code># in the Lean rootdir
+elan toolchain link lean4 build/release/stage1
+elan toolchain link lean4-stage0 build/release/stage0
+# make `lean` etc. point to stage1 in the rootdir and subdirs
+elan override set lean4
+cd src
+# make `lean` etc. point to stage0 anywhere inside `src`
+elan override set lean4-stage0
+</code></pre>
+<p>You can also use the <code>+toolchain</code> shorthand (e.g. <code>lean +lean4-debug</code>) to switch
+toolchains on the spot. <code>lean4-mode</code> will automatically use the <code>lean</code> executable
+associated with the directory of the current file as long as <code>lean4-rootdir</code> is
+unset and <code>~/.elan/bin</code> is in your <code>exec-path</code>. Where Emacs sources the
+<code>exec-path</code> from can be a bit unclear depending on your configuration, so
+alternatively you can also set <code>lean4-rootdir</code> to <code>&quot;~/.elan&quot;</code> explicitly.</p>
+<p>You might find that debugging through elan, e.g. via <code>gdb lean</code>, disables some
+things like symbol autocompletion because at first only the elan proxy binary
+is loaded. You can instead pass the explicit path to <code>bin/lean</code> in your build
+folder to gdb, or use <code>gdb $(elan which lean)</code>.</p>
+<h2><a class="header" href="#troubleshooting" id="troubleshooting">Troubleshooting</a></h2>
+<ul>
+<li>Call <code>make</code> with an additional <code>VERBOSE=1</code> argument to print executed commands.</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../commit_convention.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../make/ubuntu-16.04.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="../commit_convention.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="../make/ubuntu-16.04.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>

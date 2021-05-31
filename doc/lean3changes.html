@@ -1,0 +1,533 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Significant Changes from Lean 3 - Lean Manual</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="favicon.png">
+        
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <link rel="stylesheet" href="css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="whatIsLean.html"><strong aria-hidden="true">1.</strong> What is Lean</a></li><li class="chapter-item expanded "><a href="tour.html"><strong aria-hidden="true">2.</strong> Tour of Lean</a></li><li class="chapter-item expanded "><a href="setup.html"><strong aria-hidden="true">3.</strong> Setting Up Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="quickstart.html"><strong aria-hidden="true">3.1.</strong> Quickstart</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Language Manual</li><li class="chapter-item expanded "><a href="deptypes.html"><strong aria-hidden="true">4.</strong> Dependent Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="simptypes.html"><strong aria-hidden="true">4.1.</strong> Simple Type Theory</a></li><li class="chapter-item expanded "><a href="typeobjs.html"><strong aria-hidden="true">4.2.</strong> Types as objects</a></li><li class="chapter-item expanded "><a href="funabst.html"><strong aria-hidden="true">4.3.</strong> Function Abstraction and Evaluation</a></li><li class="chapter-item expanded "><a href="introdef.html"><strong aria-hidden="true">4.4.</strong> Introducing Definitions</a></li><li class="chapter-item expanded "><a href="dep.html"><strong aria-hidden="true">4.5.</strong> What makes dependent type theory dependent?</a></li></ol></li><li class="chapter-item expanded "><a href="organization.html"><strong aria-hidden="true">5.</strong> Organizational features</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sections.html"><strong aria-hidden="true">5.1.</strong> Sections</a></li><li class="chapter-item expanded "><a href="namespaces.html"><strong aria-hidden="true">5.2.</strong> Namespaces</a></li><li class="chapter-item expanded "><a href="implicit.html"><strong aria-hidden="true">5.3.</strong> Implicit Arguments</a></li><li class="chapter-item expanded "><a href="autobound.html"><strong aria-hidden="true">5.4.</strong> Auto Bound Implicit Arguments</a></li></ol></li><li class="chapter-item expanded "><a href="decltypes.html"><strong aria-hidden="true">6.</strong> Declaring New Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="enum.html"><strong aria-hidden="true">6.1.</strong> Enumerated Types</a></li><li class="chapter-item expanded "><a href="inductive.html"><strong aria-hidden="true">6.2.</strong> Inductive Types</a></li><li class="chapter-item expanded "><a href="struct.html"><strong aria-hidden="true">6.3.</strong> Structures</a></li><li class="chapter-item expanded "><a href="typeclass.html"><strong aria-hidden="true">6.4.</strong> Type classes</a></li><li class="chapter-item expanded "><a href="unifhint.html"><strong aria-hidden="true">6.5.</strong> Unification Hints</a></li></ol></li><li class="chapter-item expanded "><a href="builtintypes.html"><strong aria-hidden="true">7.</strong> Builtin Types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="nat.html"><strong aria-hidden="true">7.1.</strong> Natural number</a></li><li class="chapter-item expanded "><a href="int.html"><strong aria-hidden="true">7.2.</strong> Integer</a></li><li class="chapter-item expanded "><a href="uint.html"><strong aria-hidden="true">7.3.</strong> Fixed precision unsigned integer</a></li><li class="chapter-item expanded "><a href="float.html"><strong aria-hidden="true">7.4.</strong> Float</a></li><li class="chapter-item expanded "><a href="array.html"><strong aria-hidden="true">7.5.</strong> Array</a></li><li class="chapter-item expanded "><a href="list.html"><strong aria-hidden="true">7.6.</strong> List</a></li><li class="chapter-item expanded "><a href="char.html"><strong aria-hidden="true">7.7.</strong> Character</a></li><li class="chapter-item expanded "><a href="string.html"><strong aria-hidden="true">7.8.</strong> String</a></li><li class="chapter-item expanded "><a href="option.html"><strong aria-hidden="true">7.9.</strong> Option</a></li><li class="chapter-item expanded "><a href="thunk.html"><strong aria-hidden="true">7.10.</strong> Thunk</a></li><li class="chapter-item expanded "><a href="task.html"><strong aria-hidden="true">7.11.</strong> Task and Thread</a></li></ol></li><li class="chapter-item expanded "><a href="functions.html"><strong aria-hidden="true">8.</strong> Functions</a></li><li class="chapter-item expanded "><a href="tactics.html"><strong aria-hidden="true">9.</strong> Tactics</a></li><li class="chapter-item expanded "><a href="syntax.html"><strong aria-hidden="true">10.</strong> Syntax Extensions</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="do.html"><strong aria-hidden="true">10.1.</strong> The do Notation</a></li><li class="chapter-item expanded "><a href="stringinterp.html"><strong aria-hidden="true">10.2.</strong> String Interpolation</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Other</li><li class="chapter-item expanded "><a href="faq.html"><strong aria-hidden="true">11.</strong> Frequently Asked Questions</a></li><li class="chapter-item expanded "><a href="lean3changes.html" class="active"><strong aria-hidden="true">12.</strong> Significant Changes from Lean 3</a></li><li class="chapter-item expanded "><a href="syntax_highlight_in_latex.html"><strong aria-hidden="true">13.</strong> Syntax Highlighting Lean in LaTeX</a></li><li class="chapter-item expanded affix "><li class="part-title">Development</li><li class="chapter-item expanded "><a href="commit_convention.html"><strong aria-hidden="true">14.</strong> Commit Convention</a></li><li class="chapter-item expanded "><a href="make/index.html"><strong aria-hidden="true">15.</strong> Building Lean</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="make/ubuntu-16.04.html"><strong aria-hidden="true">15.1.</strong> Ubuntu Setup</a></li><li class="chapter-item expanded "><a href="make/osx-10.9.html"><strong aria-hidden="true">15.2.</strong> macOS Setup</a></li><li class="chapter-item expanded "><a href="make/msys2.html"><strong aria-hidden="true">15.3.</strong> Windows Setup</a></li><li class="chapter-item expanded "><a href="make/nix.html"><strong aria-hidden="true">15.4.</strong> Nix Setup (Experimental)</a></li></ol></li><li class="chapter-item expanded "><a href="mdbook.html"><strong aria-hidden="true">16.</strong> Building This Manual</a></li><li class="chapter-item expanded "><a href="fixing_tests.html"><strong aria-hidden="true">17.</strong> Fixing Tests</a></li><li class="chapter-item expanded "><a href="debugging.html"><strong aria-hidden="true">18.</strong> Debugging</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">Lean Manual</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                        <a href="https://github.com/leanprover/lean4" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1><a class="header" href="#significant-changes-from-lean-3" id="significant-changes-from-lean-3">Significant changes from Lean 3</a></h1>
+<p>Lean 4 is not backward compatible with Lean 3.
+We have rewritten most of the system, and took the opportunity to cleanup the syntax,
+metaprogramming framework, and elaborator. In this section, we go over the most significant
+changes.</p>
+<h2><a class="header" href="#lambda-expressions" id="lambda-expressions">Lambda expressions</a></h2>
+<p>We do not use <code>,</code> anymore to separate the binders from the lambda expression body.
+The Lean 3 syntax for lambda expressions was unconventional, and <code>,</code> has been overused in Lean 3.
+For example, we believe a list of lambda expressions is quite confusing in Lean 3, since <code>,</code> is used
+to separate the elements of a list, and in the lambda expression itself. We now use <code>=&gt;</code> as the separator,
+as an example, <code>fun x =&gt; x</code> is the identity function. One may still use the symbol <code>λ</code> as a shorthand for <code>fun</code>.
+The lambda expression notation has many new features that are not supported in Lean 3.</p>
+<ul>
+<li>Pattern matching</li>
+</ul>
+<p>In Lean 4, one can easily create new notation that abbreviates commonly used idioms. One of them is a
+<code>fun</code> followed by a <code>match</code>. In the following examples, we define a few functions using <code>fun</code>+<code>match</code> notation.</p>
+<pre><code class="language-lean"><span class="boring">namespace ex1
+</span>def Prod.str : Nat × Nat → String :=
+  fun (a, b) =&gt; &quot;(&quot; ++ toString a ++ &quot;, &quot; ++ toString b ++ &quot;)&quot;
+
+structure Point where
+  x : Nat
+  y : Nat
+  z : Nat
+
+def Point.addX : Point → Point → Nat :=
+  fun { x := a, .. } { x := b, .. } =&gt;  a+b
+
+def Sum.str : Option Nat → String :=
+  fun
+    | some a =&gt; &quot;some &quot; ++ toString a
+    | none   =&gt; &quot;none&quot;
+<span class="boring">end ex1
+</span></code></pre>
+<ul>
+<li>Implicit lambdas</li>
+</ul>
+<p>In Lean 3 stdlib, we find many <a href="https://github.com/leanprover/lean/blob/master/library/init/category/reader.lean#L39">instances</a> of the dreadful <code>@</code>+<code>_</code> idiom.
+It is often used when we the expected type is a function type with implicit arguments,
+and we have a constant (<code>reader_t.pure</code> in the example) which also takes implicit arguments. In Lean 4, the elaborator automatically introduces lambdas
+for consuming implicit arguments. We are still exploring this feature and analyzing its impact, but the experience so far has been very positive. As an example,
+here is the example in the link above using Lean 4 implicit lambdas.</p>
+<pre><code class="language-lean"><span class="boring">variable (ρ : Type) (m : Type → Type) [Monad m]
+</span>instance : Monad (ReaderT ρ m) where
+  pure := ReaderT.pure
+  bind := ReaderT.bind
+</code></pre>
+<p>Users can disable the implicit lambda feature by using <code>@</code> or writing a lambda expression with <code>{}</code> or <code>[]</code> binder annotations.
+Here are few examples</p>
+<pre><code class="language-lean"><span class="boring">namespace ex2
+</span>def id1 : {α : Type} → α → α :=
+  fun x =&gt; x
+
+def listId : List ({α : Type} → α → α) :=
+  (fun x =&gt; x) :: []
+
+-- In this example, implicit lambda introduction has been disabled because
+-- we use `@` before `fun`
+def id2 : {α : Type} → α → α :=
+  @fun α (x : α) =&gt; id1 x
+
+def id3 : {α : Type} → α → α :=
+  @fun α x =&gt; id1 x
+
+def id4 : {α : Type} → α → α :=
+  fun x =&gt; id1 x
+
+-- In this example, implicit lambda introduction has been disabled
+-- because we used the binder annotation `{...}`
+def id5 : {α : Type} → α → α :=
+  fun {α} x =&gt; id1 x
+<span class="boring">end ex2
+</span></code></pre>
+<ul>
+<li>Sugar for simple functions</li>
+</ul>
+<p>In Lean 3, we can create simple functions from infix operators by using parentheses. For example, <code>(+1)</code> is sugar for <code>fun x, x + 1</code>. In Lean 4, we generalize this notation using <code>·</code> As a placeholder. Here are a few examples:</p>
+<pre><code class="language-lean"><span class="boring">namespace ex3
+</span>#check (· + 1)
+-- fun a =&gt; a + 1
+#check (2 - ·)
+-- fun a =&gt; 2 - a
+#eval [1, 2, 3, 4, 5].foldl (·*·) 1
+-- 120
+
+def f (x y z : Nat) :=
+  x + y + z
+
+#check (f · 1 ·)
+-- fun a b =&gt; f a 1 b
+
+#eval [(1, 2), (3, 4), (5, 6)].map (·.1)
+-- [1, 3, 5]
+<span class="boring">end ex3
+</span></code></pre>
+<p>As in Lean 3, the notation is activated using parentheses, and the lambda abstraction is created by collecting the nested <code>·</code>s.
+The collection is interrupted by nested parentheses. In the following example, two different lambda expressions are created.</p>
+<pre><code class="language-lean">#check (Prod.mk · (· + 1))
+-- fun a =&gt; (a, fun b =&gt; b + 1)
+</code></pre>
+<h2><a class="header" href="#function-applications" id="function-applications">Function applications</a></h2>
+<p>In Lean 4, we have support for named arguments.
+Named arguments enable you to specify an argument for a parameter by matching the argument with
+its name rather than with its position in the parameter list.
+If you don't remember the order of the parameters but know their names,
+you can send the arguments in any order. You may also provide the value for an implicit parameter when
+Lean failed to infer it. Named arguments also improve the readability of your code by identifying what
+each argument represents.</p>
+<pre><code class="language-lean">def sum (xs : List Nat) :=
+  xs.foldl (init := 0) (·+·)
+
+#eval sum [1, 2, 3, 4]
+-- 10
+
+example {a b : Nat} {p : Nat → Nat → Nat → Prop} (h₁ : p a b b) (h₂ : b = a)
+    : p a a b :=
+  Eq.subst (motive := fun x =&gt; p a x b) h₂ h₁
+</code></pre>
+<p>In the following examples, we illustrate the interaction between named and default arguments.</p>
+<pre><code class="language-lean">def f (x : Nat) (y : Nat := 1) (w : Nat := 2) (z : Nat) :=
+  x + y + w - z
+
+example (x z : Nat) : f (z := z) x = x + 1 + 2 - z := rfl
+
+example (x z : Nat) : f x (z := z) = x + 1 + 2 - z := rfl
+
+example (x y : Nat) : f x y = fun z =&gt; x + y + 2 - z := rfl
+
+example : f = (fun x z =&gt; x + 1 + 2 - z) := rfl
+
+example (x : Nat) : f x = fun z =&gt; x + 1 + 2 - z := rfl
+
+example (y : Nat) : f (y := 5) = fun x z =&gt; x + 5 + 2 - z := rfl
+
+def g {α} [Add α] (a : α) (b? : Option α := none) (c : α) : α :=
+  match b? with
+  | none   =&gt; a + c
+  | some b =&gt; a + b + c
+
+variable {α} [Add α]
+
+example : g = fun (a c : α) =&gt; a + c := rfl
+
+example (x : α) : g (c := x) = fun (a : α) =&gt; a + x := rfl
+
+example (x : α) : g (b? := some x) = fun (a c : α) =&gt; a + x + c := rfl
+
+example (x : α) : g x = fun (c : α) =&gt; x + c := rfl
+
+example (x y : α) : g x y = fun (c : α) =&gt; x + y + c := rfl
+</code></pre>
+<p>In Lean 4, we can use <code>..</code> to provide missing explicit arguments as <code>_</code>.
+This feature combined with named arguments is useful for writing patterns. Here is an example:</p>
+<pre><code class="language-lean">inductive Term where
+  | var    (name : String)
+  | num    (val : Nat)
+  | add    (fn : Term) (arg : Term)
+  | lambda (name : String) (type : Term) (body : Term)
+
+def getBinderName : Term → Option String
+  | Term.lambda (name := n) .. =&gt; some n
+  | _ =&gt; none
+
+def getBinderType : Term → Option Term
+  | Term.lambda (type := t) .. =&gt; some t
+  | _ =&gt; none
+</code></pre>
+<p>Ellipsis are also useful when explicit argument can be automatically inferred by Lean, and we want
+to avoid a sequence of <code>_</code>s.</p>
+<pre><code class="language-lean">example (f : Nat → Nat) (a b c : Nat) : f (a + b + c) = f (a + (b + c)) :=
+  congrArg f (Nat.add_assoc ..)
+</code></pre>
+<h2><a class="header" href="#dependent-function-types" id="dependent-function-types">Dependent function types</a></h2>
+<p>Given <code>α : Type</code> and <code>β : α → Type</code>, <code>(x : α) → β x</code> denotes the type of functions <code>f</code> with the property that,
+for each <code>a : α</code>, <code>f a</code> is an element of <code>β a</code>. In other words, the type of the value returned by <code>f</code> depends on its input.
+We say <code>(x : α) → β x</code> is a dependent function type. In Lean 3, we write the dependent function type <code>(x : α) → β x</code> using
+one of the following three equivalent notations:
+<code>forall x : α, β x</code> or <code>∀ x : α, β x</code> or <code>Π x : α, β x</code>.
+The first two were intended to be used for writing propositions, and the latter for writing code.
+Although the notation <code>Π x : α, β x</code> has historical significance, we have removed it from Lean 4 because
+it is awkward to use and often confuses new users. We can still write <code>forall x : α, β x</code> and <code>∀ x : α, β x</code>.</p>
+<pre><code class="language-lean">#check forall (α : Type), α → α
+#check ∀ (α : Type), α → α
+#check ∀ α : Type, α → α
+#check ∀ α, α → α
+#check (α : Type) → α → α
+#check {α : Type} → (a : Array α) → (i : Nat) → i &lt; a.size → α
+#check {α : Type} → [ToString α] → α → String
+#check forall {α : Type} (a : Array α) (i : Nat), i &lt; a.size → α
+#check {α β : Type} → α → β → α × β
+</code></pre>
+<h2><a class="header" href="#the-meta-keyword" id="the-meta-keyword">The <code>meta</code> keyword</a></h2>
+<p>In Lean 3, the keyword <code>meta</code> is used to mark definitions that can use primitives implemented in C/C++.
+These metadefinitions can also call themselves recursively, relaxing the termination
+restriction imposed by ordinary type theory. Metadefinitions may also use unsafe primitives such as
+<code>eval_expr (α : Type u) [reflected α] : expr → tactic α</code>, or primitives that break referential transparency
+<code>tactic.unsafe_run_io</code>.</p>
+<p>The keyword <code>meta</code> has been currently removed from Lean 4. However, we may re-introduce it in the future,
+but with a much more limited purpose: marking meta code that should not be included in the executables produced by Lean.</p>
+<p>The keywords <code>axiom</code> and <code>constant</code> are not equivalent in Lean 4. In Lean 4, <code>constant</code> is used to define
+an opaque definition. Here are two simple examples:</p>
+<pre><code class="language-lean"><span class="boring">namespace meta1
+</span>constant x : Nat := 1
+-- The following example will not type check since `x` is opaque
+-- example : x = 1 := rfl
+
+-- We can evaluate `x`
+#eval x
+-- 1
+
+-- When no value is provided, the elaborator tries to build one automatically for us
+-- using the `Inhabited` type class
+constant y : Nat
+<span class="boring">end meta1
+</span></code></pre>
+<p>We can instruct Lean to use a foreign function as the implementation for any constant or definition
+using the attribute <code>@[extern &quot;foreign_function&quot;]</code>. It is the user's responsibility to ensure the
+foreign implementation is correct.
+However, a user mistake here will only impact the code generated by Lean, and
+it will <strong>not</strong> compromise the logical soundness of the system.
+That is, you cannot prove <code>False</code> using the <code>@[extern]</code> attribute.
+We use <code>@[extern]</code> with definitions when we want to provide a reference implementation in Lean
+that can be used for reasoning. When we write a definition such as</p>
+<pre><code class="language-lean">@[extern &quot;lean_nat_add&quot;]
+def add : Nat → Nat → Nat
+  | a, Nat.zero   =&gt; a
+  | a, Nat.succ b =&gt; Nat.succ (add a b)
+</code></pre>
+<p>Lean assumes that the foreign function <code>lean_nat_add</code> implements the reference implementation above.</p>
+<p>The <code>unsafe</code> keyword allows us to define functions using unsafe features such as general recursion,
+and arbitrary type casting. Regular (safe) functions cannot directly use <code>unsafe</code> ones since it would
+compromise the logical soundness of the system. As in regular programming languages, programs written
+using unsafe features may crash at runtime. Here are a few unsafe examples:</p>
+<pre><code class="language-lean">unsafe def unsound : False :=
+  unsound
+
+#check @unsafeCast
+-- {α : Type _} → {β : Type _} → α → β
+
+unsafe def nat2String (x : Nat) : String :=
+  unsafeCast x
+
+-- The following definition doesn't type check because it is not marked as `unsafe`
+-- def nat2StringSafe (x : Nat) : String :=
+--   unsafeCast x
+</code></pre>
+<p>The <code>unsafe</code> keyword is particularly useful when we want to take advantage of an implementation detail of the
+Lean execution runtime. For example, we cannot prove in Lean that arrays have a maximum size, but
+the runtime used to execute Lean programs guarantees that an array cannot have more than 2^64 (2^32) elements
+in a 64-bit (32-bit) machine. We can take advantage of this fact to provide a more efficient implementation for
+array functions. However, the efficient version would not be very useful if it can only be used in
+unsafe code. Thus, Lean 4 provides the attribute <code>@[implementedBy functionName]</code>. The idea is to provide
+an unsafe (and potentially more efficient) version of a safe definition or constant. The function <code>f</code>
+at the attribute <code>@[implementedBy f]</code> is very similar to an extern/foreign function,
+the key difference is that it is implemented in Lean itself. Again, the logical soundness of the system
+cannot be compromised by using the attribute <code>implementedBy</code>, but if the implementation is incorrect your
+program may crash at runtime. In the following example, we define <code>withPtrUnsafe a k h</code> which
+executes <code>k</code> using the memory address where <code>a</code> is stored in memory. The argument <code>h</code> is proof
+that <code>k</code> is a constant function. Then, we &quot;seal&quot; this unsafe implementation at <code>withPtr</code>. The proof <code>h</code>
+ensures the reference implementation <code>k 0</code> is correct. For more information, see the article
+&quot;Sealing Pointer-Based Optimizations Behind Pure Functions&quot;.</p>
+<pre><code class="language-lean">unsafe
+def withPtrUnsafe {α β : Type} (a : α) (k : USize → β) (h : ∀ u, k u = k 0) : β :=
+  k (ptrAddrUnsafe a)
+
+@[implementedBy withPtrUnsafe]
+def withPtr {α β : Type} (a : α) (k : USize → β) (h : ∀ u, k u = k 0) : β :=
+  k 0
+</code></pre>
+<p>General recursion is very useful in practice, and it would be impossible to implement Lean 4 without it.
+The keyword <code>partial</code> implements a very simple and efficient approach for supporting general recursion.
+Simplicity was key here because of the bootstrapping problem. That is, we had to implement Lean in Lean before
+many of its features were implemented (e.g., the tactic framework or support for wellfounded recursion).
+Another requirement for us was performance. Functions tagged with <code>partial</code> should be as efficient as the ones implemented in mainstream functional programming
+languages such as OCaml. When the <code>partial</code> keyword is used, Lean generates an auxiliary <code>unsafe</code> definition that
+uses general recursion, and then defines an opaque constant that is implemented by this auxiliary definition.
+This is very simple, efficient, and is sufficient for users that want to use Lean as a regular programming language.
+A <code>partial</code> definition cannot use unsafe features such as <code>unsafeCast</code> and <code>ptrAddrUnsafe</code>, and it can only be used to
+implement types we already known to be inhabited. Finally, since we &quot;seal&quot; the auxiliary definition using an opaque
+constant, we cannot reason about <code>partial</code> definitions.</p>
+<p>We are aware that proof assistants such as Isabelle provide a framework for defining partial functions that does not
+prevent users from proving properties about them. This kind of framework can be implemented in Lean 4. Actually,
+it can be implemented by users since Lean 4 is an extensible system. The developers current have no plans to implement
+this kind of support for Lean 4. However, we remark that users can implement it using a function that traverses
+the auxiliary unsafe definition generated by Lean, and produces a safe one using an approach similar to the one used in Isabelle.</p>
+<pre><code class="language-lean"><span class="boring">namespace partial1
+</span>partial def f (x : Nat) : IO Unit := do
+  IO.println x
+  if x &lt; 100 then
+     f (x+1)
+
+#eval f 98
+<span class="boring">end partial1
+</span></code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="faq.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="syntax_highlight_in_latex.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="faq.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="syntax_highlight_in_latex.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
